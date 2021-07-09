@@ -18,33 +18,33 @@
 - [Основные модули портала](#3) 
 
 <a name="1"></a>
-# Установка
+## Установка
 
 бла бла бла
 
 <a name="1.1"></a>
-## Требования к кофигурации
+### Требования к кофигурации
 
 If you plan to use Nightscout, we recommend using ...
 
 <a name="2"></a>
-# Запуск
+## Запуск
 бла бла бла
 
 <a name="2.1"></a>
-## Recommended minimum browser versions for using Nightscout:
+### Recommended minimum browser versions for using Nightscout:
 
 Older versions of the browsers might work, but are untested.
 
 Older versions of the browsers might work, but are untested.
 
 <a name="2.2"></a>
-## updating-my-version
+### updating-my-version
 
 бла бла бла
 
 <a name="3"></a>
-# Основные модули портала
+## Основные модули портала
 - Администрирование портала
 - Управление пользователями
 - Управление оформлением 
