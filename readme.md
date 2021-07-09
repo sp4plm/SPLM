@@ -13,7 +13,7 @@
 - [Установка:](#1)
   - [Требования к кофигурации:](#1.1)
 - [Запуск:](#2)
-  - [Updating my version](#2.1)
+  - [Recommended minimum browser](#2.1)
   - [Новый эелемент](#2.2)
 - [Основные модули портала](#3) 
 - [Дополнительные модули портала](#4)
@@ -41,7 +41,7 @@ Older versions of the browsers might work, but are untested.
 Older versions of the browsers might work, but are untested.
 
 <a name="2.2"></a>
-### updating-my-version
+### Новый эелемент
 
 бла бла бла
 
