@@ -11,10 +11,6 @@
 # Содержание
 
 - [Установка:](#1)
-  - [Требования к кофигурации:](#1.1)
-- [Запуск:](#2)
-  - [Recommended minimum browser](#2.1)
-  - [Новый эелемент](#2.2)
 - [Основные модули портала](#3) 
 - [Возможные области применения портала](#4)
 
@@ -23,46 +19,26 @@
 
 Download via git:
 
-  'git clone git://github.com/hansonkd/FlaskBootstrapSecurity.git'
+'git clone git://github.com/hansonkd/FlaskBootstrapSecurity.git'
 
 Change into the cloned directory
   
-  'cd FlaskBootstrapSecurity'
+'cd FlaskBootstrapSecurity'
 
 Get VirtualEnv and VirtualEnvWrapper set up. See here for further details: http://www.doughellmann.com/docs/virtualenvwrapper/
 
 Create a virtualenvironment
 
- 'mkvirtualenv environment'
+'mkvirtualenv environment'
  
 Install the required python dependancies:
 
- 'pip install -r requirements.txt'
+'pip install -r requirements.txt'
 
 Run a development server:
 
- 'python run.py'
+'python run.py'
 
-
-<a name="1.1"></a>
-### Требования к кофигурации
-
-If you plan to use Nightscout, we recommend using ...
-
-<a name="2"></a>
-## Запуск
-
-<a name="2.1"></a>
-### Recommended minimum browser versions for using Nightscout:
-
-Older versions of the browsers might work, but are untested.
-
-Older versions of the browsers might work, but are untested.
-
-<a name="2.2"></a>
-### Новый эелемент
-
-бла бла бла
 
 <a name="3"></a>
 ## Основные модули портала
