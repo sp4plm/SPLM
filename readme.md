@@ -36,15 +36,21 @@
 
 Создайте virtualenvironment:
 
-  `mkvirtualenv environment`
+    ```
+    mkvirtualenv environment
+    ```    
  
 4) Установите необходиомые дополнительные пакеты (python dependancies):
 
-  `pip install -r requirements.txt`
+    ```
+    pip install -r requirements.txt
+    ```
 
 5) Запустите сервер приложения:
 
-  `python run.py`
+    ```
+    python run.py
+    ```
 
 <a name="3"></a>
 ## Основные модули портала
