@@ -21,7 +21,32 @@
 <a name="1"></a>
 ## Установка
 
-бла бла бла
+Download via git:
+
+  git clone git://github.com/hansonkd/FlaskBootstrapSecurity.git
+
+Change into the cloned directory
+  
+  cd FlaskBootstrapSecurity
+
+Get VirtualEnv and VirtualEnvWrapper set up. See here for further details: http://www.doughellmann.com/docs/virtualenvwrapper/
+
+Create a virtualenvironment
+
+ mkvirtualenv environment
+Install the required python dependancies:
+
+ pip install -r requirements.txt
+As a temporary workaround, run this command to get a version of Flask-Social that works with the current mongoengine
+
+ pip install --upgrade https://github.com/mattupstate/flask-social/tball/develop
+Edit flask_application/config.py to change your mail server and other settings:
+
+
+Run a development server:
+
+ python manage.py runserver
+
 
 <a name="1.1"></a>
 ### Требования к кофигурации
@@ -30,7 +55,6 @@ If you plan to use Nightscout, we recommend using ...
 
 <a name="2"></a>
 ## Запуск
-бла бла бла
 
 <a name="2.1"></a>
 ### Recommended minimum browser versions for using Nightscout:
