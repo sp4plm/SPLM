@@ -32,9 +32,7 @@
     cd SPLM
     ```
 
-3) Подготовьте виртуальное окружение VirtualEnv и VirtualEnvWrapper. Дополнительно смотрите: http://www.doughellmann.com/docs/virtualenvwrapper/ и https://python-scripts.com/virtualenv
-
-Создайте virtualenvironment:
+3) Подготовьте виртуальное окружение VirtualEnv и VirtualEnvWrapper. Дополнительно смотрите: http://www.doughellmann.com/docs/virtualenvwrapper/ и https://python-scripts.com/virtualenv. Создайте virtualenvironment:
 
     ```
     mkvirtualenv environment
