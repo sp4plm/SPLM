@@ -1,3 +1,5 @@
+# Semantic Portal for Product Lifecycle Management (SP4PLM) in short: Semantic PLM (SPLM)
+
 # Назначение портала
 
 Портал предназначен для навигации и анализа данных, представленных в семантическом виде, см стандарты Semantic Web на официальном сайте [w3c.org](https://www.w3.org/standards/semanticweb/). Портал так же предназначен для интеграции информации из разных источников.
