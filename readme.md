@@ -19,26 +19,25 @@
 
 Download via git:
 
-'git clone git://github.com/hansonkd/FlaskBootstrapSecurity.git'
+`git clone git://github.com/hansonkd/FlaskBootstrapSecurity.git`
 
 Change into the cloned directory
   
-'cd FlaskBootstrapSecurity'
+`cd FlaskBootstrapSecurity`
 
 Get VirtualEnv and VirtualEnvWrapper set up. See here for further details: http://www.doughellmann.com/docs/virtualenvwrapper/
 
 Create a virtualenvironment
 
-'mkvirtualenv environment'
+`mkvirtualenv environment`
  
 Install the required python dependancies:
 
-'pip install -r requirements.txt'
+`pip install -r requirements.txt`
 
 Run a development server:
 
-'python run.py'
-
+`python run.py`
 
 <a name="3"></a>
 ## Основные модули портала
