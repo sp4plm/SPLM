@@ -20,25 +20,25 @@
 <a name="1"></a>
 ## Установка
 
-Download via git:
+Загрузите исходный код с git:
 
 `git clone git://github.com/oleg-post/SPLM.git`
 
-Change into the cloned directory
+Перейдите в директорию проекта:
   
 `cd SPLM`
 
-Get VirtualEnv and VirtualEnvWrapper set up. See here for further details: http://www.doughellmann.com/docs/virtualenvwrapper/
+Скачайте виртуальное окружение VirtualEnv и VirtualEnvWrapper. Дополнительно смотрите: http://www.doughellmann.com/docs/virtualenvwrapper/
 
-Create a virtualenvironment
+Создайте virtualenvironment:
 
 `mkvirtualenv environment`
  
-Install the required python dependancies:
+Установите необходиомые дополнительные пакеты (python dependancies):
 
 `pip install -r requirements.txt`
 
-Run a development server:
+Запустите сервер приложения:
 
 `python run.py`
 
