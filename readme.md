@@ -1,4 +1,5 @@
-# Semantic Portal for Product Lifecycle Management (SP4PLM) in short: Semantic PLM (SPLM)
+# Semantic Portal for Product Lifecycle Management (SP4PLM) 
+## in short: Semantic PLM (SPLM)
 
 # Назначение портала
 
@@ -21,11 +22,11 @@
 
 Download via git:
 
-`git clone git://github.com/hansonkd/FlaskBootstrapSecurity.git`
+`git clone git://github.com/oleg-post/SPLM.git`
 
 Change into the cloned directory
   
-`cd FlaskBootstrapSecurity`
+`cd SPLM`
 
 Get VirtualEnv and VirtualEnvWrapper set up. See here for further details: http://www.doughellmann.com/docs/virtualenvwrapper/
 
