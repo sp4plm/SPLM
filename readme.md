@@ -38,8 +38,8 @@
 
     ```
     mkvirtualenv environment
-    ```    
- 
+    ```
+    
 4) Установите необходиомые дополнительные пакеты (python dependancies):
 
     ```
