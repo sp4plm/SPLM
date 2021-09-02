@@ -1,5 +1,6 @@
 # Semantic Portal for Product Lifecycle Management (SP4PLM) 
-## in short: Semantic PLM (SPLM)
+
+in short: Semantic PLM (SPLM)
 
 # Назначение портала
 
