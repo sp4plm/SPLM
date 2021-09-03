@@ -1,0 +1,108 @@
+{
+	"info": {
+		"_CMT_": "информация о документе по контракту. Страница /contract_doc.php",
+		"#VARS": {
+			"URI": {
+				"mark": "#{URI}",
+				"default": ""
+			}
+		},
+		"#TXT": "SELECT ?tz ?topic ?level ?date ?file_lbl WHERE {
+                    BIND(<#{URI}> as ?tz ) .
+                    Optional {  ?tz onto:hasAttribute ?att_topic .
+                    ?att_topic a onto:Topic .
+                    ?att_topic onto:hasAttributeValue/rdfs:label ?topic . }
+                    Optional {  ?tz onto:hasAttribute ?att_lvl .
+                    ?att_lvl a onto:DocumentationPlanHierarchy .
+                    ?att_lvl onto:hasAttributeValue/onto:value ?level . }
+                    Optional {  ?tz onto:hasAttribute ?att_date .
+                    ?att_date a onto:StartDate .
+                    ?att_date onto:hasAttributeValue/onto:value ?date . }
+                    ?tz onto:isFromFile ?file .
+                    ?file rdfs:label ?file_lbl .
+                }"
+	},
+	"themes": {
+		"_CMT_": "Список теп ТЗ с разбивкой по уровню",
+		"#VARS": {},
+		"#TXT": "SELECT distinct ?topic ?lev_2 ?lev_3 WHERE {
+                    ?tp a onto:Topic .
+                    ?tp onto:hasAttributeValue/rdfs:label ?topic .
+                    BIND(STRBEFORE(?topic, \".\") as ?lev_2) .
+                    BIND(STRAFTER(?topic, \".\") as ?lev_3) .
+                } ORDER BY ?topic"
+	},
+	"statistic": {
+		"_CMT_": "информация о состоянии дел по ТЗ. Страница /contract_doc.php",
+		"#VARS": {
+			"URI": {
+				"mark": "#{URI}",
+				"default": ""
+			}
+		},
+		"#TXT": "SELECT ?tzz ?allreqs ?allocated ?trace_fact ?ver_acpt ?ver_rej ?kp_plan ?kp_fact {
+                ?tzz a onto:TZ .
+                { select ?tzz (count(distinct ?req) as ?allreqs) {
+                        BIND (<#{URI}> as ?tzz)
+                        ?req onto:isCreatedIn ?tzz .
+                        ?req a onto:Requirement .
+                        } group by ?tzz }
+
+                Optional {
+                        { select ?tzz (count(distinct ?req) as ?allocated) {
+                        BIND (<#{URI}> as ?tzz)
+                        ?req onto:isCreatedIn ?tzz .
+                        ?req a onto:Requirement .
+                        ?req onto:hasReqImplementer ?org .
+                        } group by ?tzz }}
+                Optional {
+                        { select ?tzz (count(distinct ?ver) as ?trace_fact) {
+                        BIND (<#{URI}> as ?tzz)
+                        ?req onto:isCreatedIn ?tzz .
+                        ?req a onto:Requirement .
+                        ?req onto:hasVersion ?ver .
+                        ?ver onto:isTracedTo ?docv .
+                        ?ver onto:latestVersion xsd:true .
+                        ?docv onto:latestVersion xsd:true .
+                        } group by ?tzz }}
+                Optional {
+                        { select ?tzz (count(distinct ?reqver ) as ?ver_acpt) {
+                        BIND (<#{URI}> as ?tzz)
+                        ?s a onto:DocVerificationReportSection .
+                        ?s onto:hasAttribute ?s_att .
+                        ?s_att a onto:Verification .
+                        ?s_att onto:hasAttributeValue/rdfs:label ?status . filter regex(?status, 'Да')
+                        ?reqver onto:hasSectionOfVerification ?s .
+                        ?reqver onto:latestVersion xs:true .
+                        ?reqver onto:isFromDoc ?tzz .
+                        } group by ?tzz }}
+                Optional {
+                        { select ?tzz (count(distinct ?reqver ) as ?ver_rej) {
+                  BIND (<#{URI}> as ?tzz)
+                        ?s a onto:DocVerificationReportSection .
+                        ?s onto:hasAttribute ?s_att .
+                        ?s_att a onto:Verification .
+                        ?s_att onto:hasAttributeValue/rdfs:label ?status . filter regex(?status, 'Нет')
+                        ?reqver onto:hasSectionOfVerification ?s .
+                        ?reqver onto:latestVersion xs:true .
+                        ?reqver onto:isFromDoc ?tzz .
+                        } group by ?tzz }}
+                Optional {
+                        { select ?tzz (count(distinct ?s ) as ?kp_plan) {
+                        BIND (<#{URI}> as ?tzz)
+                        ?s a onto:DocumentationPlanRecord .
+                        ?s onto:hasPlanResult ?pr .
+        ?plan onto:hasRecord ?s .
+        ?tzz onto:hasDocumentationPlan ?plan .
+                        } group by ?tzz }}
+                Optional {
+                        { select ?tzz (count(distinct ?s ) as ?kp_fact) {
+                        BIND (<#{URI}> as ?tzz)
+                        ?s a onto:DocumentationPlanRecord .
+                        ?s onto:hasWorkResult ?wr .
+        ?plan onto:hasRecord ?s .
+        ?tzz onto:hasDocumentationPlan ?plan .
+                        } group by ?tzz }}
+                }"
+	}
+}

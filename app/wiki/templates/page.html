@@ -1,0 +1,10 @@
+{% extends app_root_tpl() %}
+
+{% block title %}
+    {% if title %}SPLM: {{ title }}{% else %}Редактор Wiki страниц{% endif %}
+{% endblock %}
+
+
+{% block page_main_content %}
+	{{page|safe}}
+{% endblock %}

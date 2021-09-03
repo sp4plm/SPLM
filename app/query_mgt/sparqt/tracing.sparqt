@@ -1,0 +1,145 @@
+{
+    "test" : {
+        "_CMT_": "Заглушка",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""},"lang":{"mark":"#{lang}","default":"RU"}},
+        "#TXT":""
+    },
+    "mrx" : {
+        "_CMT_": "Трассировка требований. От требования к документам. Страница /tracing.php",
+        "#VARS":{"TZT":{"mark":"#{TZT}","default":""}},
+        "#TXT":"SELECT DISTINCT ?ver ?ver_lbl ?ver_cls ?verlbl (group_concat(?traced_doc; separator=\"; \") as ?doc_list) {
+                    ?tema onto:hasAttributeValue/rdfs:label \"#{TZT}\" .
+                    ?tema a onto:Topic .
+                    ?tz onto:hasAttribute ?tema .
+                    ?item onto:isCreatedIn ?tz .
+                    ?item rdfs:label ?ver_lbl .
+                    ?item onto:hasVersion ?ver .
+                    ?ver onto:latestVersion xs:true .
+                    ?ver rdf:type ?ver_cls .
+                    ?ver onto:isTracedTo ?docv .
+                    ?docv onto:latestVersion xs:true .
+                    OPTIONAL { ?ver rdfs:label ?verlbl . }
+                    ?doc onto:hasVersion ?docv .
+                    ?doc rdfs:label ?doc_lbl .
+                    ?doc rdf:type ?doc_cls .
+                    ?doc_cls rdfs:label ?doc_cls_lbl .
+                    BIND (CONCAT(?doc_lbl, \" (\", ?doc_cls_lbl, \")\") AS ?traced_doc) .                                                              
+                } GROUP BY ?ver ?ver_lbl ?ver_cls ?verlbl"
+    },
+    "mrx_tz" : {
+        "_CMT_": "Трассировка требований. От требования к документам. Страница /tracing.php",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT DISTINCT ?ver ?ver_lbl ?ver_cls ?verlbl (group_concat(?traced_doc; separator=\"; \") as ?doc_list) {
+                    ?ver onto:isTracedTo ?docv .
+                    ?ver onto:latestVersion xs:true .
+                    ?docv onto:latestVersion xs:true .
+                    ?ver rdf:type ?ver_cls .
+                    OPTIONAL {
+                      ?ver rdfs:label ?verlbl .
+                    }
+                    ?doc rdfs:label ?doc_lbl .
+                    ?doc onto:hasVersion ?docv .
+                    ?doc rdf:type ?doc_cls .
+                    ?doc_cls rdfs:label ?doc_cls_lbl .
+                    BIND (CONCAT(?doc_lbl, \" (\", ?doc_cls_lbl, \")\") AS ?traced_doc) .
+                    ?item onto:hasVersion ?ver .
+                    ?item rdfs:label ?ver_lbl .
+                    ?item onto:isCreatedIn <#{URI}>.
+                } GROUP BY ?ver ?ver_lbl ?ver_cls ?verlbl"
+    },
+    "back_mrx" : {
+        "_CMT_": "Трассировка требований. От документа к требованиям. Страница /tracing.php",
+        "#VARS":{"TZT":{"mark":"#{TZT}","default":""}},
+        "#TXT":"SELECT DISTINCT ?docv ?docv_lbl ?docv_cls (group_concat(?item_lbl; separator=\"; \") as ?it) {
+                    ?tema onto:hasAttributeValue/rdfs:label \"#{TZT}\" .
+                    ?tema a onto:Topic .
+                    ?tz onto:hasAttribute ?tema .
+                    ?item onto:isCreatedIn ?tz .
+                    ?item rdfs:label ?item_lbl .
+                    ?item onto:hasVersion ?itemver .
+                    ?itemver onto:latestVersion xs:true .
+                    ?itemver onto:isTracedTo ?docv .
+                    ?docv onto:latestVersion xs:true .
+                    ?doc rdfs:label ?docvlbl .
+                    ?doc rdf:type/rdfs:label ?doc_cls_lbl .
+                    ?doc onto:hasVersion ?docv .
+                    ?docv rdf:type ?docv_cls .
+                    BIND (CONCAT(?docvlbl, \" (\", ?doc_cls_lbl, \")\") AS ?docv_lbl) .
+                } GROUP BY ?docv ?docv_lbl ?docv_cls"
+    },
+    "mrx_cnt" : {
+        "_CMT_": "Трассировка требований. От требования к документам. Страница /tracing.php",
+        "#VARS":{},
+        "#TXT":"SELECT (count(DISTINCT ?ver) AS ?cnt) {
+                    ?ver onto:isTracedTo ?docv .
+                    ?ver onto:latestVersion xs:true .
+                    ?docv onto:latestVersion xs:true .
+                }"
+    },
+    "back_mrx_cnt" : {
+        "_CMT_": "Трассировка требований. От документа к требованиям. Страница /tracing.php",
+        "#VARS":{},
+        "#TXT":"SELECT (count(DISTINCT ?docv) AS ?cnt) {
+                    ?itemver onto:isTracedTo ?docv .
+                    ?itemver onto:latestVersion xs:true .
+                    ?docv onto:latestVersion xs:true .
+                }"
+    },
+    "mrx_cls" : {
+        "_CMT_": "Трассировка требований. От требования к документам. Страница /tracing.php",
+        "#VARS":{"CLS":{"mark":"#{cls}","default":"onto:Document"}},
+        "#TXT":"SELECT DISTINCT ?ver ?ver_lbl ?ver_cls ?verlbl (group_concat(?doc_lbl; separator=\"; \") as ?doc_list) {
+                    ?ver onto:isTracedTo ?docv .
+                    ?ver onto:latestVersion xs:true .
+                    ?docv onto:latestVersion xs:true .
+                    ?ver rdf:type ?ver_cls .
+                    OPTIONAL {
+                      ?ver rdfs:label ?verlbl .
+                    }
+                    ?doc rdf:type #{cls} .
+                    ?doc rdfs:label ?doc_lbl .
+                    ?doc onto:hasVersion ?docv .
+                    ?docv rdf:type ?doc_cls .
+                    ?item onto:hasVersion ?ver .
+                    ?item rdfs:label ?ver_lbl .
+                } GROUP BY ?ver ?ver_lbl ?ver_cls ?verlbl"
+    },
+    "back_mrx_cls" : {
+        "_CMT_": "Трассировка требований. От документа к требованиям. Страница /tracing.php",
+        "#VARS":{"CLS":{"mark":"#{cls}","default":"onto:Document"}},
+        "#TXT":"SELECT DISTINCT ?docv ?docv_lbl ?docv_cls (group_concat(?item_lbl; separator=\"; \") as ?it) {
+                    ?itemver onto:isTracedTo ?docv .
+                    ?itemver onto:latestVersion xs:true .
+                    ?docv onto:latestVersion xs:true .
+                    ?itemver rdf:type ?itemver_cls .
+                    ?doc rdfs:label ?docv_lbl .
+                    ?doc onto:hasVersion ?docv .
+                    ?doc rdf:type #{cls} .
+                    ?docv rdf:type ?docv_cls .
+                    ?item onto:hasVersion ?itemver .
+                    ?item rdfs:label ?item_lbl .
+                } GROUP BY ?docv ?docv_lbl ?docv_cls"
+    },
+    "mrx_cls_cnt" : {
+        "_CMT_": "Трассировка требований. От требования к документам. Страница /tracing",
+        "#VARS":{"CLS":{"mark":"#{cls}","default":"onto:Document"}},
+        "#TXT":"SELECT (count(DISTINCT ?ver) AS ?cnt) {
+                    ?ver onto:isTracedTo ?docv .
+                    ?ver onto:latestVersion xs:true .
+                    ?docv onto:latestVersion xs:true .
+                    ?doc onto:hasVersion ?docv .
+                    ?doc rdf:type #{cls} .
+                }"
+    },
+    "back_mrx_cls_cnt" : {
+        "_CMT_": "Трассировка требований. От документа к требованиям. Страница /tracing",
+        "#VARS":{"CLS":{"mark":"#{cls}","default":"onto:Document"}},
+        "#TXT":"SELECT (count(DISTINCT ?docv) AS ?cnt) {
+                    ?itemver onto:isTracedTo ?docv .
+                    ?itemver onto:latestVersion xs:true .
+                    ?docv onto:latestVersion xs:true .
+                    ?doc onto:hasVersion ?docv .
+                    ?doc rdf:type #{cls} .
+                }"
+    }
+}

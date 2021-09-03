@@ -1,0 +1,30 @@
+{
+    "object":{
+        "_CMT_":"Выбираем данные, где предмет является объектом (таблица 2 в навигации)",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT ?s ?s_lbl ?p ?p_lbl WHERE {
+                    ?s ?p <#{URI}>.
+                    OPTIONAL { ?s rdfs:label ?s_lbl.}
+                    OPTIONAL { ?p rdfs:label ?p_lbl. }
+                    OPTIONAL { ?s rdfs:label ?s_lbl. }
+                }"
+    },
+    "subject" : {
+        "_CMT_": "Выбираем данные, где предмет является субъектом (таблица 1 в навигации)",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT ?p ?p_lbl ?o ?o_lbl WHERE {
+                    <#{URI}> ?p ?o.
+                    OPTIONAL { ?o rdfs:label ?o_lbl. }
+                    OPTIONAL { ?p rdfs:label ?p_lbl. }
+                    OPTIONAL { ?o rdfs:label ?o_lbl. }
+                }"
+    },
+    "base" : {
+        "_CMT_": "Выбирает полную информацию об объекте",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT ?o ?o_lbl ?o_cls WHERE {
+                    ?o rdf:type ?o_cls FILTER (?o=<#{URI}>).
+                    ?o rdfs:label ?o_lbl .
+                }"
+    }
+}

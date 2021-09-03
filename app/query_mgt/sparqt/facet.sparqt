@@ -1,0 +1,114 @@
+{
+    "atts":{
+        "_CMT_":"Запрос возвращает параметры для фасетного поиска(атрибуты нормативных требований), по которым будут отбираться объекты поиска. Отображаются в левой колонке. Страница faset_search.php",
+        "#VARS":{"SOT":{"mark":"#{SOT}","default":""}},
+        "#TXT":"SELECT DISTINCT ?prop ?prop_lbl ?link WHERE {
+                    {
+                        ?ver a onto:TextItemVersion .
+                        ?ver onto:latestVersion xs:true .
+                        ?item onto:hasVersion ?ver .
+                        ?ver onto:isFromDoc ?doc .
+                        bind (\"class\" as ?link) .
+                        ?doc a onto:RegulatoryDocument .
+                        ?doc a ?prop .
+                        OPTIONAL { ?prop rdfs:label ?prop_lbl . }
+                    } UNION {
+                        ?ver a onto:TextItemVersion .
+                        ?ver onto:latestVersion xs:true .
+                        ?ver onto:hasAttribute ?att .
+                        bind (\"ValuedAttribute\" as ?link) .
+                        ?att a ?prop .
+                        ?prop rdfs:subClassOf onto:StringAttribute .
+                        OPTIONAL { ?prop rdfs:label ?prop_lbl . }
+                        ?att onto:hasAttributeValue ?aval .
+                        ?aval onto:value ?val .
+                    }
+                } ORDER BY ?prop_lbl"
+    },
+    "atts_contract":{
+        "_CMT_":"Запрос возвращает параметры для фасетного поиска(атрибуты контрактных требований), по которым будут отбираться объекты поиска. Отображаются в левой колонке. Страница faset_search_creqs.php",
+        "#VARS":{"SOT":{"mark":"#{SOT}","default":""}},
+        "#TXT":"SELECT DISTINCT ?prop ?prop_lbl ?link WHERE {
+                    {
+                        bind (\"class\" as ?link) .
+                        ?doc a onto:TZ .
+                        ?doc a ?prop .
+                    ?prop rdfs:label ?prop_lbl .
+                    } UNION {
+                        bind (\"LabeledAttribute\" as ?link) .
+                        ?att a ?prop . filter (?prop = onto:Method || ?prop=onto:EOMU || ?prop=onto:RequirementsCategory || ?prop=onto:RequirementsQualityLevel || ?prop=onto:VerificationMethod || ?prop=onto:SafetyImpact || ?prop=onto:CostImpact || ?prop=onto:TimeImpact )
+                        OPTIONAL { ?prop rdfs:label ?prop_lbl . }
+                    }
+                } ORDER BY ?prop_lbl"
+    },
+    "attvals_other":{
+        "_CMT_":"Запрос возвращает значения для атрибута/параметра поиска. Страница facet_search.php",
+        "#VARS":{"SOT":{"mark":"#{SOT}","default":""},"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT DISTINCT ?val WHERE {
+                    ?ver rdf:type #{SOT}.
+                    ?ver onto:latestVersion xs:true .
+                    ?item onto:hasVersion ?ver .
+                    ?ver onto:isFromDoc ?doc .
+                    ?doc a <#{URI}>  .
+                    ?doc rdfs:label ?val .
+                } ORDER BY ASC(?val)"
+    },
+    "attvals_valued":{
+        "_CMT_":"Запрос возвращает значения для атрибута/параметра поиска, отмеченного в основном запросе как StringAttribute. Страница facet_search.php",
+        "#VARS":{"SOT":{"mark":"#{SOT}","default":""},"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT DISTINCT ?val WHERE {
+                    ?ver rdf:type #{SOT}.
+                    ?ver onto:latestVersion xs:true .
+                    ?ver ?p ?v .
+                    ?v a <#{URI}> .
+                    ?v onto:hasAttributeValue ?aval .
+                    ?aval onto:value ?val .
+                } ORDER BY ASC(?val)"
+    },
+    "attvals_labeled":{
+        "_CMT_":"Запрос возвращает значения для атрибута/параметра поиска, отмеченного в основном запросе как StringAttribute. Страница facet_search.php",
+        "#VARS":{"SOT":{"mark":"#{SOT}","default":""},"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT DISTINCT ?val WHERE {
+                    ?ver rdf:type #{SOT}.
+                    ?ver onto:latestVersion xs:true .
+                    ?ver ?p ?v .
+                    ?v a <#{URI}> .
+                    ?v onto:hasAttributeValue ?aval .
+                    ?aval rdfs:label ?val . 
+                } ORDER BY ASC(?val)"
+    },
+    "attvals_dated":{
+        "_CMT_":"Запрос возвращает значения для атрибута/параметра поиска, отмеченного в основном запросе как LabeledAttribute. Страница facet_search.php",
+        "#VARS":{"SOT":{"mark":"#{SOT}","default":""},"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT DISTINCT ?val WHERE {
+                    ?ver rdf:type #{SOT}.
+                    ?ver onto:latestVersion xs:true .
+                    ?ver ?p ?v .
+                    ?v a <#{URI}> .
+                    ?v onto:hasAttributeValue ?aval .
+                    ?aval onto:value ?val .
+                } ORDER BY ASC(?val)"
+    },
+    "obj_card":{
+        "_CMT_":"Запрос возвращает значения атрибутов/параметров для выбранного объекта поиска, в виде таблицы двух колонок - имя и значение. Страница facet_search.php",
+        "#VARS":{"SOT":{"mark":"#{SOT}","default":""},"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT DISTINCT ?prop ?prop_lbl ?val ?val_lbl WHERE {
+                           {
+                              ?item onto:hasVersion <#{URI}> .
+                              <#{URI}>  onto:isFromDoc ?val .
+                              OPTIONAL { ?val rdfs:label ?val_lbl . }
+                            ?val rdf:type ?prop .
+                              ?prop rdfs:label ?prop_lbl .
+                            }
+                    UNION
+                            {
+                                <#{URI}> onto:hasAttribute ?prop .
+                                ?prop a ?clss .
+                                ?clss rdfs:label ?prop_lbl .
+                                ?prop onto:hasAttributeValue ?attval .
+                                OPTIONAL{ ?attval onto:value ?val . }
+                                OPTIONAL { ?attval rdfs:label ?val . }
+                            }
+                } GROUP BY ?prop ?prop_lbl ?val ?val_lbl ORDER BY ASC(?prop_lbl)"
+    }
+}

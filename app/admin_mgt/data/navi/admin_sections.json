@@ -1,0 +1,3 @@
+[
+  {"id":1,"label": "Настройки портала","rules":"","href":"/portal/management/section/PortalSettings","parid":0, "srtid":1,"page":[],"icon":"","thumb":"","descr":"", "url_func" : "", "code":"PortalSettings"}
+]

@@ -1,0 +1,86 @@
+{
+    "test" : {
+        "_CMT_": "Заглушка",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""},"lang":{"mark":"#{lang}","default":"RU"}},
+        "#TXT":""
+    },
+    "dataload" : {
+        "_CMT_": "Запрос для определения времени заливки последних данных в хранилище",
+        "#VARS":{},
+        "#TXT":"select distinct ?s {?s a owl:Ontology .}"
+    },
+    "inst":{
+        "_CMT_": "Выбираем инстанс",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT DISTINCT ?inst ?inst_cls ?inst_lbl WHERE {
+                    ?inst rdf:type ?inst_cls FILTER (?inst=<#{URI}>).
+                    ?inst rdfs:label ?inst_lbl .
+                }"
+    },
+    "cls_inst":{
+        "_CMT_": "Выбираем инстанс класса",
+        "#VARS":{"CLS":{"mark":"#{CLS}","default":""},"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT DISTINCT ?inst ?inst_cls ?inst_lbl WHERE {
+                    ?inst rdf:type ?inst_cls FILTER (?inst=<#{URI}> && ?inst_cls=#{CLS}) .
+                    ?inst rdfs:label ?inst_lbl .
+                }"
+    },
+    "types":{
+        "_CMT_": "Выбираем все типы в хранилище",
+        "#VARS":{},
+        "#TXT":"SELECT distinct ?type WHERE { ?s rdf:type ?type }"
+    },
+    "otype" : {
+        "_CMT_": "Выбираем данные, где предмет является субъектом (таблица 1 в навигации)",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT ?o_cls WHERE { <#{URI}> rdf:type ?o_cls. }"
+    },
+    "label":{
+        "_CMT_": "Выбираем все лейблы в хранилище",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT DISTINCT ?lbl WHERE { <#{URI}> rdfs:label ?lbl }"
+    },
+    "predicates":{
+        "_CMT_": "Выбираем все типы предикаты",
+        "#VARS":{},
+        "#TXT":"SELECT DISTINCT ?p WHERE { ?s ?p ?o }"
+    },
+    "search":{
+        "_CMT_": "Запрос для поиска по данным портала",
+        "#VARS":{"lang":{"mark":"#{lang}","default":"RU"},"arg":{"mark":"#{arg}","default":""},"parg":{"mark":"#{parg}","default":"null"},"SearchCLS":{"mark":"#{SearchCLS}","default":""}},
+        "#TXT":"SELECT ?res ?cl_lbl ?res_lbl ?res_cls ?att_cl_lb ?val WHERE {
+                    {
+                        ?res rdfs:label ?res_lbl . FILTER regex(?res_lbl, \"#{arg}\", \"i\")
+                    } UNION {
+                        ?node onto:value ?val  . FILTER (regex(?val, \"#{arg}\", \"i\") || ?val=#{parg})
+                        ?att onto:hasAttributeValue ?node .
+                        ?att a ?att_cl .
+                        ?att_cl rdfs:label ?att_cl_lb .
+                        ?res onto:hasAttribute ?att .
+                        ?res rdfs:label ?res_lbl .
+                    } UNION {
+                        ?node rdfs:label ?val  . FILTER (regex(?val, \"#{arg}\", \"i\"))
+                        ?att onto:hasAttributeValue ?node .
+                        ?att a ?att_cl .
+                        ?att_cl rdfs:label ?att_cl_lb .
+                        ?res onto:hasAttribute ?att .
+                        ?res rdfs:label ?res_lbl .
+                    }
+                    ?res a ?res_cls .
+                    ?res_cls rdfs:label ?cl_lbl . #{SearchCLS}
+                }order by ?res_lbl"
+    },
+    "for_tgf":{
+        "_CMT_": "Выбирает все что связано отношением hasParentReq и имеет последнюю версию. Предназначен для выгрузки в формате tgf. Страница /formats.php",
+        "#VARS":{},
+        "#TXT":"select ?s ?s_lbl ?o ?o_lbl
+                {?s onto:hasParentReq ?o .
+                 ?s onto:latestVersion xs:true .
+                 ?o onto:latestVersion xs:true .
+                 ?si onto:hasVersion ?s .
+                 ?si rdfs:label ?s_lbl .
+                 ?oi onto:hasVersion ?o .
+                 ?oi rdfs:label ?o_lbl .
+                                }"
+    }
+}

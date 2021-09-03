@@ -1,0 +1,29 @@
+{% extends "base_bootstrap.html" %}
+{% block page_nav %}{% endblock %}
+{% block bread_crumbs %}{% endblock %}
+{% block app_content %}
+    <div class="col-xs-6 col-sm-3 sidebar">
+        {% if page_side_title %}<h2 class="content-header">{{ page_side_title | safe }}</h2>{% endif %}
+    </div>
+    <div class="col-xs-12 col-sm-9 maincontent">
+        {% if page_title %}<h1 class="content-header">{{ page_title }}</h1>{% endif %}
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.username.label }}<br>
+                {{ form.username(size=32) }}<br>
+                {% for error in form.username.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.secret.label }}<br>
+                {{ form.secret(size=32) }}<br>
+                {% for error in form.secret.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>{{ form.submit() }}</p>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,102 @@
+{
+    "atts":{
+        "_CMT_":"",
+        "#VARS":{"SOT":{"mark":"#{SOT}","default":""}},
+        "#TXT":"SELECT DISTINCT ?prop ?prop_lbl ?link WHERE {
+                           { ?so rdf:type #{SOT}.
+                             ?so sto:isPartOf ?val .
+                             bind (\"class\" as ?link) .
+                             ?val a ?prop .
+                             OPTIONAL { ?prop rdfs:label ?prop_lbl .}
+                            }
+                    UNION
+                            { ?so rdf:type #{SOT}.
+                              ?so sto:isLocatedIn ?val .
+                             bind (\"class\" as ?link) .
+                             ?val a ?prop .
+                              OPTIONAL { ?prop rdfs:label ?prop_lbl .}
+                            }
+                      UNION
+                            { ?so rdf:type #{SOT}.
+                              ?so sto:hasStringAttribute ?att .
+                              bind (\"StringAttribute\" as ?link) .
+                              ?att a ?prop .
+                              ?prop rdfs:label ?prop_lbl .
+                            }
+                    UNION
+                            { ?so rdf:type #{SOT}.
+                              ?so sto:hasQuantityAttribute ?att .
+                              bind (\"QuantityAttribute\" as ?link) .
+                              ?att a ?prop .
+                              ?prop rdfs:label ?prop_lbl .
+                            }
+                } GROUP BY ?prop ?prop_lbl ?link ORDER BY ASC(?prop_lbl)"
+    },
+    "attvals_other":{
+        "_CMT_":"1",
+        "#VARS":{"SOT":{"mark":"#{SOT}","default":""},"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT DISTINCT ?val WHERE {
+                    ?so rdf:type #{SOT}.
+                    ?so ?p ?v .
+                    ?v a <#{URI}> .
+                    ?v rdfs:label ?val .
+                } ORDER BY ASC(?val)"
+    },
+    "attvals_string":{
+        "_CMT_":"2",
+        "#VARS":{"SOT":{"mark":"#{SOT}","default":""},"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT DISTINCT ?val WHERE {
+                    ?so rdf:type #{SOT}.
+                    ?so ?p ?v .
+                    ?v a <#{URI}> .
+                    ?v sto:hasStringAttributeValue ?aval .
+                    ?aval qudt:value ?val .
+                } ORDER BY ASC(?val)"
+    },
+    "attvals_quantity":{
+        "_CMT_":"3",
+        "#VARS":{"SOT":{"mark":"#{SOT}","default":""},"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT DISTINCT ?val WHERE {
+                    ?so rdf:type #{SOT}.
+                    ?so ?p ?v .
+                    ?v a <#{URI}> .
+                    ?v sto:hasQuantityAttributeValue ?aval .
+                    ?aval qudt:value ?val .
+                } ORDER BY ASC(?val)"
+    },
+    "obj_card":{
+        "_CMT_":"4",
+        "#VARS":{"SOT":{"mark":"#{SOT}","default":""},"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT DISTINCT ?prop ?prop_lbl ?val ?val_lbl WHERE {
+                           { <#{URI}> rdf:type #{SOT}.
+                             <#{URI}> sto:isPartOf ?val .
+                             <#{URI}> ?prop ?val .
+                             OPTIONAL { ?val rdfs:label ?val_lbl .}
+                             OPTIONAL { ?prop rdfs:label ?prop_lbl .}
+                            }
+                    UNION
+                            { <#{URI}> rdf:type #{SOT}.
+                              <#{URI}> sto:isLocatedIn ?val .
+                              <#{URI}> ?prop ?val .
+                              OPTIONAL { ?val rdfs:label ?val_lbl . }
+                              OPTIONAL { ?prop rdfs:label ?prop_lbl .}
+                            }
+                    UNION
+                            { <#{URI}> rdf:type #{SOT}.
+                              <#{URI}> sto:hasStringAttribute ?prop .
+                              ?prop a ?clss .
+                              ?clss rdfs:label ?prop_lbl .
+                              ?prop sto:hasStringAttributeValue ?attval .
+                              ?attval qudt:value ?val .
+                            }
+                    UNION
+                            { <#{URI}> rdf:type #{SOT}.
+                              <#{URI}> sto:hasQuantityAttribute ?prop .
+                              ?prop a ?clss .
+                              ?clss rdfs:label ?prop_lbl .
+                              ?prop sto:hasQuantityAttributeValue ?attval .
+                              ?attval qudt:value ?val .
+                            }
+                } GROUP BY ?prop ?prop_lbl ?val ?val_lbl ORDER BY ASC(?prop_lbl)"
+    }
+}

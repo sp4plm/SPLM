@@ -1,0 +1,68 @@
+{
+    "list" : {
+        "_CMT_": "Список документов - запрос на изменение. Страница /change_requests.php",
+        "#VARS":{},
+        "#TXT":"SELECT  ?tz_lbl ?chreq ?chreq_cls ?chreq_lbl ?date ?reasn_val {
+                    BIND (onto:RequirementChangeRequest as ?chreq_cls) .
+                    ?chreq a ?chreq_cls .
+                    ?chreq rdfs:label ?chreq_lbl .
+                    ?chreq onto:hasAttribute ?att_d .
+                    ?att_d a onto:DateOfDocumentRelease .
+                    ?att_d onto:hasAttributeValue/onto:value ?date .
+                    ?chreq onto:hasAttribute ?reasn .
+                    ?reasn a onto:ReasonOfChange .
+                    ?reasn onto:hasAttributeValue/rdfs:label ?reasn_val .
+                    ?chreq onto:hasOldReqVersion ?itemver .
+                    ?item onto:hasVersion ?itemver .
+                    ?item onto:isCreatedIn ?tz .
+                    ?tz rdfs:label ?tz_lbl .
+                }"
+    },
+    "list_cnt" : {
+        "_CMT_": "Список документов - запрос на изменение. Страница /changerequests",
+        "#VARS":{},
+        "#TXT":"select (count(DISTINCT ?doc) AS ?cnt) {
+                      ?doc a onto:RequirementChangeRequest .
+                    }"
+    },
+    "info" : {
+        "_CMT_": "Информация о запросе на изменение. Страница /change_request.php",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"select ?doc ?doc_cls ?doc_lbl ?doc_date ?reason ?file ?compn ?compn_cls ?compn_lbl {
+                        BIND(<#{URI}> as ?doc ) .
+                        ?doc a ?doc_cls .
+                        ?doc rdfs:label ?doc_lbl .
+                        ?doc onto:hasAttribute ?att_date .
+                        ?att_date a onto:DateOfDocumentRelease .
+                        ?att_date onto:hasAttributeValue/onto:value ?doc_date .
+                        ?doc onto:hasAttribute ?att_reason .
+                        ?att_reason a onto:ReasonOfChange .
+                        ?att_reason onto:hasAttributeValue/rdfs:label ?reason .
+                        ?doc onto:isFromFile/rdfs:label ?file .
+                        ?doc onto:madeBy ?compn .
+                        ?compn a ?compn_cls .
+                        ?compn rdfs:label ?compn_lbl .
+                    }"
+    },
+    "reqs" : {
+        "_CMT_": "Список требований для 'Запроса на изменение'. Страница /change_request.php",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"select ?oldreqver_cls ?oldreqver ?oldreqver_lbl ?oldreqnumber ?old_req_text ?newreqver ?newreqver_cls ?newreqver_lbl ?newreqnumber ?new_req_text 
+                {
+                    BIND(<#{URI}> as ?doc ) .
+                    ?doc a onto:RequirementChangeRequest .
+                    ?doc onto:hasOldReqVersion ?oldreqver .
+                    ?item onto:hasVersion ?oldreqver .
+                    ?oldreqver a ?oldreqver_cls .
+                    ?item rdfs:label ?oldreqver_lbl .
+                    ?oldreqver onto:value ?oldreqnumber .
+                    ?oldreqver rdfs:label ?old_req_text .
+                    ?item onto:hasVersion ?newreqver . 
+                    ?newreqver onto:latestVersion xs:true .
+                    ?newreqver rdfs:label ?new_req_text .
+                    ?item rdfs:label ?newreqver_lbl .
+                    ?newreqver onto:value ?newreqnumber .
+                    ?oldreqver a ?newreqver_cls .
+                }"
+    }
+}

@@ -1,0 +1,140 @@
+{
+    "class" : {
+        "_CMT_": "Class",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"CONSTRUCT {
+                        <#{URI}> rdfs:subClass ?d .
+                        ?d rdfs:label ?ld .
+                        <#{URI}> rdfs:subClassOf ?e .
+                        ?e rdfs:label ?le .
+                        <#{URI}> rdfs:range ?property2 .
+                        ?property2 rdfs:domain ?c .
+                        <#{URI}> rdfs:domain ?property1 .
+                        ?property1 rdfs:range ?b .
+                        <#{URI}> rdfs:label ?la .
+                        ?b rdfs:label ?lb .
+                        ?c rdfs:label ?lc .
+                        ?property1 rdfs:label ?lp1 .
+                        ?property2 rdfs:label ?lp2 .
+                        rdfs:domain rdfs:label \"domain\" .
+                        rdfs:range rdfs:label \"range\" .
+                        rdfs:subClass rdfs:label \"subClass\" .
+                        rdfs:subClassOf rdfs:label \"subClassOf\" . }
+                    WHERE {
+                    OPTIONAL {<#{URI}> rdfs:label ?la .}
+                    { ?property2 rdfs:range <#{URI}> .
+                     OPTIONAL { ?property2 rdfs:label ?lp2 .}
+                     OPTIONAL { ?property2 rdfs:domain ?c .
+                               OPTIONAL { ?c rdfs:label ?lc .} }
+                    } UNION {
+                      ?property1 rdfs:domain <#{URI}> .
+                      OPTIONAL { ?property1 rdfs:label ?lp1 . }
+                      OPTIONAL { ?property1 rdfs:range ?b . OPTIONAL { ?b rdfs:label ?lb . } }
+                    }
+                    OPTIONAL { ?d rdfs:subClassOf <#{URI}> .
+                              ?d rdfs:label ?ld . }
+                    OPTIONAL { <#{URI}> rdfs:subClassOf ?e .
+                              ?e rdfs:label ?le . }
+                    }"
+    },
+    "resource": {
+        "_CMT_": "Resource",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"CONSTRUCT {  <#{URI}>  <http://dbpedia.org/ontology/edge> ?y .
+                    ?y rdfs:label ?l3 .
+                    ?y <http://dbpedia.org/ontology/edge> ?a .
+                    <http://dbpedia.org/ontology/edge> rdfs:label \" \".
+                    <#{URI}>  rdfs:label ?l2 .
+                    ?a rdfs:label  ?l .
+                    ?a <http://dbpedia.org/ontology/thumbnail> ?pic .  }
+
+                    WHERE {  {<#{URI}> ?y ?a } UNION {?a ?y <#{URI}> }
+                            OPTIONAL{ <#{URI}>  rdfs:label ?l2 .}
+                            OPTIONAL {  ?a rdfs:label ?l. }
+                            OPTIONAL { ?a  <http://dbpedia.org/ontology/thumbnail> ?pic .}
+                            OPTIONAL {?y rdfs:label ?l3 .}
+                    FILTER(langMatches(lang(?l3), \"#{lang}\"))
+                }"
+    },
+    "OP" : {
+        "_CMT_": "ObjectProperty",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"CONSTRUCT {
+                    <#{URI}> rdf:type <http://www.w3.org/2002/07/owl#ObjectProperty> .
+                    <http://www.w3.org/2002/07/owl#ObjectProperty> rdfs:label \"ObjectProperty\" .
+
+                    <#{URI}> rdfs:range ?class1 .
+                    <#{URI}> rdfs:domain ?class2 .
+
+                    <#{URI}> rdfs:label ?l .
+                    ?class1 rdfs:label ?lc1 .
+                    ?class2 rdfs:label ?lc2 .
+
+                    rdfs:domain rdfs:label \"domain\" .
+                    rdfs:range rdfs:label \"range\" . }
+                    WHERE {
+                        OPTIONAL {<#{URI}> rdfs:label ?l .}
+                        {
+                            <#{URI}> rdfs:range ?class1 . OPTIONAL { ?class1 rdfs:label ?lc1 .}
+                        } UNION {
+                            <#{URI}> rdfs:domain ?class2 . OPTIONAL { ?class2 rdfs:label ?lc2 .  }
+                        }
+                    }"
+    },
+    "DTP" : {
+        "_CMT_": "DatatypeProperty",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"CONSTRUCT {
+                    <#{URI}> rdf:type <http://www.w3.org/2002/07/owl#DatatypeProperty> .
+                    <http://www.w3.org/2002/07/owl#DatatypeProperty> rdfs:label \"DatatypeProperty\" .
+
+                    <#{URI}> rdfs:range ?class1 .
+                    <#{URI}> rdfs:domain ?class2 .
+
+                    <#{URI}> rdfs:label ?l .
+                    ?class1 rdfs:label ?lc1 .
+                    ?class2 rdfs:label ?lc2 .
+
+                    rdfs:domain rdfs:label \"domain\" .
+                    rdfs:range rdfs:label \"range\" . }
+                    WHERE {
+                        OPTIONAL {<#{URI}> rdfs:label ?l .}
+                        {
+                            <#{URI}> rdfs:range ?class1 . OPTIONAL { ?class1 rdfs:label ?lc1 .}
+                        } UNION {
+                            <#{URI}> rdfs:domain ?class2 . OPTIONAL { ?class2 rdfs:label ?lc2 .  }
+                        }
+                    }"
+    },
+    "select" : {
+        "_CMT_": "DatatypeProperty",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"select ?s ?s_lbl ?p ?o ?o_lbl {
+                    ?s onto:hasParentReq ?o .
+                    ?s ?p ?o .
+                    optional { ?o onto:hasParentReq ?b .}
+                    filter (!bound(?b) ) .
+                    ?t onto:hasVersion ?s .
+                    ?t rdfs:label ?t_lbl .
+                    ?k onto:hasVersion ?o .
+                    ?k rdfs:label ?o_lbl .
+                } order by ?s_lbl"
+    
+    },
+    "select2" : {
+        "_CMT_": "DatatypeProperty",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT ?s ?s_lbl ?p ?p_lbl ?o ?o_lbl WHERE {
+                    {
+                        ?s ?p ?o filter(?s=<#{URI}>).
+                        OPTIONAL{?p rdfs:label ?p_lbl . }
+                        OPTIONAL{?o rdfs:label ?o_lbl . }
+                    } UNION {
+                        ?s ?p ?o filter(?o=<#{URI}>).
+                        OPTIONAL{ ?s rdfs:label ?s_lbl .}
+                        OPTIONAL{?p rdfs:label ?p_lbl . }
+                    }
+
+                }"
+    }
+}

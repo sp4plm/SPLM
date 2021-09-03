@@ -1,0 +1,172 @@
+{
+	"reqs_stat": {
+		"_CMT_": "Собираем всю статистику по требованиям",
+		"#VARS": {
+			"CURDATE": {
+				"mark": "#{CURDATE}",
+				"default": "2030-12-30"
+			}
+		},
+		"#TXT": "SELECT distinct ?period ?subproj ?tz ?tz_start ?tz_event ?allreqs ?allocated ?trace_plan ?trace_fact ?ver_rej ?ver_acpt ?rating ?kp_done ?kp_total {
+          ?tzz rdfs:label ?tz .
+          BIND ('#{CURDATE}' as ?period ) .
+          ?tzz onto:hasAttribute ?att_sd .
+          ?att_sd a onto:StartDate .
+          ?att_sd onto:hasAttributeValue ?att_sdval .
+          ?att_sdval onto:value ?tz_start . filter (?tz_start <= ?period)
+          ?tzz onto:hasAttribute ?att_tp .
+          ?att_tp a onto:Topic .
+          ?att_tp onto:hasAttributeValue ?att_tpval .
+          ?att_tpval rdfs:label ?subproj .
+          BIND (CONCAT(STR(YEAR(xs:dateTime(?tz_start))),'-12-30') as ?tz_event).
+          BIND (?allreqs as ?trace_plan) .
+          BIND (0 as ?rating ) .
+          { select ?tzz (count(distinct ?req) as ?allreqs) {
+                       ?tzz a onto:TZ .
+                       ?req onto:isCreatedIn ?tzz .
+                       ?req a onto:Requirement .
+          } group by ?tzz }
+         Optional {
+           { select ?tzz (count(distinct ?req) as ?allocated) {
+                        ?tzz a onto:TZ .
+                       ?req onto:isCreatedIn ?tzz .
+                        ?req a onto:Requirement .
+                        ?req onto:hasReqImplementer ?org .
+          } group by ?tzz }}
+          Optional {
+           { select ?tzz (count(distinct ?ver) as ?trace_fact) {
+                         ?tzz a onto:TZ .
+                         ?req onto:isCreatedIn ?tzz .
+                         ?req a onto:Requirement .
+                         ?req onto:hasVersion ?ver .
+                         ?ver onto:isTracedTo ?docv .
+                         ?ver onto:latestVersion xsd:true .
+                         ?docv onto:latestVersion xsd:true .
+          } group by ?tzz }}
+        Optional {
+          { select ?tzz (count(distinct ?reqver ) as ?ver_acpt) {
+                            ?s a onto:DocVerificationReportSection .
+                            ?s onto:hasAttribute ?s_att .
+                            ?s_att a onto:Verification .
+                            ?s_att onto:hasAttributeValue/rdfs:label ?status . filter regex(?status, 'Да')
+                            ?reqver onto:hasSectionOfVerification ?s .
+                            ?reqver onto:latestVersion xs:true .
+                            ?reqver onto:isFromDoc ?tzz .
+                            ?tzz a onto:TZ .
+                        } group by ?tzz }}
+         Optional {
+          { select ?tzz (count(distinct ?reqver ) as ?ver_rej) {
+                            ?s a onto:DocVerificationReportSection .
+                            ?s onto:hasAttribute ?s_att .
+                            ?s_att a onto:Verification .
+                            ?s_att onto:hasAttributeValue/rdfs:label ?status . filter regex(?status, 'Нет')
+                            ?reqver onto:hasSectionOfVerification ?s .
+                            ?reqver onto:latestVersion xs:true .
+                            ?reqver onto:isFromDoc ?tzz .
+                            ?tzz a onto:TZ .
+                        } group by ?tzz }}
+        Optional {
+        { select ?tzz (count(distinct ?s ) as ?kp_done) {
+                            ?s a onto:DocumentationPlanRecord .
+                            ?s onto:hasAttribute ?s_att .
+                            ?s_att a onto:FinishDate .
+                            ?s_att onto:hasAttributeValue/rdfs:label ?fd . filter (?fd <= '#{CURDATE}')
+         ?plan onto:hasRecord ?s .
+         ?tzz onto:hasDocumentationPlan ?plan .
+                            ?tzz a onto:TZ .
+                        } group by ?tzz }}
+                Optional {
+        { select ?tzz (count(distinct ?s ) as ?kp_total) {
+                            ?s a onto:DocumentationPlanRecord .
+                            ?s onto:hasAttribute ?s_att .
+                            ?s_att a onto:FinishDate .
+                            ?s_att onto:hasAttributeValue/rdfs:label ?fd .
+         ?plan onto:hasRecord ?s .
+         ?tzz onto:hasDocumentationPlan ?plan .
+                            ?tzz a onto:TZ .
+                        } group by ?tzz }}
+        }"
+	},
+	"req_ors_stat": {
+		"_CMT_": "",
+		"#VARS": {
+			"CURDATE": {
+				"mark": "#{CURDATE}",
+				"default": "2030-12-30"
+			}
+		},
+		"#TXT": "SELECT ?period ?org_lbl ?allocreqs ?trace_plan ?trace_fact ?ver_acpt ?rating {
+          ?org rdfs:label ?org_lbl .
+          BIND ('#{CURDATE}' as ?period ) .
+          BIND (?allocreqs as ?trace_plan) .
+          BIND (0 as ?rating ) .
+          { select ?org (count(distinct ?req) as ?allocreqs) {
+                       ?org a onto:Organization .
+                       ?req onto:hasReqImplementer ?org .
+                       ?req a onto:Requirement .
+          } group by ?org }
+          Optional {
+           { select ?org (count(distinct ?ver) as ?trace_fact) {
+                         ?org a onto:Organization .
+                         ?req onto:hasReqImplementer ?org .
+                         ?req a onto:Requirement .
+                         ?req onto:hasVersion ?ver .
+                         ?ver onto:isTracedTo ?docv .
+                         ?ver onto:latestVersion xsd:true .
+                         ?docv onto:latestVersion xsd:true .
+          } group by ?org }}
+        Optional {
+          { select ?org (count(distinct ?reqver ) as ?ver_acpt) {
+                            ?s a onto:DocVerificationReportSection .
+                            ?s onto:hasAttribute ?s_att .
+                            ?s_att a onto:Verification .
+                            ?s_att onto:hasAttributeValue/rdfs:label ?status . filter regex(?status, 'Да')
+                            ?reqver onto:hasSectionOfVerification ?s .
+                            ?reqver onto:latestVersion xs:true .
+                            ?req onto:hasVersion ?reqver .
+                            ?req onto:hasReqImplementer ?org .
+                            ?org a onto:Organization .
+                        } group by ?org }}
+        }"
+	},
+	"contractsSchedule": {
+		"_CMT_": "contractsSchedule",
+		"#VARS": {
+			"CURDATE": {
+				"mark": "#{CURDATE}",
+				"default": "2030-12-30"
+			}
+		},
+		"#TXT": "SELECT ?period ?schversion ?record ?deadline ?qnt ?subproj (count(distinct ?tz) as ?tz_cnt) ?s1
+                { ?d a onto:ContractingSchedule .
+                ?d onto:hasVersion ?dver .
+                ?dver onto:value ?schversion .
+                ?dver onto:hasRecord ?rec .
+                ?rec rdfs:label ?record .
+                ?rec onto:hasAttribute ?att_dl .
+                ?att_dl a onto:Deadline .
+                ?att_dl onto:hasAttributeValue/onto:value ?deadline .
+                ?rec onto:hasAttribute ?att_qnt .
+                ?att_qnt a onto:DocumentsQnt .
+                ?att_qnt onto:hasAttributeValue/onto:value ?qnt .
+                ?rec onto:hasAttribute ?att_topic .
+                ?att_topic a onto:Topic .
+                ?att_topic onto:hasAttributeValue/rdfs:label ?subproj .
+                ?tz_topic onto:hasAttributeValue/rdfs:label ?subproj .
+                ?tz onto:hasAttribute ?tz_topic .
+                ?tz a onto:TZ .
+                ?req onto:isCreatedIn ?tz .
+                BIND ('#{CURDATE}' as ?period ) .
+                BIND ('0' as ?s1 ) .
+                } group by ?period ?schversion ?record ?deadline ?qnt ?subproj ?s1 order by ?record"
+	},
+	"linkTZ": {
+		"_CMT_": "информация для создания ссылок на карточку ТЗ",
+		"#VARS": {},
+		"#TXT": "SELECT distinct ?tz ?tz_lbl ?tz_cls { 
+BIND (onto:TZ as ?tz_cls ). 
+?tz a ?tz_cls .
+?req onto:isCreatedIn ?tz .
+?tz rdfs:label ?tz_lbl .}"
+	}
+}

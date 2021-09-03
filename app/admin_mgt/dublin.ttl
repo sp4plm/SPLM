@@ -1,0 +1,52 @@
+# baseURI: http://splm.portal.web/osplm
+# prefix: osplm
+
+@prefix osplm: <http://splm.portal.web/osplm#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix data: <http://splm.portal.web/osplm/data#> .
+
+<http://splm.portal.web/osplm#admin_mgt> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://splm.portal.web/osplm#Module> .
+
+<http://splm.portal.web/osplm#admin_mgt> <http://purl.org/dc/elements/1.1/contributor> "Антон Новиков"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://www.w3.org/2000/01/rdf-schema#label> "Portal Admin"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/title> "Модуль Portal administrative interface"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/subject> "Portal managment"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/description> "Модуль предоставляет административный интерфейс портала"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/date> "$Date: 2021-06-28 11:33:00 0300 (Tue, 28 Jun 2021) $"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/creator> "Антон Новиков"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/rights> "GNU"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/type> <http://purl.org/dc/dcmitype/Service> ;
+  <http://purl.org/dc/elements/1.1/format> "text/html, application"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#versionInfo> "$Id: 0.0.1 1 2021-06-28 11:33:00Z $"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#type> "webservice"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#web_prefix> "/portal/management"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#httpEnabled> xsd:true .
+
+<http://splm.portal.web/osplm#admin_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_adminmgt_1> .
+<http://splm.portal.web/osplm/data#url_adminmgt_1> osplm:value "/portal/management"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_adminmgt_1> osplm:hasHTMLtemplate "admin_mgt-base.html"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#admin_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_adminmgt_2> .
+<http://splm.portal.web/osplm/data#url_adminmgt_2> osplm:value "/portal/management/section"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#admin_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_adminmgt_3> .
+<http://splm.portal.web/osplm/data#url_adminmgt_3> osplm:value "/portal/management/section/navi"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<http://splm.portal.web/osplm#admin_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_adminmgt_4> .
+<http://splm.portal.web/osplm/data#url_adminmgt_4> osplm:value "/portal/management/navigation"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Навигация"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> ;
+  osplm:hasHTMLtemplate "admin_navigation.html"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<http://splm.portal.web/osplm#admin_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_adminmgt_5> .
+<http://splm.portal.web/osplm/data#url_adminmgt_5> osplm:value "/portal/management/login"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  osplm:shallBeShownInMenu <http://www.w3.org/2001/XMLSchema#true> ;
+  rdfs:label "Авторизация"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  osplm:hasHTMLtemplate "login.html"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<http://splm.portal.web/osplm#admin_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_adminmgt_6> .
+<http://splm.portal.web/osplm/data#url_adminmgt_6> osplm:value "/portal/management/logout"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  osplm:shallBeShownInMenu <http://www.w3.org/2001/XMLSchema#true> ;
+  rdfs:label "Выход"^^<http://www.w3.org/2001/XMLSchema#string> .

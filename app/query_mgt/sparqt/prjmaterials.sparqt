@@ -1,0 +1,95 @@
+{
+    "test" : {
+        "_CMT_": "Заглушка",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""},"lang":{"mark":"#{lang}","default":"RU"}},
+        "#TXT":""
+    },
+    "list" : {
+        "_CMT_": "Список проектной документации. Страница /prj_materials.php",
+        "#VARS":{},
+        "#TXT":"select ?docv ?docv_cls ?docv_lbl (substr(?vr,1,1) as ?rev) (substr(?vr,3) as ?ver) ?val_lbl ?company ?company_lbl ?company_cls (count(distinct ?req) as ?req_cnt ) {
+                    ?docv a onto:DocumentVersion .
+                    ?docv rdf:type ?docv_cls .
+                    ?doc onto:hasVersion ?docv .
+                    ?docv onto:latestVersion xsd:true .
+                    ?docv rdfs:label ?vr .
+                    ?doc rdfs:label ?docv_lbl .
+                    ?doc onto:hasAttribute ?att .
+                    ?att a onto:DocumentName .
+                    ?att onto:hasAttributeValue ?val .
+                    ?val rdfs:label ?val_lbl .
+                    Optional {
+                        ?doc onto:madeBy ?company .
+                        ?company rdfs:label ?company_lbl .
+                        ?company a ?company_cls
+                    } .
+                    Optional {
+                        ?reqver onto:isTracedTo ?docv .
+                        ?req onto:hasVersion ?reqver .
+                        ?reqver onto:latestVersion xsd:true .
+                        ?docv onto:latestVersion xsd:true .
+                    } .
+                } group by ?docv ?docv_cls ?docv_lbl ?val_lbl ?vr ?company ?company_lbl ?company_cls order by ?docv_lbl"
+    },
+    "list_cls" : {
+        "_CMT_": "Список проектной документации. Страница /prj_materials.php",
+        "#VARS":{"CLS":{"mark":"#{cls}","default":"onto:Document"},"DVC":{"mark":"#{dvc}","default":"onto:DocumentVersion"}},
+        "#TXT":"SELECT ?docv ?docv_cls ?docv_lbl ?rev ?ver ?val_lbl ?company ?company_lbl ?company_cls (count(DISTINCT ?req) as ?req_cnt ) {
+                    ?docv a #{dvc} .
+                    ?docv rdf:type ?docv_cls .
+                    ?doc onto:hasVersion ?docv .
+                    ?docv onto:latestVersion xsd:true .
+                    ?docv rdfs:label ?vr .
+                    BIND(substr(?vr,1,1) as ?rev)
+                    BIND(substr(?vr,3) as ?ver)
+                    ?doc rdfs:label ?docv_lbl .
+                    ?doc onto:hasAttribute ?att .
+                    ?doc rdf:type #{cls} .
+                    ?att a onto:DocumentName .
+                    ?att onto:hasAttributeValue ?val .
+                    ?val rdfs:label ?val_lbl .
+                    OPTIONAL {
+                        ?doc onto:madeBy ?company .
+                        ?company rdfs:label ?company_lbl .
+                        ?company a ?company_cls
+                    } .
+                    OPTIONAL {
+                        ?reqver onto:isTracedTo ?docv .
+                        ?req onto:hasVersion ?reqver .
+                        ?reqver onto:latestVersion xsd:true .
+                        ?docv onto:latestVersion xsd:true .
+                    } .
+                } GROUP BY ?docv ?docv_cls ?docv_lbl ?rev ?ver ?val_lbl ?vr ?company ?company_lbl ?company_cls ORDER BY ?docv_lbl"
+    },
+    "list_old" : {
+        "_CMT_": "Список проектной документации. Страница /prj_materials.php",
+        "#VARS":{},
+        "#TXT":"select ?docv ?docv_cls ?docv_lbl (substr(?vr,1,1) as ?rev) (substr(?vr,3) as ?ver) ?val_lbl ?company ?company_lbl ?company_cls (count(distinct ?req) as ?req_cnt ) {
+                    ?docv a onto:DocumentVersion .
+                    ?docv rdf:type ?docv_cls .
+                    ?doc onto:hasVersion ?docv .
+                    ?docv rdfs:label ?vr  filter (STRDT(SUBSTR(STR(?vr), 1, 1), xsd:decimal) + STRDT(SUBSTR(STR(?vr), 3), xsd:decimal)/1000 = ?mx) .
+                    {
+                        select ?doc (max(?ver3) as ?mx) where {
+                            ?doc onto:hasVersion ?docver.
+                            ?docver rdfs:label ?ver2 .
+                            bind (STRDT(SUBSTR(STR(?ver2), 1, 1), xsd:decimal) + STRDT(SUBSTR(STR(?ver2), 3), xsd:decimal)/1000 as ?ver3) .
+                        } group by ?doc
+                    }
+                    ?doc rdfs:label ?docv_lbl .
+                    ?doc onto:hasAttribute ?att .
+                    ?att a onto:DocumentName .
+                    ?att onto:hasAttributeValue ?val .
+                    ?val rdfs:label ?val_lbl .
+                    Optional {
+                        ?doc onto:madeBy ?company .
+                        ?company rdfs:label ?company_lbl .
+                        ?company a ?company_cls
+                    } .
+                    Optional {
+                        ?reqver onto:isTracedTo ?docv .
+                        ?req onto:hasVersion ?reqver .
+                    } .
+                } group by ?docv ?docv_cls ?docv_lbl ?val_lbl ?vr ?company ?company_lbl ?company_cls order by ?docv_lbl"
+    }
+}

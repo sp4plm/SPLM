@@ -1,0 +1,18 @@
+{
+	"check_classes": {
+		"_CMT_": "поиск узлов без классов",
+		"#VARS": {},
+		"#TXT": "select ?node ?graph {
+                 ?node ?p ?o . FILTER regex(str(?node), 'http://proryv2020.ru/odek/data', '^i' )
+                 Optional {?node a ?class }. filter (!bound(?class))
+                 GRAPH ?graph {?node ?p ?o .}}"
+	},
+	"check_labels": {
+		"_CMT_": "поиск узлов с множеством лейблов",
+		"#VARS": {},
+		"#TXT": "select distinct ?node  (count(?lbl) as ?qnt) (group_concat(?lbl; separator=' ^^^  ') as ?lbl_list) (group_concat(?g; separator=' ^^^  ') as ?named_graph)
+                {?node rdfs:label ?lbl . FILTER regex(str(?node), 'http://proryv2020.ru/odek/data', '^i' )
+                GRAPH ?g {?node rdfs:label ?lbl .}
+                } group by ?node having (?qnt > 1)"
+	}
+}

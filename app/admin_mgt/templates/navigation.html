@@ -1,0 +1,65 @@
+{% extends admin_root_tpl() %}
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="{{url_for('admin_mgt.static', filename='css/navigation.css')}}" />
+{% endblock %}
+
+{% block page_main_content %}
+<span id="page-content-marker" style="display:none;"></span>
+<div id="navi-content-form">
+<!--    <form name="NaviContentForm" onsubmit="return false;" action="{{ content_save_action }}">-->
+        <input type="hidden" name="NaviCode" value="{{ curr_blk['code'] }}" />
+
+        <table class="simple-tbl">
+            <thead>
+                <tr>
+                    <th>
+                        <button id="add-new-link">Добавить</button>
+                    </th>
+                    <th>Наименование</th>
+                    <th>Ссылка</th>
+                    <th>Код</th>
+                    <th>Роли пользователей</th>
+                </tr>
+            </thead>
+            <tbody id="navi-content-items">
+            {% if block_items %}
+                {% for itm in block_items %}
+                <tr>
+                    <td>
+                        <span class="act-btn ui-state-default ui-corner-all toolbar-btn" action="delete"><span class="del-navi-block ui-icon ui-icon-trash"></span></span>
+                        <span class="act-btn ui-state-default ui-corner-all toolbar-btn" action="edit"><span class="edit-navi-block ui-icon ui-icon-pencil"></span></span>
+                        <span class="act-btn ui-state-default ui-corner-all toolbar-btn" action="add_links"><span class="del-navi-block ui-icon ui-icon-gear"></span></span>
+                        <span class="act-btn ui-state-default ui-corner-all toolbar-btn" action="sort_up"><span class="del-navi-block ui-icon ui-icon-arrowreturnthick-1-n"></span></span>
+                        <span class="act-btn ui-state-default ui-corner-all toolbar-btn" action="sort_down"><span class="del-navi-block ui-icon ui-icon-arrowreturnthick-1-s"></span></span>
+                    </td>
+                    <td>{{ itm['label'] }}</td>
+                    <td>{{ itm['href'] }}</td>
+                    <td>{{ itm['code'] }}</td>
+                    <td>{{ itm['roles'] }}</td>
+                </tr>
+                {% endfor %}
+            {% endif %}
+            </tbody>
+<!--            <tbody id="navi-content-toolbar">-->
+<!--                <tr>-->
+<!--                    <td colspan="5" align="center" style="padding-top:10px;">-->
+<!--                        &nbsp;-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <td colspan="5" align="center" style="border-top:1px solid #000;">-->
+<!--                        <button class="ui-button" name="CloseNaviForm">Закрыть</button>-->
+<!--                        <button class="ui-button" name="SaveNavi">Сохранить</button>-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--            </tbody>-->
+        </table>
+<!--    </form>-->
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+    <script src="{{url_for('admin_mgt.static', filename='js/navigation.js')}}" type="text/javascript"></script>
+{% endblock %}

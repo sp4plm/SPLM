@@ -1,0 +1,26 @@
+{
+    "expired_regs":{
+        "_CMT_":"Список устаревших НТД",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"select ?doc ?doc_cls ?doc_lbl ?docname_lbl (count(?txt) AS ?cnt) ?new_doc_lbl ?cancel_date {
+                    ?doc a onto:RegulatoryDocument .
+                    ?doc a ?doc_cls .
+                    ?doc rdfs:label ?doc_lbl .
+                    ?doc onto:hasAttribute ?att .
+                    ?att a onto:DocumentName .
+                    ?att onto:hasAttributeValue ?val .
+                    ?val rdfs:label ?docname_lbl .
+                    ?doc onto:hasAttribute ?st .
+                    ?st a onto:Status .
+                    ?st onto:hasAttributeValue/rdfs:label \"Отменен\" .
+                    ?doc onto:isReplacedWith ?new_doc .
+                    ?new_doc rdfs:label ?new_doc_lbl .
+                    ?doc onto:hasAttribute ?cd .
+                    ?cd a onto:CancelDate .
+                    ?cd onto:hasAttributeValue/onto:value ?cancel_date .
+                    ?ver onto:isFromDoc ?doc .
+                    ?txt onto:hasVersion ?ver .
+                    ?txt a onto:Requirement .
+                } group by ?doc ?doc_cls ?doc_lbl ?docname_lbl ?new_doc_lbl ?cancel_date order by ?doc_lbl"
+    }
+}

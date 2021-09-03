@@ -1,0 +1,136 @@
+{
+    "list": {
+        "_CMT_":"Список ADLAS документов. Страница /doc_adlas_list.php",
+        "#VARS":{},
+        "#TXT":"select ?doc ?doc_cls ?doc_lbl ?docname_lbl {
+                    ?doc a onto:ADLAS_Document .
+                    ?doc a ?doc_cls .
+                    ?doc rdfs:label ?doc_lbl .
+                    ?doc onto:hasAttribute ?att .
+                    ?att onto:hasAttributeValue ?val .
+                    ?val rdfs:label ?docname_lbl .
+                    
+                } group by ?doc ?doc_cls ?doc_lbl ?docname_lbl order by ?doc_lbl"
+    },
+    "doc_last_ver": {
+        "_CMT_":"Список ADLAS документов. Страница /doc_adlas_list.php",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"select distinct ?docver ?docver_cls ?docver_lbl (substr(?vr,1,1) as ?rev) (substr(?vr,3) as ?ver)?data_issue ?status {
+                    BIND(<#{URI}> as ?doc ) .
+                    ?doc onto:hasVersion ?docver .
+                    ?docver onto:latestVersion xs:true .
+                    ?doc rdfs:label ?docver_lbl .
+                    ?docver a ?docver_cls .
+                    ?docver rdfs:label ?vr .
+                    ?doc onto:madeBy ?company .
+                    ?company rdf:type ?company_cls .
+                    ?company rdfs:label ?company_lbl .
+                    Optional {
+                        ?docver onto:hasAttribute ?att_date .
+                        ?att_date onto:hasAttributeValue ?attval_date .
+                        ?attval_date onto:value ?data_issue .
+                    }
+                    Optional {
+                        ?docver onto:hasRecordOfVerification ?rec .
+                        ?rec onto:hasAttribute ?att_v .
+                        ?att_v a onto:Verification .
+                        ?att_v onto:hasAttributeValue ?val .
+                        ?val rdfs:label ?status .
+                    }
+                }"
+    },
+    "vers": {
+        "_CMT_":"Возвращает версии ADLAS документа. Страница /doc_adlas.php",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "Options":{"Reasoning":false},
+        "#TXT":"select distinct ?docver ?docver_cls ?docver_lbl (substr(?vr,1,1) as ?rev) (substr(?vr,3) as ?ver) ?data_issue ?status {
+                    BIND(<#{URI}> as ?doc ) .
+                    ?doc onto:hasVersion ?docver .
+                    
+                    ?doc rdfs:label ?docver_lbl .
+                    ?docver a ?docver_cls .
+                    ?docver rdfs:label ?vr .
+                    ?doc onto:madeBy ?company .
+                    ?company rdf:type ?company_cls .
+                    ?company rdfs:label ?company_lbl .
+                    Optional {
+                        ?docver onto:hasAttribute ?att_date .
+                        ?att_date onto:hasAttributeValue ?attval_date .
+                        ?attval_date onto:value ?data_issue .
+                    }
+                    Optional {
+                        ?docver onto:hasRecordOfVerification ?rec .
+                        ?rec onto:hasAttribute ?att_v .
+                        ?att_v a onto:Verification .
+                        ?att_v onto:hasAttributeValue ?val .
+                        ?val rdfs:label ?status .
+                    }
+                }"
+    },
+    "requirements":{
+        "_CMT_":"Возвращет список требований учтеных в версии документа. Страница /doc_adlas_ver.php",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"select distinct ?ver ?ver_lbl ?ver_cls ?ver_val ?vertxt (group_concat(?parent_reqs; separator=\"; \") as ?req_list) ?has_child
+                {
+                    ?ver rdf:type ?ver_cls .
+                    ?ver onto:value ?ver_val .
+                    ?ver a onto:TextItemVersion .
+                    ?item onto:hasVersion ?ver .
+                    ?item rdfs:label ?ver_lbl .
+                    Optional {
+                      ?ver onto:hasParentReq ?parnt_ver .
+                      ?parnt_ver onto:latestVersion xs:true .
+                      ?parnt onto:hasVersion ?parnt_ver .
+                      ?parnt rdfs:label ?parnt_lbl .
+                       BIND (CONCAT(STR(?parnt), \", \", ?parnt_lbl) as ?parent_reqs ).
+                    } .
+                    Optional {?ver rdfs:label ?vertxt }.
+                    {
+                        select DISTINCT ?ver ?has_child {
+                            ?ver onto:isTracedTo <#{URI}> .
+                            OPTIONAL {?child_v onto:hasParentReq ?ver . } .
+                            BIND ( if (bound(?child_v), \"YES\", \"NO\") as ?has_child ) .
+                        }
+                    }
+                } group by ?ver ?ver_lbl ?ver_cls ?ver_val ?vertxt ?has_child order by ?ver"
+    },
+    "child_reqs":{
+        "_CMT_":"Возвращает список дочерних требований к указанному. Страница /doc_adlas_ver.php",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"select ?areq ?areq_lbl ?areq_cls ?ver ?text ?doclbl {
+                    ?o onto:hasParentReq <#{URI}> .
+                    ?o rdfs:label ?text .
+                    ?areq rdf:type ?areq_cls .
+                    ?o onto:value ?ver .
+                    ?areq onto:hasVersion ?o .
+                    ?areq rdfs:label ?areq_lbl .
+                    OPTIONAL{
+                        ?o onto:isAllocatedIn ?doc .
+                        ?doc onto:hasAttribute ?att .
+                        ?att a onto:NickName .
+                        ?att onto:hasAttributeValue ?attval .
+                        ?attval onto:value ?doclbl
+                    }
+                } order by ?areq_lbl
+                "
+    },
+    "checked_reqs":{
+        "_CMT_":"",
+        "#VARS":{},
+        "#TXT":""
+    },
+    "export_tgf":{
+        "_CMT_":"Возвращает граф по требованиям документа в формате TGF",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"select ?s ?s_lbl ?o ?o_lbl {
+                    ?s onto:hasParentReq ?o .
+                    ?s onto:latestVersion xs:true .
+                    ?s onto:isFromDocVersion <#{URI}> .
+                    ?o onto:latestVersion xs:true .
+                    ?si onto:hasVersion ?s .
+                    ?si rdfs:label ?s_lbl .
+                    ?oi onto:hasVersion ?o .
+                    ?oi rdfs:label ?o_lbl .
+                }"
+    }
+}

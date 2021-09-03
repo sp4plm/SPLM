@@ -1,0 +1,68 @@
+# baseURI: http://splm.portal.web/osplm
+# imports: http://purl.org/dc/elements/1.1/
+# imports: http://purl.org/dc/terms/
+# prefix: osplm
+
+@prefix osplm: <http://splm.portal.web/osplm#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://splm.portal.web/osplm>
+  a owl:Ontology ;
+  owl:imports <http://purl.org/dc/elements/1.1/> ;
+  owl:imports <http://purl.org/dc/terms/> ;
+  owl:versionInfo "Created with TopBraid Composer" ;
+.
+osplm:Funstion
+  a owl:Class ;
+  rdfs:label "Funstion"@en ;
+  rdfs:subClassOf owl:Thing ;
+.
+osplm:Module
+  a owl:Class ;
+  rdfs:label "Module" ;
+  rdfs:subClassOf owl:Thing ;
+.
+osplm:URL
+  a owl:Class ;
+  rdfs:label "Значение крайнего срока" ;
+  rdfs:subClassOf owl:Thing ;
+.
+osplm:allowSPARQLedit
+  a owl:DatatypeProperty ;
+  rdfs:label "allow SPARQL edit "@en ;
+.
+osplm:forAdminPurpose
+  a owl:DatatypeProperty ;
+  rdfs:label "for admin purpose"@en ;
+.
+osplm:hasAccessRight
+  a owl:ObjectProperty ;
+  rdfs:label "shall be shown in menu "@en ;
+.
+osplm:hasDescription
+  a owl:DatatypeProperty ;
+  rdfs:label "has description"@en ;
+.
+osplm:hasHTMLtemplate
+  a owl:DatatypeProperty ;
+  rdfs:label "Module"@en ;
+.
+osplm:hasPathForSPARQLquery
+  a owl:DatatypeProperty ;
+  rdfs:label "has path for SPARQL query"@en ;
+.
+osplm:hasURL
+  a owl:ObjectProperty ;
+  rdfs:label "Module"@en ;
+.
+osplm:shallBeShownInMenu
+  a owl:DatatypeProperty ;
+  rdfs:label "shall be shown in menu "@en ;
+.
+osplm:value
+  a owl:DatatypeProperty ;
+  rdfs:label "value"@en ;
+.

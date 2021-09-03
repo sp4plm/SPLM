@@ -1,0 +1,57 @@
+{% extends app_root_tpl() %}
+{% block title %}
+    {% if title %}SPLM: {{ title }}{% else %}Публикация данных{% endif %}
+{% endblock %}
+
+{% block styles %}
+    {{super()}}
+    <link type="text/css" rel="stylesheet" href="{{url_for('publish_mgt.static', filename='js/jquery.jqGrid-4.13.2/css/ui.jqgrid.css')}}" />
+    <link type="text/css" rel="stylesheet" href="{{url_for('publish_mgt.static', filename='js/jquery.jqGrid-4.13.2/css/ui.jqgrid-bootstrap.css')}}" />
+    <link rel="stylesheet" href="{{url_for('publish_mgt.static', filename='css/publisher.css')}}" />
+{% endblock %}
+
+{% block bread_crumbs %}{% endblock %}
+
+{% block page_sidenav %}
+{% if inavi %}
+    <ul class="nav">
+    {% for item in inavi %}
+        {% if item['current'] %}
+                {% set selected_label = item['label'] %}
+        {% endif %}
+        <li class="ui-state-default ui-corner-all sub-sidenavi-item">
+            <a href="{{ item['href'] }}">{{ item['label'] }}</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}
+{% block page_main_content %}
+    {% if 'data' == dir_name %}
+    <div class="data-informer">
+        <label>Время последне публикации:&nbsp;&nbsp;</label><span class="publisher-info" id="last-publish"></span>
+        <span>&nbsp;&nbsp;||&nbsp;&nbsp;</span>
+        <label>Время последней резервной копии:&nbsp;&nbsp;</label><span class="publisher-info" id="last-backup"></span>
+    </div>
+    {% endif %}
+    <div class="table-box" dirname="{{dir_name}}">
+        <div class="json-source" id="files-cfg-tbl" style="display:none">{{ tbl }}</div>
+    </div>
+    <div class="sub-sidenavi-toolbar">
+    {% if 'data' == dir_name %}
+    <button class="sub-tollbar-btn" action="publish-data" id="publicaator">Опубликовать данные</button>
+    {% endif %}
+    {% if 'backups' == dir_name %}
+    <button class="sub-tollbar-btn" action="backup-data" id="backupper">Создать резервную копию</button>
+    {% endif %}
+    </div>
+    <iframe name="FMIFrameHelper" style="display:none;width:0px;height:0px;"></iframe>
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+    <script src="{{url_for('publish_mgt.static', filename='js/jquery.jqGrid-4.13.2/js/jquery.jqgrid.min.js')}}" type="text/javascript"></script>
+    <script src="{{url_for('publish_mgt.static', filename='js/jquery.jqGrid-4.13.2/js/i18n/grid.locale-ru.min.js')}}" type="text/javascript"></script>
+    <script src="{{url_for('publish_mgt.static', filename='js/publish-proc.js')}}" type="text/javascript"></script>
+    <script src="{{url_for('publish_mgt.static', filename='js/publisher.js')}}" type="text/javascript"></script>
+{% endblock %}

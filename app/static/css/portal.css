@@ -1,0 +1,10 @@
+
+/*
+html { width:100%;height:100%;font-size:100%;font-family:Tahoma;}
+body { width:100%;height:100%;font-size:62.5%;overflow:auto;padding-bottom:0px;}
+*/
+.ui-jqgrid .ui-userdata {height: auto !important;}
+.toolbar-delim {margin: 0 2px;border: 1px solid #999999;line-height: 22px;height: 20px;clear: none;float: left;}
+.toolbar-btn {width: auto;float: left;clear: none;margin: 2px 2px;min-width: 16px;min-height: 16px;cursor: pointer;font-size: 0px;}
+.toolbar-btn{border:1px solid #999999;margin:2px;cursor:pointer;}
+    .toolbar-btn .text{padding:2px 2px;}

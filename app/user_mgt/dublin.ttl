@@ -1,0 +1,88 @@
+# baseURI: http://splm.portal.web/osplm
+# prefix: osplm
+
+@prefix osplm: <http://splm.portal.web/osplm#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix data: <http://splm.portal.web/osplm/data#> .
+
+<http://splm.portal.web/osplm#user_mgt> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://splm.portal.web/osplm#Module> .
+
+<http://splm.portal.web/osplm#user_mgt> <http://purl.org/dc/elements/1.1/contributor> "Антон Новиков"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://www.w3.org/2000/01/rdf-schema#label> "User management"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/title> "Модуль управления пользователями"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/subject> "Users managment"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/description> "Модуль предоставляет функционал управления пользователями"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/date> "$Date: 2021-06-30 12:00:00 0300 (Tue, 30 Jun 2021) $"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/creator> "Антон Новиков"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/rights> "GNU"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/type> <http://purl.org/dc/dcmitype/Software> ;
+  <http://purl.org/dc/elements/1.1/format> "text/html, application"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#versionInfo> "$Id: 0.0.1 1 2021-06-30 12:00:00Z $"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#type> "webservice"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#hasWebPrefix> "/users"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#httpEnabled> xsd:true .
+
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_1> .
+<http://splm.portal.web/osplm/data#url_usermgt_1> osplm:value "/users/profile"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_usermgt_1> osplm:hasHTMLtemplate "profile.html"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_usermgt_1> osplm:shallBeShownInMenu <http://www.w3.org/2001/XMLSchema#true> .
+<http://splm.portal.web/osplm/data#url_usermgt_1> rdfs:label "Профиль"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_2> .
+<http://splm.portal.web/osplm/data#url_usermgt_2> osplm:value "/users/signin"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_usermgt_2> osplm:hasHTMLtemplate "profile.html"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_3> .
+<http://splm.portal.web/osplm/data#url_usermgt_3> osplm:value "/users/login"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_usermgt_3> osplm:hasHTMLtemplate "profile.html"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_4> .
+<http://splm.portal.web/osplm/data#url_usermgt_4> osplm:value "/users/logout"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_5> .
+<http://splm.portal.web/osplm/data#url_usermgt_5> osplm:value "/users/list"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_6> .
+<http://splm.portal.web/osplm/data#url_usermgt_6> osplm:value "/users/dialog/edit"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_7> .
+<http://splm.portal.web/osplm/data#url_usermgt_7> osplm:value "/users/dialog/view"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_8> .
+<http://splm.portal.web/osplm/data#url_usermgt_8> osplm:value "/users/getModuleData/"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_9> .
+<http://splm.portal.web/osplm/data#url_usermgt_9> osplm:value "/users/save/"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_10> .
+<http://splm.portal.web/osplm/data#url_usermgt_10> osplm:value "/users/changePass/"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_11> .
+<http://splm.portal.web/osplm/data#url_usermgt_11> osplm:value "/users/toggleDebugMode/1"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_12> .
+<http://splm.portal.web/osplm/data#url_usermgt_12> osplm:value "/users/toggleDebugMode/0"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_13> .
+<http://splm.portal.web/osplm/data#url_usermgt_13> osplm:value "/users/delete/"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_14> .
+<http://splm.portal.web/osplm/data#url_usermgt_14> osplm:value "/users/getInfo/"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_15> .
+<http://splm.portal.web/osplm/data#url_usermgt_15> osplm:value "/users/removeSelection"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_16> .
+<http://splm.portal.web/osplm/data#url_usermgt_16> osplm:value "/users/roles/getList"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_17> .
+<http://splm.portal.web/osplm/data#url_usermgt_17> osplm:value "/users/roles/getInfo"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_18> .
+<http://splm.portal.web/osplm/data#url_usermgt_18> osplm:value "/users/roles/delete"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_19> .
+<http://splm.portal.web/osplm/data#url_usermgt_19> osplm:value "/users/roles/save"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_20> .
+<http://splm.portal.web/osplm/data#url_usermgt_20> osplm:value "/users/export/list"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_usermgt_20> osplm:shallBeShownInMenu <http://www.w3.org/2001/XMLSchema#true> .
+<http://splm.portal.web/osplm/data#url_usermgt_20> rdfs:label "Экспорт списка пользователей"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_usermgt_20> osplm:hasAccessRight "tosters"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_21> .
+<http://splm.portal.web/osplm/data#url_usermgt_21> osplm:value "/users/manage"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_usermgt_21> rdfs:label "Пользователи"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_usermgt_21> osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> .
+<http://splm.portal.web/osplm/data#url_usermgt_21> osplm:hasHTMLtemplate "manage_users.html"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_22> .
+<http://splm.portal.web/osplm/data#url_usermgt_22> osplm:value "/users/manage/roles"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_usermgt_22> rdfs:label "Роли пользователей"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_usermgt_22> osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> .
+<http://splm.portal.web/osplm/data#url_usermgt_22> osplm:hasHTMLtemplate "manage_roles.html"^^<http://www.w3.org/2001/XMLSchema#string> .

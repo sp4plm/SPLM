@@ -1,0 +1,189 @@
+{
+    "yvl_trace":{
+        "_CMT":"Трассировка требований YVL. Страница /reports/yvl_tracing_report.php",
+        "#VARS":{"YVLCode":{"mark":"#{YVLCode}","default":""}},
+        "#TXT":"SELECT DISTINCT ?yvl ?yvl_lbl ?yvl_vls ?ver ?ver_lbl ?lastv ?ver_cls ?verlbl(group_concat(?con; separator=\"; \") as ?doc_list) {
+                    ?item a onto:Requirement .
+                    ?item onto:hasVersion ?ver .
+                    ?item rdfs:label ?ver_lbl .
+                    ?ver onto:latestVersion xs:true .
+                    ?ver onto:value ?lastv .
+                    ?ver onto:isFromDoc ?yvl .
+                    ?yvl a ?yvl_vls .
+                    ?yvl rdfs:label \"#{YVLCode}\" .
+                    ?yvl rdfs:label ?yvl_lbl .
+                    OPTIONAL { ?ver rdfs:label ?verlbl .  } .
+                    OPTIONAL {
+                        ?ver onto:isTracedTo ?docv .
+                        ?doc onto:hasVersion ?docv .
+                        ?doc rdfs:label ?doc_lbl .
+                        ?docv onto:latestVersion xs:true .
+                        ?docv rdf:type ?doc_cls .
+                        ?docv rdfs:label ?verlbl1 .
+                        ?doc onto:hasAttribute ?att .
+                        ?att a onto:DocumentName .
+                        ?att onto:hasAttributeValue ?att_val .
+                        ?att_val rdfs:label ?doc_name .
+                        BIND (CONCAT(STR(?doc_lbl), \" - ver.\", ?verlbl1, \"- name:\", ?doc_name) as ?con ).
+                    }
+                } GROUP BY ?yvl ?yvl_lbl ?yvl_vls ?ver ?ver_lbl ?lastv ?ver_cls ?verlbl ORDER BY ?ver_lbl"
+    },
+    "bad_reqs":{
+        "_CMT":"Требования с формулировкой для уточнения. Страница /reports/bad_reqs.php",
+        "#VARS":{},
+        "#TXT":"select ?doc_lbl ?ver ?ver_cls ?ver_lbl ?text ?version {
+                    ?ver onto:latestVersion xs:true .
+                    ?ver rdfs:label ?text .
+                    ?ver onto:value ?version .
+                    ?ver a ?ver_cls .
+                    ?ver onto:hasAttribute ?att_q .
+                    ?att_q a onto:RequirementsQualityLevel .  
+                    ?att_q onto:hasAttributeValue/rdfs:label \"Нет\"  .
+                    ?item onto:hasVersion ?ver .
+                    ?item rdfs:label ?ver_lbl .
+                    ?item onto:isCreatedIn ?doc  .
+                    ?doc rdfs:label ?doc_lbl .
+                 } order by ?doc_lbl ?seq"
+    },
+    "all_reqs":{
+        "_CMT":"Все требования. Страница /reports/all_requirements.php",
+        "#VARS":{},
+        "#TXT":"select ?doc ?doc_cls ?doc_lbl ?seq ?ver ?ver_cls ?ver_lbl ?txt ?version {
+                    ?item onto:hasVersion ?ver .
+                    ?item rdfs:label ?ver_lbl .
+                    ?ver onto:latestVersion xs:true .
+                    ?ver onto:value ?version .
+                    ?ver a onto:TextItemVersion .
+                    ?ver rdf:type ?ver_cls .
+                    OPTIONAL{
+                        ?ver onto:hasAttribute ?att_s .
+                        ?att_s onto:hasAttributeValue ?s_val .
+                        ?att_s a onto:SequenceNumber .
+                        ?s_val onto:value ?seq .
+                    }
+                    ?ver onto:isFromDoc ?doc  .
+                    ?doc rdfs:label ?doc_lbl .
+                    ?doc rdf:type ?doc_cls . FILTER (?doc_cls = onto:TZ || ?doc_cls = onto:RegulatoryDocument )
+                    ?item a ?typ .
+                    ?ver rdfs:label ?txt . 
+                } order by ?doc ?doc_cls ?doc_lbl ?seq"
+    },
+    "all_reqs2":{
+        "_CMT":"Все требования. Страница /reports/all_requirements.php",
+        "#VARS":{},
+        "#TXT":"select DISTINCT ?doc ?doc_cls ?doc_lbl ?ver ?ver_cls ?ver_lbl ?txt ?version where {
+                    ?req onto:hasVersion ?ver .
+                    ?req rdfs:label ?ver_lbl .
+                    ?ver onto:isFromDoc ?doc .
+                    ?doc a ?doc_cls .
+                    ?doc rdfs:label ?doc_lbl .
+                    ?ver a onto:TextItemVersion .
+                    ?ver a ?reqver_cls .
+                    ?ver onto:latestVersion xs:true .
+                    ?ver onto:value ?version .
+                    ?ver rdfs:label ?txt .
+                    
+                } group by ?doc ?doc_cls ?doc_lbl ?ver ?ver_cls ?ver_lbl ?txt ?version"
+    },
+    "exp_trace":{
+        "_CMT":"Все требования. Страница /reports/all_requirements.php",
+        "#VARS":{},
+        "#TXT":"SELECT DISTINCT ?req_lbl ?reqverval ?doc_lbl ?docverval {
+                    ?reqver onto:isTracedTo ?docver .
+                    ?reqver onto:latestVersion xs:true .
+                    ?reqver onto:value ?reqverval .
+                    ?req onto:hasVersion ?reqver .
+                    ?req rdfs:label ?req_lbl .
+                    ?reqver onto:isFromDoc ?idoc .
+                    ?idoc a ?idocclass . FILTER (?idocclass=onto:RegulatoryDocument || ?idocclass=onto:TZ )
+                    ?docver onto:latestVersion xs:true .
+                    ?docver rdfs:label ?docverval .
+                    ?doc onto:hasVersion ?docver .
+                    ?doc rdfs:label ?doc_lbl .
+                } ORDER BY ?req_lbl"
+    },
+    "exp_trace_cont":{
+        "_CMT":"Экспорт трассировок требований контракта. Страница /reports/index.php",
+        "#VARS":{},
+        "#TXT":"SELECT DISTINCT ?req_lbl ?reqverval ?doc_lbl ?docverval {
+                    ?reqver onto:isTracedTo ?docver .
+                    ?reqver onto:latestVersion xs:true .
+                    ?reqver onto:value ?reqverval .
+                    ?req onto:hasVersion ?reqver .
+                    ?req rdfs:label ?req_lbl .
+                    ?reqver onto:isFromDoc ?idoc .
+                    ?idoc a ?idocclass . FILTER (?idocclass=onto:TZ )
+                    ?docver onto:latestVersion xs:true .
+                    ?docver rdfs:label ?docverval .
+                    ?doc onto:hasVersion ?docver .
+                    ?doc rdfs:label ?doc_lbl .
+                } ORDER BY ?req_lbl"
+    },
+    "exp_trace_reg":{
+        "_CMT":"Экспорт трассировок нормативных требований. Страница /reports/index.php",
+        "#VARS":{},
+        "#TXT":"SELECT DISTINCT ?req_lbl ?reqverval ?doc_lbl ?docverval ?doorsID{
+                    ?reqver onto:isTracedTo ?docver .
+                    ?reqver onto:latestVersion xs:true .
+                    ?reqver onto:value ?reqverval .
+                    ?reqver onto:hasAttribute ?attr .
+                    ?attr a onto:Location .
+                    ?attr onto:hasAttributeValue ?attrVal .
+                    ?attrVal onto:value ?doorsID .
+                    ?req onto:hasVersion ?reqver .
+                    ?req rdfs:label ?req_lbl .
+                    ?reqver onto:isFromDoc ?idoc .
+                    ?idoc a ?idocclass . FILTER (?idocclass=onto:RegulatoryDocument )
+                    ?docver onto:latestVersion xs:true .
+                    ?docver rdfs:label ?docverval .
+                    ?doc onto:hasVersion ?docver .
+                    ?doc rdfs:label ?doc_lbl .
+                } ORDER BY ?req_lbl"
+    },
+    "notalloc":{
+        "_CMT":"Список нераспределенных требований. Страница /reports/not_allocated.php",
+        "#VARS":{},
+        "#TXT":"SELECT DISTINCT ?item ?item_lbl ?item_cls ?doc_lbl ?text {
+                    ?item a onto:Requirement . FILTER NOT EXISTS {?item onto:hasReqImplementer ?company }              
+                    ?item rdfs:label ?item_lbl .
+                    ?item rdf:type ?item_cls .
+                    ?item onto:hasVersion ?version .
+                    ?version onto:latestVersion xs:true .
+                    ?version onto:isFromDoc ?doc .
+                    ?doc a onto:TZ .
+                    ?doc rdfs:label ?doc_lbl .
+                    ?doc rdf:type ?doc_cls .
+                    ?item a ?texttype .
+                    ?version rdfs:label ?text . 
+                 } ORDER BY ?doc_lbl"
+    },
+    "rfi_list":{
+        "_CMT":"Список нераспределенных требований. Страница /reports/rfi_links.php",
+        "#VARS":{},
+        "#TXT":"SELECT ?doc_lbl ?ver ?ver_lbl ?ver_cls ?ver_text ?version ?rfilink {
+                    ?ver onto:hasRFILink ?rfilink .
+                    ?item onto:hasVersion ?ver .
+                    ?item rdfs:label ?ver_lbl .
+                    ?ver onto:isFromDoc ?doc .
+                    ?doc rdfs:label ?doc_lbl .
+                    ?ver a ?ver_cls .
+                    ?ver rdfs:label ?ver_text .
+                    ?ver onto:value ?version .
+                } ORDER BY ?doc_lbl"
+    },
+    "nodoclink_reqs_cls":{
+        "_CMT":"Список требований неимеющих связи с документами. Страница /reports/contractreqs_nodoclink.php | stukreqs_nodoclink.php",
+        "#VARS":{"CLS":{"mark":"#{cls}","default":"onto:Document"}},
+        "#TXT":"SELECT ?source_lbl ?item_lbl ?ver_lbl ?ver_val {
+                    ?item a onto:Requirement .
+                    ?item rdfs:label ?item_lbl .
+                    ?item onto:isCreatedIn ?source .
+                    ?source a #{cls} .
+                    ?source rdfs:label ?source_lbl .
+                    ?item onto:hasVersion ?ver . FILTER NOT EXISTS { ?ver onto:isTracedTo ?doc . } 
+                    ?ver onto:latestVersion xs:true .
+                    ?ver rdfs:label ?ver_lbl .
+                    ?ver onto:value ?ver_val .
+                } order by ?source_lbl ?item_lbl"
+    }
+}

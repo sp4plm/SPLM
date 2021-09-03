@@ -1,0 +1,35 @@
+{% extends admin_root_tpl() %}
+
+{% block title %}
+    {% if title %}SPLM: {{ title }}{% else %}Редактор Wiki страниц{% endif %}
+{% endblock %}
+
+
+{% block styles %}
+    {{super()}}
+	<style type="text/css">
+	  .scroll-ul-list {
+			max-height: 450px;
+			overflow-y: scroll !important;
+		}
+  	</style>
+
+{% endblock %}
+
+
+
+{% block page_main_content %}
+<div class="scroll-ul-list">
+	<form method="get">
+	<h1>Список страниц</h1>
+	<ul>
+		{% for page in pages %}
+			<li>
+				<a href="{{url_for('wiki.page', page_id = page, do = 'edit')}}">{{page}}</a> (<a href="{{url_for('wiki.page', page_id = page)}}">просмотр</a>)
+			</li>
+		{% endfor %}
+	</ul>
+	<input type="submit" value="Создать" formaction="{{url_for('wiki.page', page_id = '')}}">
+	</form>
+</div>
+{% endblock %}

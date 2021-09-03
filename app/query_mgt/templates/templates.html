@@ -1,0 +1,44 @@
+{% extends admin_root_tpl() %}
+
+{% block title %}
+    {% if title %}SPLM: {{ title }}{% else %}Редактор SPARQL шаблонов{% endif %}
+{% endblock %}
+
+
+{% block page_main_content %}
+	<form method="post">
+		<h1>Список шаблонов</h1>
+
+		{% if file %}
+			<input type="text" value="{{file}}" name="file" readonly>
+		{% else %}
+			<input type="text" value="" name="file">
+		{% endif %}
+
+		<ul>
+			{% for template in templates %}
+				<li>
+					<a href="{{url_for('query.template', file = file, template = template)}}">{{template}}</a>
+				</li>
+			{% endfor %}
+		</ul>
+
+		{% if file %}
+			<input type="submit" value="Создать шаблон" name="create" formaction="{{url_for('query.template', file = file, template = '')}}">
+		{% else %}
+			<input type="submit" value="Сохранить" name="save" formaction="{{url_for('query.file')}}">
+		{% endif %}
+		<input type="submit" value="Удалить" name="delete" formaction="{{url_for('query.file', file = file)}}">
+
+		<br/>
+
+	</form>
+	<form method="get">
+		<input type="submit" value="К списку файлов" formaction="{{url_for('query.manager')}}">
+	</form>
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+    <script src="{{url_for('query.static', filename='js/main.js')}}" type="text/javascript"></script>
+{% endblock %}

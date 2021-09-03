@@ -1,0 +1,54 @@
+{% extends admin_root_tpl() %}
+
+{% block title %}
+    {% if title %}SPLM: {{ title }}{% else %}Редактор Wiki страниц{% endif %}
+{% endblock %}
+
+{% block styles %}
+    {{super()}}
+	<style type="text/css">
+	  .scroll-ul-list {
+			max-height: 450px;
+			overflow-y: scroll !important;
+		}
+  	</style>
+
+{% endblock %}
+
+
+{% block page_main_content %}
+<div class="scroll-ul-list">
+	<form method="post" >
+		<h1>Страница</h1>
+		<br/>
+
+		Id страницы:
+		<br/>
+		{% if page_id %}
+			<input type="text" value="{{page_id}}" name="page_id" readonly>
+		{% else %}
+			<input type="text" value="" name="page_id">
+		{% endif %}
+		<br/>
+
+		Текст страницы:
+		<br/>
+		{% if page %}
+			<textarea name="page" rows="30" cols="100">{{page}}</textarea>
+		{% else %}
+			<textarea name="page" rows="30" cols="100"></textarea>
+		{% endif %}
+
+		<br/>
+
+
+		<input type="submit" value="Сохранить" name="save" formaction="{{url_for('wiki.page', page_id = page_id)}}">
+		<input type="submit" value="Удалить" name="delete" formaction="{{url_for('wiki.page', page_id = page_id)}}">
+		<br/>
+	</form>
+
+	<form method="get">
+		<input type="submit" value="К списку страниц" formaction="{{url_for('wiki.wiki')}}">
+	</form>
+</div>
+{% endblock %}

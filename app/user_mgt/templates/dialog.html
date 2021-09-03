@@ -1,0 +1,55 @@
+<div class="form-box user-edit-formBox">
+            <form name="UserEditForm" class="edit-form user-edit-form" method="post" onsubmit="return false;">
+                <input type="hidden" name="ID" value="" />
+                <input type="hidden" name="TYPE" value="" />
+                <input type="hidden" name="Roles[]" value="" />
+                <table class="form-tbl">
+                    <tbody>
+                        <tr field="FIO">
+                            <td class="form-field-label">ФИО</td>
+                            <td class="form-field-data">
+                                <div class="ui-widget ui-widget-content ui-corner-all field-ui-wrp">
+                                    <input type="text" class="input-text" name="FIO" value="" />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr field="Login">
+                            <td class="form-field-label">Имя пользователя</td>
+                            <td class="form-field-data">
+                                <div class="ui-widget ui-widget-content ui-corner-all field-ui-wrp">
+                                    <input type="text" class="input-text" name="Login" value="" />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr field="Password">
+                            <td class="form-field-label">Пароль</td>
+                            <td class="form-field-data">
+                                <div class="ui-widget ui-widget-content ui-corner-all field-ui-wrp">
+                                    <input type="password" class="input-password" name="Password" value="" />
+                                </div>
+                                <div class="ui-widget ui-widget-content ui-corner-all field-ui-wrp password-field">
+                                    <input type="password" class="input-password" name="PasswordCheck" value="" />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr field="Email">
+                            <td class="form-field-label">Email</td>
+                            <td class="form-field-data">
+                                <div class="ui-widget ui-widget-content ui-corner-all field-ui-wrp">
+                                    <input type="text" class="input-email" name="Email" value="" />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr field="Roles">
+                            <td class="form-field-label">Роли</td>
+                            <td class="form-field-data"><div class="ui-widget ui-widget-content ui-corner-all field-ui-wrp"></div></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="toolbar form-toolbar">
+                    <button name="CloseUserFormBtn" class="toolbar-btn close-btn user-close-btn">Закрыть</button>
+                    <button name="SaveUserDataBtn" class="toolbar-btn save-btn user-save-btn">Сохранить</button>
+                    <button name="DeleteUserBtn" class="toolbar-btn del-btn user-del-btn">Удалить</button>
+                </div>
+            </form>
+        </div>
