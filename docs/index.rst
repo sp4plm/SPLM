@@ -1,3 +1,1 @@
-installation.rst
-
 api.rst
