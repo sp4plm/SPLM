@@ -32,6 +32,4 @@
 
 .. code-block:: console
 
-python run.py
-
-<a name="3"></a>
+    python run.py
