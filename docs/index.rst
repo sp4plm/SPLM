@@ -1,2 +1,3 @@
-installation
-api
+installation.rst
+
+api.rst
