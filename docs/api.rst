@@ -24,8 +24,4 @@ in short: Semantic PLM (SPLM)
 
 Ключевой особенностью портала является то, что все данные на портале отображаются в зависимости от их классов зарегистрированных в нем онтологий. Т. е. каждый класс онтологии имеет свою форму представления данных, которая может быть уникальной и заданной в явном виде. Или создаваться «на лету» в результате наследования от своего старшего класса онтологии.
 
-.. image:: https://readthedocs.org/projects/splm/badge/?version=latest 
-        :target: https://splm.readthedocs.io?badge=latest
-        :alt: Documentation Status
-
 .. _W3c: https://www.w3.org/standards/semanticweb/
