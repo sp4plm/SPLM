@@ -14,7 +14,7 @@ in short: Semantic PLM (SPLM)
 
 # Содержание
 
-- [Установка](installation.rst)
+- [Установка](docs/installation.rst)
 - [Основные модули портала](#1) 
 - [Возможные области применения портала](#2)
 
