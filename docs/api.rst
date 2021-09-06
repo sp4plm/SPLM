@@ -1,3 +1,11 @@
+API Documentation
+=================
+
+.. toctree::
+   :maxdepth: 4
+
+   splm
+   
 ## Semantic Portal for Product Lifecycle Management (SP4PLM)
 
 in short: Semantic PLM (SPLM)
