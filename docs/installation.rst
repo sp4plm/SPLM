@@ -8,7 +8,7 @@
 
 .. code-block:: console
 
-    git clone git://github.com/oleg-post/SPLM.git
+    git clone git://github.com/oleg-post/SPLM
 
 2) Перейдите в директорию проекта:
 
