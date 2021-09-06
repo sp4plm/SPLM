@@ -16,7 +16,7 @@ in short: Semantic PLM (SPLM)
 
 Портал предназначен для навигации и анализа данных, представленных в семантическом виде, см стандарты Semantic Web на официальном сайте [w3c.org](https://www.w3.org/standards/semanticweb/). Портал так же предназначен для интеграции информации из разных источников.
 
-![w3c](https://www.w3.org/Icons/SW/sw-horz-w3c.png)
+.. figure:: https://www.w3.org/Icons/SW/sw-horz-w3c.png
 
 Особенность портала
 ------------
