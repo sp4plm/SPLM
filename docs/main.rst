@@ -1,11 +1,6 @@
 Описание
 =================
 
-.. toctree::
-   :maxdepth: 4
-
-   SP4PLM
-
 SP4PLM - семантическая платформа для построения порталов управления данными
 ------------
 SP4PLM - semantic platform for product life-cycle management
