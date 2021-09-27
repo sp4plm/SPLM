@@ -27,8 +27,8 @@
 
 .. code-block:: console
 
-    $ sudo apt install python3.7
-    $ sudo apt install python3-venv
+    $ sudo apt install python3.8
+    $ sudo apt install python3.8-venv
     $ sudo mkdir venv && cd venv
     $ sudo python3 -m venv env
     $ source env/bin/activate
