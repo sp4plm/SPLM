@@ -30,7 +30,7 @@
     $ sudo apt install python3.8
     $ sudo apt install python3.8-venv
     $ sudo mkdir venv && cd venv
-    $ sudo python3 -m venv env
+    $ sudo python3.8 -m venv env
     $ source env/bin/activate
 
 
