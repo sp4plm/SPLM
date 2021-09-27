@@ -7,15 +7,15 @@
 
 .. code-block:: console
 
-    sudo apt install git
+    $ sudo apt install git
 
 
 1) Загрузите исходный код с git, находясь в папке "opt":
 
 .. code-block:: console
     
-    cd /opt
-    git clone git://github.com/oleg-post/SPLM
+    $ cd /opt
+    $ sudo git clone git://github.com/oleg-post/SPLM
 
 2) Перейдите в директорию проекта:
 
@@ -23,11 +23,15 @@
 
     cd SPLM
 
-3) Подготовьте виртуальное окружение VirtualEnv и VirtualEnvWrapper. Дополнительно смотрите: http://www.doughellmann.com/docs/virtualenvwrapper/ и https://python-scripts.com/virtualenv. Создайте virtual environment:
+3) Подготовьте виртуальное окружение VirtualEnv и VirtualEnvWrapper. Дополнительно смотрите: https://python-scripts.com/virtualenv. Создайте virtual environment:
 
 .. code-block:: console
 
-    mkvirtualenv environment
+    $ sudo apt install python3-venv
+    $ sudo mkdir venv && cd venv
+    $ sudo python3 -m venv env
+    $ source env/bin/activate
+
 
 4) Установите необходимые дополнительные пакеты (python dependencies):
 
