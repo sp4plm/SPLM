@@ -10,10 +10,11 @@
     sudo apt install git
 
 
-1) Загрузите исходный код с git:
+1) Загрузите исходный код с git, находясь в папке "opt":
 
 .. code-block:: console
-
+    
+    cd /opt
     git clone git://github.com/oleg-post/SPLM
 
 2) Перейдите в директорию проекта:
