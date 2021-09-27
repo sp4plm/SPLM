@@ -32,6 +32,7 @@
     $ sudo mkdir venv && cd venv
     $ sudo python3.8 -m venv env
     $ source env/bin/activate
+    $ cd ..
 
 
 4) Установите необходимые дополнительные пакеты (python dependencies):
