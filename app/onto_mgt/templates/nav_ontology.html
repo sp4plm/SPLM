@@ -1,0 +1,73 @@
+{% extends "base_bootstrap.html" %}
+
+{% block title %}
+    {% if title %}SPLM: {{ title }}{% else %}Навигация по онтологии{% endif %}
+{% endblock %}
+
+
+{% block styles %}
+    {{super()}}
+	<style type="text/css">
+	    .scroll-ul-list {
+			max-height: 450px;
+			overflow-y: scroll !important;
+		}
+		.scroll-well {
+			max-width: 500px;
+			overflow-x: scroll !important;
+			padding: 5px;
+		}
+		.xicon-pos {
+			margin-top: 10px;
+		}
+  	</style>
+
+
+    <link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid-bootstrap.css')}}" />
+
+
+    <link rel="stylesheet" href="{{url_for('static', filename='css/portal.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static', filename='css/portal.datamanager.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static', filename='css/portal.jqgrid.css')}}" />
+
+    <link rel="stylesheet" href="{{url_for('static', filename='css/jqtree.css')}}" />
+
+{% endblock %}
+
+{% block page_sidenav %}
+	{% if js and "#tree3" in js %}
+		<div class="scroll-well">
+			<div id="tree3"></div>
+		</div>
+	{% else %}
+		{{super()}}
+	{% endif %}
+{% endblock %}
+
+
+{% block page_main_content %}
+	<h2 class="content-header">{{class_name}}</h2>
+	<br>
+	<span class="header-section-toggler xicon-open xicon-pos">&nbsp;</span><h3 id="relations" class="content-header">Отношения</h3>
+	{{relations|safe}}
+	<br>
+	<span class="header-section-toggler xicon-open xicon-pos">&nbsp;</span><h3 id="axioms" class="content-header">Аксиомы</h3>
+	{{axioms|safe}}
+	<br>
+	<span class="header-section-toggler xicon-open xicon-pos">&nbsp;</span><h3 id="instances" class="content-header">Экземпляры</h3>
+	{{instances|safe}}
+
+{% endblock %}
+
+
+
+{% block scripts %}
+    {{super()}}
+	<script type="text/javascript" language="javascript" src="{{url_for('static', filename='vend/jqTree-1.3.6.5/tree.jquery.js')}}"></script>
+	
+	<script type="text/javascript" charset="UTF-8" name="loader" vers="latest" src="{{url_for('static', filename='js/jquery.wfm-loader.js')}}"></script>
+	<script type="text/javascript" charset="UTF-8" name="webpage" vers="latest" src="{{url_for('static', filename='js/webpage.js')}}" ></script>
+
+	{{js|safe}}
+{% endblock %}

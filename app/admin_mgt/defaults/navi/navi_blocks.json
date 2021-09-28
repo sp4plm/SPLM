@@ -1,0 +1,6 @@
+[
+  {"id": 1, "label": "Разделы административного интерфейса", "rules": "", "href": "", "parid": 0, "srtid": 1, "page": [], "icon": "", "thumb": "", "descr": "", "url_func": "", "code": "admin_sections"},
+  {"id": 2, "label": "Список ссылок пользователя", "rules": "", "href": "", "parid": 0, "srtid": 2, "page": [], "icon": "", "thumb": "", "descr": "", "url_func": "", "code": "SiteUserNavi", "roles": ""},
+  {"id": 3, "label": "Разделы портала", "rules": "", "href": "", "parid": 0, "srtid": 3, "page": [], "icon": "", "thumb": "", "descr": "", "url_func": "", "code": "SiteSections", "roles": ""},
+  {"id": 4, "label": "Блок верхней навигации", "rules": "", "href": "", "parid": 0, "srtid": 4, "page": [], "icon": "", "thumb": "", "descr": "", "url_func": "", "code": "SiteTopNavi", "roles": ""}
+]

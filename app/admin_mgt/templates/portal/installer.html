@@ -1,0 +1,40 @@
+{% extends app_root_tpl() %}
+{% block styles %}
+    {{super()}}
+    <link rel="stylesheet" href="{{url_for('portal_installer.static', filename='css/installer.portal.css')}}" />
+{% endblock %}
+{% block navbar %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="">{% if project_name %}{{ project_name }}1{% else %}{{ portal_labels("projectLabel") }}{% endif %}</a>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+{% block page_nav %}{% endblock %}{% block bread_crumbs %}{% endblock %}
+{% block page_sidenav %}
+{% if not already_c0nfigured %}
+<ul>
+    <li><button act="run">Запустить первичное конфигурирование</button></li>
+</ul>
+{% else %}
+<!--<p>Выполнение каких-либо действий не требуется!</p>-->
+<ul>
+    <li><button act="uninstall">Запустить деинсталляцию</button></li>
+</ul>
+{% endif %}
+{% endblock %}
+{% block page_main_content %}
+<input type="hidden" value="/portal/installer" id="js-base-url" />
+<span id="page-content-marker" style="display:none;"></span>
+<div id="results-informer">
+    {% if already_c0nfigured %}
+        <p style="font-weight:bold;font-size:24px;">Первичное конфигурирование не требуется!</p>
+    {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}
+    {{super()}}
+    <script src="{{url_for('portal_installer.static', filename='js/installer.portal.js')}}" type="text/javascript"></script>
+{% endblock %}

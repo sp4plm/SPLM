@@ -1,0 +1,19 @@
+<ul class="nav navbar-nav navbar-right">
+    <li class="dropdown">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{current_user.name}}<span class="caret"></span></a>
+      <ul class="dropdown-menu">
+          {% set unavi = ucustom_navi(current_user) %}
+          {% if unavi %}
+          {% for link in unavi %}
+          {% if 1 < loop.length and loop.last and loop.index > 1 %}
+          <li class="divider" role="separator"></li>
+          {% endif %}
+           <li><a href="{{ link.href }}">{{ link.label}}</a></li>
+          {% if 2 < loop.length and loop.first %}
+          <li class="divider" role="separator"></li>
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+      </ul>
+    </li>
+</ul>

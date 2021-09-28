@@ -1,0 +1,5 @@
+[
+  {"id":1,"label": "Настройки портала","rules":"","href":"/portal/management/section/PortalSettings","parid":0, "srtid":1,"page":[],"icon":"","thumb":"","descr":"", "url_func" : "", "code":"PortalSettings"},
+  {"id":2,"label": "Настройки модулей","rules":"","href":"/portal/management/section/ModulesSettings","parid":0, "srtid":2,"page":[],"icon":"","thumb":"","descr":"", "url_func" : "", "code":"ModulesSettings"},
+  {"id":10000,"label": "Конфигуратор","rules":"","href":"/portal/management/section/Configurator","parid":0, "srtid":3,"page":[],"icon":"","thumb":"","descr":"", "url_func" : "", "code":"Configurator"}
+]

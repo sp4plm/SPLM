@@ -1,0 +1,14 @@
+{% extends app_root_tpl() %}
+{% block navbar %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="">{% if project_name %}{{ project_name }}1{% else %}{{ portal_labels("projectLabel") }}{% endif %}</a>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+{% block page_nav %}{% endblock %}{% block bread_crumbs %}{% endblock %}
+{% block page_sidenav %}
+{% endblock %}
+{% block page_main_content %}<p>{{ welcome_text| safe }}</p>{% endblock %}
