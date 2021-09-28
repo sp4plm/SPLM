@@ -61,5 +61,8 @@ class ModApi(AdminConf):
     @staticmethod
     def get_config_path():
         pth = ''
-        pth = AdminConf.CONFIGS_PATH
+        if os.path.exists(AdminConf.CONFIGS_PATH):
+            pth = AdminConf.CONFIGS_PATH
+        else:
+            pth = os.path.join(AdminConf.SELF_PATH, 'defaults', 'cfg')
         return pth

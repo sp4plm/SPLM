@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-from app import app_api
 
 class AdminConf:
     _class_file = __file__
@@ -8,10 +7,14 @@ class AdminConf:
 
     SELF_PATH = os.path.dirname(_class_file)
     MOD_NAME = os.path.basename(SELF_PATH)
-    MOD_WEB_ROOT = '/portal/management'
+    MOD_WEB_ROOT = '/portal'
 
-    DATA_PATH = os.path.join(SELF_PATH, 'data')
-    CONFIGS_PATH = os.path.join(DATA_PATH, 'cfg')
+    INIT_DIR_NAME = 'defaults'
+    DATA_DIR_NAME = 'data'
+    CONF_DIR_NAME = 'cfg'
+    NAVI_DIR_NAME = 'navi'
+    DATA_PATH = os.path.join(SELF_PATH, DATA_DIR_NAME)
+    CONFIGS_PATH = os.path.join(DATA_PATH, CONF_DIR_NAME)
     DESCRIPTION_FILE = os.path.join(DATA_PATH, 'dublin.ttl')
 
     ADMIN_NAVI_BLOCK_CODE = 'admin_sections'

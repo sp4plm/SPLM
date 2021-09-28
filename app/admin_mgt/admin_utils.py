@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-import json
 import os
+import json
 import configparser
 
 from app.utilites.code_helper import CodeHelper
-from app import app_api
+from app import app_api, mod_manager
 from app.admin_mgt.admin_conf import AdminConf
 from app.admin_mgt.admin_navigation import AdminNavigation
 from app.admin_mgt.users_auth_logger import UsersAuthLogger
@@ -16,39 +16,39 @@ class AdminUtils(AdminConf):
     _class_file = __file__
     _debug_name = 'AdminUtils'
 
-    @staticmethod
-    def get_current_sectionin_tpl(flask_request):
-        lst = {}
-        admin_navi = AdminNavigation()
-        lst = admin_navi.get_current_section(flask_request)
-        return lst
+    # @staticmethod
+    # def get_current_sectionin_tpl(flask_request):
+    #     lst = {}
+    #     admin_navi = AdminNavigation()
+    #     lst = admin_navi.get_current_section(flask_request)
+    #     return lst
 
-    @staticmethod
-    def get_current_subitem_tpl(flask_request):
-        lst = {}
-        admin_navi = AdminNavigation()
-        lst = admin_navi.get_current_subitem(flask_request)
-        return lst
+    # @staticmethod
+    # def get_current_subitem_tpl(flask_request):
+    #     lst = {}
+    #     admin_navi = AdminNavigation()
+    #     lst = admin_navi.get_current_subitem(flask_request)
+    #     return lst
 
-    @staticmethod
-    def get_admin_current_section(code):
-        lst = []
-        current = {}
-        admin_navi = AdminNavigation()
-        lst = admin_navi.get_sections()
-        if lst:
-            for blk in lst:
-                if blk['code'] == code:
-                    current = blk
-                    break
-        return current
+    # @staticmethod
+    # def get_admin_current_section(code):
+    #     lst = []
+    #     current = {}
+    #     admin_navi = AdminNavigation()
+    #     lst = admin_navi.get_sections()
+    #     if lst:
+    #         for blk in lst:
+    #             if blk['code'] == code:
+    #                 current = blk
+    #                 break
+    #     return current
 
-    @staticmethod
-    def get_admin_section_navi(code):
-        lst = []
-        admin_navi = AdminNavigation()
-        lst = admin_navi.get_sections_navi(code)
-        return lst
+    # @staticmethod
+    # def get_admin_section_navi(code):
+    #     lst = []
+    #     admin_navi = AdminNavigation()
+    #     lst = admin_navi.get_sections_navi(code)
+    #     return lst
 
     @staticmethod
     def _get_navi_path():
@@ -114,12 +114,12 @@ class AdminUtils(AdminConf):
                 blk['items'] = _t
         return blk
 
-    @staticmethod
-    def get_admin_sections():
-        lst = []
-        admin_navi = AdminNavigation()
-        lst = admin_navi.get_sections()
-        return lst
+    # @staticmethod
+    # def get_admin_sections():
+    #     lst = []
+    #     admin_navi = AdminNavigation()
+    #     lst = admin_navi.get_sections()
+    #     return lst
 
     @staticmethod
     def get_portal_sections():
@@ -133,7 +133,11 @@ class AdminUtils(AdminConf):
 
         # $accessLog = new
         # PortalLog(portalApp::getInstance()->getSetting('main.Info.userAccLogName'));
-        app_cfg = app_api.get_config_util()(AdminConf.CONFIGS_PATH)
+        if os.path.exists(AdminConf.CONFIGS_PATH):
+            app_cfg = app_api.get_config_util()(AdminConf.CONFIGS_PATH)
+        else:
+            _path = os.path.join(AdminConf.SELF_PATH, AdminConf.INIT_DIR_NAME, AdminConf.CONF_DIR_NAME)
+            app_cfg = app_api.get_config_util()(_path)
         relative_logs = app_cfg.get('main.Info.logDir')
         logs_dir = os.path.join(app_api.get_app_root_dir(), relative_logs)
         if not os.path.exists(logs_dir):
@@ -154,6 +158,14 @@ class AdminUtils(AdminConf):
     def get_portal_config():
         ocfg = None
         ocfg = app_api.get_config_util()(AdminConf.CONFIGS_PATH)
+        return ocfg
+
+    @staticmethod
+    def get_default_config():
+        ocfg = None
+        _path = AdminConf.get_mod_path(AdminConf.INIT_DIR_NAME)
+        _path = os.path.join(_path, AdminConf.CONF_DIR_NAME)
+        ocfg = app_api.get_config_util()(_path)
         return ocfg
 
     @staticmethod

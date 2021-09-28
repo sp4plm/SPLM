@@ -1,8 +1,9 @@
 $(function(){
-    var _$box, dialog,
+    var _$box, dialog, _base_url,
         _$lastOpenDlg = null;
 
     _$box = $('#page-content-marker').parent();
+    _base_url = _$box.find('#js-base-url').val();
 
     function clickAddNaviLinks(){
         hideNaviBlocks();
@@ -364,10 +365,12 @@ $(function(){
     function clickAddNewNavi(){
         hideNaviBlocks();
         viewEditForm();
+        $(this).hide();
         $('#navi-edit-form').find('[name="CloseNaviForm"]').on('click', function(){
             hideEditForm();
             viewNaviBlocks();
             clearEditForm();
+            _$box.find('[name="AddNewNavi"]').show();
         });
         $('#navi-edit-form').find('[name="SaveNavi"]').on('click', function(){
             var $frm;
@@ -378,16 +381,28 @@ $(function(){
     }
 
     function clickEditNavi(naviBlock){
+        var codes;
         hideNaviBlocks();
         viewEditForm();
+        codes = get_default_blocks();
+        _$box.find('[name="AddNewNavi"]').hide();
         $('#navi-edit-form').find('[name="NaviCode"]').val(naviBlock['code']);
         $('#navi-edit-form').find('[name="NaviBlockName"]').val(naviBlock['label']);
         $('#navi-edit-form').find('[name="NaviBlockCode"]').val(naviBlock['code']);
         $('#navi-edit-form').find('[name="NaviBlockLink"]').val(naviBlock['href']);
+        if(0 < codes.length) {
+            if(-1 !== codes.indexOf(naviBlock['code'])) {
+                $('#navi-edit-form').find('[name="NaviBlockCode"]').prop('readonly', true);
+            } else {
+                $('#navi-edit-form').find('[name="NaviBlockCode"]').prop('readonly', false);
+                $('#navi-edit-form').find('[name="NaviBlockCode"]').removeProp('readonly');
+            }
+        }
         $('#navi-edit-form').find('[name="CloseNaviForm"]').on('click', function(){
             hideEditForm();
             viewNaviBlocks();
             clearEditForm();
+            _$box.find('[name="AddNewNavi"]').show();
         });
         $('#navi-edit-form').find('[name="SaveNavi"]').on('click', function(){
             var $frm;
@@ -494,6 +509,15 @@ $(function(){
     function viewNaviBlocks(){ $('#awailable-navigations').show(); }
 
     function hideNaviBlocks(){ $('#awailable-navigations').hide(); }
+
+    function get_default_blocks() {
+        var frm, s, lst = [];
+        s = $('#navi-edit-form').find('[name="DefCodes"]').val();
+        if(''!=s) {
+            lst = s.split(',');
+        }
+        return lst;
+    }
 
     // инициализация диалога для работы с окнами
     dialog.init();

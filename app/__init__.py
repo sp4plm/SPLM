@@ -34,7 +34,7 @@ login_manager.login_message = u'Авторизуйтесь пожалуйста 
 login_manager.needs_refresh_message = u'Авторизуйтесь пожалуйста для доступа.' # REFRESH_MESSAGE
 
 # требуется обдумать и реализовать переход после авторизации на стартовую страницу портала - из настроек
-login_manager.login_view = 'admin_mgt.login'  # данный параметр требуется устанавливать через настройки
+login_manager.login_view = 'portal.login'  # данный параметр требуется устанавливать через настройки
 
 app.add_template_global(app_api.get_app_root_tpl, name='app_root_tpl') # функция в шаблоне - получение главного шаблона портала
 app.add_template_global(app_api.is_app_module_enabled, name='check_module')
@@ -50,8 +50,11 @@ app.add_template_global(app_api.get_portal_labels, name='portal_labels')
 from app.admin_mgt.models.links import Link
 from app.admin_mgt.models.embedded_user import EmbeddedUser
 
-from app.admin_mgt.views import mod as adminModule
+from app.admin_mgt.views import mod as adminModule, portal_mod, installer_mod, management_mod
 app.register_blueprint(adminModule)
+app.register_blueprint(portal_mod)
+app.register_blueprint(installer_mod)
+app.register_blueprint(management_mod)
 
 if app_api.is_app_module_enabled('user_mgt'):
     from app.user_mgt.models.users import User
@@ -77,7 +80,7 @@ def not_found(error):
     # интерфейса и перенаправить
     all_urls = [str(_u) for _u in app.url_map.iter_rules()]
     if '/' not in all_urls:
-        return redirect(url_for(PortalNavi.get_admin_endpoint()))
+        return redirect(url_for('portal.welcome'))
     return render_template('errors/404.html'), 404
 
 
@@ -89,7 +92,23 @@ def internal_error(error):
 
 @app.before_request
 def before_request():
+    # надо выполнять простую проверку на наличие файла - что портал установлен и инициализирован
+    # если файла нет перенаправлять на специальный урл инсталлятор портала? который закрыт паролем к административного
+    # интерфейса
+    _marker = app.config['CONFIGURATOR_MARK_NAME']
+    if not os.path.exists(_marker):
+        opened_urls = []
+        _url = url_for('portal.welcome')
+        opened_urls.append(_url)
+        install_url = url_for('portal_installer.installer')
+        opened_urls.append(install_url)
+
+        if request.path not in opened_urls and \
+                -1 == request.path.find('/static/') and \
+                not request.path.startswith(install_url):
+            return redirect(_url)
     g.user = None
+    session.permanent = True
     if current_user.is_authenticated:
         if '_user_id' in session:
             uid = int(session['_user_id'])

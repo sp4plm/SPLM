@@ -913,7 +913,7 @@ if(typeof void null!=typeof jQuery){
 
                 case 'link_navigation':
                     if(type==='f'){
-                        document.location.href = "/onto/navigation?onto=" + row.Name;
+                        document.location.href = "/onto/nav_ontology?onto=" + row.Name;
                     }
                     break;
             }

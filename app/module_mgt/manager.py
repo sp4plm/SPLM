@@ -11,14 +11,17 @@ class Manager:
     _description_file = 'dublin.ttl'
 
     def __init__(self, flask_app=None):
+        from time import time
+        _t = time()
+        # print(self._debug_name + '.__init__', _t)
         if flask_app is not None:
             self._init_flask_app(flask_app)
         # теперь надо посомтреть файл кеша созданный при запуске системы
         # если файл есть то его пытаемся загрузить в _modules
         # надо определить требуется ли восстанавливаться из кеша
         if self._check_cache_file():
-            self._restore_cache()
-            # compile_modules_info - перезапишет все данные из кеша
+            if 'modules_ttl' in self._current_app.config and 0 == len(self._current_app.config['modules_ttl']):
+                self._restore_cache()
         self._work_g = None # временное хранение графа - части общего описания всех модулей
 
     def _init_flask_app(self, flask_app):
@@ -49,7 +52,8 @@ class Manager:
                 # print('mt', mt)
                 self._current_app.config['modules_ttl'] = self._current_app.config['modules_ttl'].parse(data=mt, format="n3")
             # нужно сделать дамп
-            self._current_app.config['modules_list'] = mods_list.keys()
+            self._current_app.config['modules_list'] = list(mods_list.keys())
+            # print(self._debug_name + '.compile_modules_info.modules:', self._current_app.config['modules_list'])
 
             # print(self._current_app.config['modules_ttl'].serialize(destination='output.txt', format="turtle"))
 
@@ -78,6 +82,8 @@ class Manager:
         :param modname: string имя модуля
         :return: None или экземпляр класса ModApi
         """
+        from time import sleep
+        # print(self._debug_name + '.get_mod_api -> exists modules:', self._current_app.config['modules_list'])
         if not self.module_exists(modname):
             raise ModuleNotFoundError('Undefined component: {}'.format(modname))
         api_mod_ext = 'py'
@@ -158,6 +164,11 @@ class Manager:
         return resolved
 
     def get_mod_open_urls(self, mod_name):
+        """
+        Метод возвращает список URL модуля, доступных для указания в меню портала различного уровня.
+        :param mod_name:  string: имя модуля - имя директории в директории приложения
+        :return: список URL модуля, доступных для указания в меню портала
+        """
         opened = []
         # _inf0 = self.get_mod_decscription(mod_name) # читать напрямую ttl файл модуля
         _inf0 = self._current_app.config['modules_ttl']
@@ -169,12 +180,21 @@ class Manager:
             _mod_urls = _inf0.objects(subject=rdflib.URIRef(mod_uri), predicate=OSPLM.hasURL)
             mod_urls = [url for url in _mod_urls]
             _urls = _inf0.subjects(predicate=OSPLM.shallBeShownInMenu, object=rdflib.namespace.XSD.true)
-            _urls = [_u for _u in _urls if _u in mod_urls] # оставляем только URL указанного модуля
+            open_urls = [url for url in _urls]
+            if 0 == len(open_urls):
+                _urls = _inf0.subjects(predicate=OSPLM.shallBeShownInMenu, object=rdflib.namespace.XS.true)
+                open_urls = [url for url in _urls]
+            _urls = [_u for _u in open_urls if _u in mod_urls] # оставляем только URL указанного модуля
             opened = self._compile_mod_urls(_urls)
         return opened
 
     def get_mod_admin_urls(self, mod_name):
-        """"""
+        """
+        Метод созвращает список URL  модуля, предназначенных для административного интерфейса
+        :param mod_name: string: имя модуля - имя директории в директории приложения
+        :return: список URL модуля для административного интерфейса
+        """
+        # print(self._debug_name + '.get_mod_admin_urls: call')
         res = []
         _inf0 = self._current_app.config['modules_ttl']
         self._work_g = _inf0
@@ -185,7 +205,11 @@ class Manager:
             _mod_urls = _inf0.objects(subject=rdflib.URIRef(mod_uri), predicate=OSPLM.hasURL)
             mod_urls = [url for url in _mod_urls]
             _urls = _inf0.subjects(predicate=OSPLM.forAdminPurpose, object=rdflib.namespace.XSD.true)
-            _urls = [_u for _u in _urls if _u in mod_urls] # оставляем только URL указанного модуля
+            adm_urls = [url for url in _urls]
+            if 0 == len(adm_urls):
+                _urls = _inf0.subjects(predicate=OSPLM.forAdminPurpose, object=rdflib.namespace.XS.true)
+                adm_urls = [url for url in _urls]
+            _urls = [_u for _u in adm_urls if _u in mod_urls] # оставляем только URL указанного модуля
             res = self._compile_mod_urls(_urls)
         return res
 
@@ -215,7 +239,6 @@ class Manager:
             _roles = self._work_g.objects(subject=url, predicate=OSPLM.hasAccessRight)
             if _roles:
                 for _role in _roles:
-                    # code = self._parse_rdflib_gen(self._work_g.objects(subject=_role, predicate=rdflib.namespace.RDFS.label))
                     code = _role
                     if isinstance(code, str):
                         _url['roles'].append(str(code))
@@ -286,7 +309,6 @@ class Manager:
         return uri
 
     def get_available_modules(self):
-        # self._restore_cache() # при создании экземпляра восстанавливаемся из кеша
         return self._current_app.config['modules_list']
 
     def _dump_cache(self):
@@ -294,7 +316,10 @@ class Manager:
         # формируем имя файла кеша
         cache_file = ''
         cache_file = self._get_cache_file()
+        if self._check_cache_file():
+            os.unlink(cache_file)
         # print('cache_file', cache_file)
+        # print(self._debug_name + '._dump_cache.modules:', self._current_app.config['modules_list'])
         # сохраняем собранную информацию в файл кеша
         self._current_app.config['modules_ttl'].serialize(destination=cache_file, format="turtle")
 
@@ -310,6 +335,7 @@ class Manager:
                 if OSPLM is None:
                     OSPLM = rdflib.Namespace('http://splm.portal.web/osplm')
                 mods = self._current_app.config['modules_ttl'].subjects(rdflib.namespace.RDF.type, OSPLM.Module)
+                # print('Catched modules', mods)
                 lst = self._parse_rdflib_gen(mods)
                 app_uri = self._get_app_uri()
                 self._current_app.config['modules_list'] = [m.replace(app_uri, '') for m in lst]

@@ -4,9 +4,8 @@
         "#VARS":{"URI":{"mark":"#{URI}","default":""}},
         "#TXT":"SELECT ?s ?s_lbl ?p ?p_lbl WHERE {
                     ?s ?p <#{URI}>.
-                    OPTIONAL { ?s rdfs:label ?s_lbl.}
-                    OPTIONAL { ?p rdfs:label ?p_lbl. }
                     OPTIONAL { ?s rdfs:label ?s_lbl. }
+                    OPTIONAL { ?p rdfs:label ?p_lbl. }
                 }"
     },
     "subject" : {
@@ -16,7 +15,6 @@
                     <#{URI}> ?p ?o.
                     OPTIONAL { ?o rdfs:label ?o_lbl. }
                     OPTIONAL { ?p rdfs:label ?p_lbl. }
-                    OPTIONAL { ?o rdfs:label ?o_lbl. }
                 }"
     },
     "base" : {
@@ -25,6 +23,15 @@
         "#TXT":"SELECT ?o ?o_lbl ?o_cls WHERE {
                     ?o rdf:type ?o_cls FILTER (?o=<#{URI}>).
                     ?o rdfs:label ?o_lbl .
+                }"
+    },
+    "subject_nav_onto" : {
+        "_CMT_": "Выбираем данные, где предмет является субъектом (для навигации по онтологии) без blank nodes",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT ?p ?p_lbl ?o ?o_lbl WHERE {
+                    <#{URI}> ?p ?o .
+                    OPTIONAL { ?o rdfs:label ?o_lbl. }
+                    OPTIONAL { ?p rdfs:label ?p_lbl. } . filter (isIRI(?o))
                 }"
     }
 }

@@ -5,8 +5,8 @@ import os
 
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
 from flask.views import MethodView
-from flask_allows import Permission, Requirement
 from flask_login import current_user, login_user, logout_user, login_required
+from sqlalchemy.exc import NoResultFound
 from werkzeug.urls import url_parse
 from app import app_api
 from app.user_mgt.user_conf import UserConf
@@ -110,7 +110,10 @@ def users_list():
         search_flag = not ('false' == request.form['_search']) # инверсия от значения
 
     offset = limit * page - limit
-    total = User.query.count()
+    try:
+        total = User.query.count()
+    except NoResultFound:
+        total = 0
     data_list = []
     # '''
     if search_flag:
@@ -120,7 +123,10 @@ def users_list():
         q = ''
         qfilter = {}
         # qfilter[User[sidx]] = 'anton'
-        query_result = User.query.all()
+        try:
+            query_result = User.query.all()
+        except NoResultFound:
+            query_result = []
         # print('Users.views.users_list say: query result', query_result)
     # '''
     for user in query_result:

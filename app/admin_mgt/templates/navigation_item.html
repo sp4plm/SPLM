@@ -1,5 +1,6 @@
 {% extends "navigation.html" %}
 {% block page_main_content %}
+<input type="hidden" value="/portal/management/navigation" id="js-base-url" />
 <span id="page-content-marker" style="display:none;"></span>
 <div id="naviitem-edit-form">
 <form name="NaviItemEditForm" onsubmit="return false;" action="{{ save_action }}">
@@ -16,13 +17,22 @@
             <tr>
                 <td>Ссылка:</td>
                 <td>
+                    {% if curr_point['code'] in is_locked %}
+                    <input type="text" name="NaviItemLink" value="{{ curr_point['href'] }}" readonly />
+                    {% else %}
                     <input type="text" name="NaviItemLink" value="{{ curr_point['href'] }}" />
-
+                    {% endif %}
                 </td>
             </tr>
             <tr>
                 <td>Код пункта навигации:</td>
-                <td colspan="2"><input type="text" name="NaviItemCode" value="{{ curr_point['code'] }}" /></td>
+                <td colspan="2">
+                    {% if curr_point['code'] in is_locked %}
+                    <input type="text" name="NaviItemCode" value="{{ curr_point['code'] }}" readonly />
+                    {% else %}
+                    <input type="text" name="NaviItemCode" value="{{ curr_point['code'] }}" />
+                    {% endif %}
+                </td>
             </tr>
             <tr>
                 <td>Роли пользователя (для ограничения доступа):

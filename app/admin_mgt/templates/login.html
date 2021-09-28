@@ -1,6 +1,14 @@
-{% extends "base_bootstrap.html" %}
-{% block page_nav %}{% endblock %}
-{% block bread_crumbs %}{% endblock %}
+{% extends app_root_tpl() %}
+{% block navbar %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="">{% if project_name %}{{ project_name }}1{% else %}{{ portal_labels("projectLabel") }}{% endif %}</a>
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+{% block page_nav %}{% endblock %}{% block bread_crumbs %}{% endblock %}
 {% block app_content %}
     <div class="col-xs-6 col-sm-3 sidebar">
         {% if page_side_title %}<h2 class="content-header">{{ page_side_title | safe }}</h2>{% endif %}

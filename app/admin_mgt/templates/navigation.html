@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block page_main_content %}
+<input type="hidden" value="/portal/management/navigation" id="js-base-url" />
 <span id="page-content-marker" style="display:none;"></span>
 <div id="navi-content-form">
 <!--    <form name="NaviContentForm" onsubmit="return false;" action="{{ content_save_action }}">-->
@@ -27,9 +28,10 @@
                 {% for itm in block_items %}
                 <tr>
                     <td>
+                        {% if itm['code'] not in is_locked %}
                         <span class="act-btn ui-state-default ui-corner-all toolbar-btn" action="delete"><span class="del-navi-block ui-icon ui-icon-trash"></span></span>
+                        {% endif %}
                         <span class="act-btn ui-state-default ui-corner-all toolbar-btn" action="edit"><span class="edit-navi-block ui-icon ui-icon-pencil"></span></span>
-                        <span class="act-btn ui-state-default ui-corner-all toolbar-btn" action="add_links"><span class="del-navi-block ui-icon ui-icon-gear"></span></span>
                         <span class="act-btn ui-state-default ui-corner-all toolbar-btn" action="sort_up"><span class="del-navi-block ui-icon ui-icon-arrowreturnthick-1-n"></span></span>
                         <span class="act-btn ui-state-default ui-corner-all toolbar-btn" action="sort_down"><span class="del-navi-block ui-icon ui-icon-arrowreturnthick-1-s"></span></span>
                     </td>

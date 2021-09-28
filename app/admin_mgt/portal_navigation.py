@@ -3,16 +3,18 @@ import os
 import json
 
 from app.admin_mgt.admin_conf import AdminConf
+from app.admin_mgt.navigation_files import NavigationFiles
 from app.utilites.code_helper import CodeHelper
 
 
-class PortalNavigation(AdminConf):
+class PortalNavigation(NavigationFiles):
     _class_file = __file__
     _debug_name = 'PortalNavigation'
-    _register = 'navi_blocks.json'
+    # _register = 'navi_blocks.json'
 
     def __init__(self):
-        self._files_path = os.path.join(AdminConf.DATA_PATH, 'navi')
+        super().__init__()
+        self._files_path = os.path.join(AdminConf.DATA_PATH, AdminConf.NAVI_DIR_NAME)
 
     def get_section_by_code(self, code):
         current = None
@@ -63,15 +65,3 @@ class PortalNavigation(AdminConf):
                         flg = True
                         break
         return flg
-
-    def _read_json_file(self, file_path):
-        data = None
-        if os.path.exists(file_path):
-            with open(file_path, 'r', encoding='utf8') as fp:
-                _cont = fp.read()
-                if _cont:
-                    try:
-                        data = json.loads(_cont)
-                    except Exception as ex:
-                        raise Exception(self._debug_name + '._read_json_file.Exception: {}'.format(str(ex)))
-        return data

@@ -20,9 +20,9 @@ def requires_auth(f):
         # print(g)
         # print(current_user)
         curr_user = g.user if g.user else current_user
-        print('User is admin', EmbeddedUser.is_local_admin(curr_user.login))
-        print('request.path', request.path)
-        print('is_admin_url', AdminUtils.is_admin_url(request.path))
+        # print('User is admin', EmbeddedUser.is_local_admin(curr_user.login))
+        # print('request.path', request.path)
+        # print('is_admin_url', AdminUtils.is_admin_url(request.path))
         if not EmbeddedUser.is_local_admin(curr_user.login) and AdminUtils.is_admin_url(request.path):
             # flash(u'You need to be signed in for this page as Administrator.')
             return redirect(url_for(login_manager.login_view, next=request.path))

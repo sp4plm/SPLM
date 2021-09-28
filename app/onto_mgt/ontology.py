@@ -5,6 +5,9 @@ import re
 from rdflib import Graph, RDF, OWL, RDFS
 
 from app.onto_mgt.files_managment import FilesManagment
+from app.utilites.code_helper import CodeHelper
+
+from app.onto_mgt.views import *
 
 class Ontology():
     _class_file = __file__
@@ -20,22 +23,21 @@ class Ontology():
         self.prefixes = {}
         self.onto_file = onto_file
 
+
     def addOntology(self):
-        #TODO загрузка файлов онтологии, добавление в register.json
         # /loadFiles/ontos
-        pass
+        upload_files()
 
 
     def deleteOntology(self):
-        # TODO удаление файлов онтологии, удаление из register.json
         # /removeFile/ontos
-        pass
+        remove_file()
 
 
     def updateOntology(self):
-        # TODO изменение файлов онтологии, обновление в register.json
-        # /updateFile/ontos
-        pass
+        # В текущей реализации работы с онтологиями добавить и обновить онтологию
+        # выполняет одна функция с условием проверяющим существование загружаемой онтологии
+        self.addOntology()
 
 
     def getPrefixes(self):

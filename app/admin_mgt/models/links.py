@@ -80,7 +80,7 @@ class Link(AppBaseModel):
             l.append(link.to_dict())
         links = None
         filter = None
-        print('Link.resolve_links_by_node say: ', str(l))
+        # print('Link.resolve_links_by_node say: ', str(l))
         return Link.resolve_links(l)
 
     @staticmethod

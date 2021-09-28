@@ -12,6 +12,8 @@ from app.utilites.portal_navi import PortalNavi
 from app.query_mgt.query import Query
 from app.module_mgt.manager import Manager
 
+from rdflib import Namespace
+
 
 def get_config_util():
     """
@@ -33,8 +35,8 @@ def get_app_config():
 
 def get_mod_decscription(mod_name):
     """
-    Функция возвращает описание модуля с именем mod_name, хранящееся в dublin.ttl модуля
-    :param mod_name: string: Имя модуля для получения описания - dublin.ttl
+    Функция возвращает описание, хранящееся в dublin.ttl, модуля с именем mod_name (имя директории)
+    :param mod_name: string: Имя модуля (имя директории) для получения описания - dublin.ttl
     :return: None или rdflib.Graph() Если модуля нет то None, если модуль есть то rdflib.Graph()
     rdflib.Graph() - может оказаться пустым, если модуль есть а dublin.ttl отсутствует
     """
@@ -47,8 +49,8 @@ def get_mod_api(modname):
     """
     Функция форвращает экземпляр класса ModApi модуля modname описанного в файле mod_api
      расположеного в корне модуля modname
-    :param modname: string имя модуля
-    :return: None или экземпляр класса ModApi
+    :param modname: string: имя модуля (имя директории)
+    :return: ModApi: None или экземпляр класса ModApi
     """
     mod_manager = Manager(app)
     obj_comp = None
@@ -56,13 +58,13 @@ def get_mod_api(modname):
         obj_comp = mod_manager.get_mod_api(modname)
     except Exception as ex:
         raise ex
-    return obj_comp
+    return obj_comp # type: ModApi
 
 
 def is_app_module_enabled(mod_name):
     """
     Функция проверяет подключен ли модуль mod_name к порталу
-    :param mod_name: имя модуля (имя директории)
+    :param mod_name: string: имя модуля (имя директории)
     :return:
     """
     mod_manager = Manager(app)
@@ -119,7 +121,6 @@ def tsc_query(_q, _params = {}):
 
 def compile_query(_q, _params={}):
     '''
-
     :param _q: <module>.<file>.<template>
     :param _params: dict - {VARNAME : VALUE}
     :return: query_TXT
@@ -129,13 +130,28 @@ def compile_query(_q, _params={}):
 
 def compile_query_result(result):
     '''
-
-    :param _q: <module>.<file>.<template>
-    :param _params: dict - {VARNAME : VALUE}
-    :return: query_TXT
+    :param result: sparql query
+    :return: compiled sparql query
     '''
     return Query().compileQueryResult(result)
 
+
+
+
+def get_module_sparqt_dir(module):
+    '''
+    :param module: module name
+    :return: path to sparqt dir in module
+    '''
+    g = get_mod_decscription(module)
+
+    OSPLM = Namespace(get_portal_onto_uri() + "#")
+    path_sparqt = ""
+    for path in g.objects(predicate=OSPLM.hasPathForSPARQLquery):
+        path_sparqt = path
+        break
+
+    return os.path.join(get_mod_path(module), path_sparqt)
 
 
 

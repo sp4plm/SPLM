@@ -12,11 +12,11 @@
 	<ul>
 		{% for file in files %}
 			<li>
-				<a href="{{url_for('query.file', file = file)}}">{{file}}</a>
+				<a href="{{url_for(module + '.sparqt_file', file = file)}}">{{file}}</a>
 			</li>
 		{% endfor %}
 	</ul>
-	<input type="submit" value="Создать" formaction="{{url_for('query.file', file = '')}}">
+	<input type="submit" value="Создать" formaction="{{url_for(module + '.sparqt_file', file = '')}}">
 	</form>
 </div>
 {% endblock %}

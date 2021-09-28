@@ -1,14 +1,11 @@
 {% extends app_root_tpl() %}
-
 {% block title %}
     {% if title %}SPLM: {{ title }}{% else %}Symantic PLM admin{% endif %}
 {% endblock %}
-
 {% block styles %}
     {{super()}}
     <link rel="stylesheet" href="{{url_for('static', filename='css/portal.manager.css')}}" />
 {% endblock %}
-
 {% if not sections %} {% set sections=admin_sections() %} {% endif %}
 {% if not current_section %} {% set current_section=admin_current_section(flask_request) %} {% endif %}
 {% block page_nav %}
@@ -35,7 +32,6 @@
 </div>
 {% endblock %}
 {% block bread_crumbs %}{% endblock %}
-
 {% if not current_subitem %} {% set current_subitem=admin_current_subitem(flask_request) %} {% endif %}
 {% block page_sidenav %}
 {% if not navi %}
@@ -59,7 +55,6 @@
     </ul>
 {% endif %}
 {% endblock %}
-
 {% block scripts %}
     {{super()}}
     <script src="{{url_for('static', filename='js/jquery.wfm-loader.js')}}" type="text/javascript"></script>

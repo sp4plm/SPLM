@@ -3,22 +3,27 @@ import os
 import json
 
 from app.admin_mgt.admin_conf import AdminConf
+from app.admin_mgt.navigation_files import NavigationFiles
 from app.utilites.code_helper import CodeHelper
 from app import mod_manager
 
 
-class AdminNavigation(AdminConf):
+class AdminNavigation(NavigationFiles):
     _class_file = __file__
     _debug_name = 'AdminNavigation'
 
     def __init__(self):
-        self._files_path = os.path.join(AdminConf.DATA_PATH, 'navi')
+        super().__init__()
+        self._files_path = os.path.join(AdminConf.DATA_PATH, AdminConf.NAVI_DIR_NAME)
         self.sections = []
         self.current_section = None
         self.section_navi = []
         self.current_section_navi = None
         self._map = []
+        self._navi_struct = {}
         self.gen_map()
+        self._navi_struct = self._get_structure()
+        # print(self._debug_name + '.__init__: map', self._map)
 
     def get_section(self, code):
         """
@@ -42,17 +47,23 @@ class AdminNavigation(AdminConf):
         file_path = self._get_section_items_filename(code)
         try :
             data = self._read_json_file(file_path, [])
+            file_source = True
         except Exception as ex:
             data = None
         if data is None:
             # вызываем метод катомного получения ссылок для секции навигации
             data = self._try_call_customs(code)
+            file_source = False
         if not isinstance(data, list):
             data = []
 
         if data:
+            _a = [data]
+            if file_source:
+                _a.append('asc')
+                _a.append('srtid')  # если источник file то наверно специальная сортировка
             # сортировка по labels
-            data = self._sort_items(data)
+            data = self._sort_items(_a)
         return data
 
     @staticmethod
@@ -154,7 +165,7 @@ class AdminNavigation(AdminConf):
     @staticmethod
     def _get_section_items_filename(code):
         file_name = code + '.json'
-        file_path = os.path.join(AdminConf.DATA_PATH, 'navi', file_name)
+        file_path = os.path.join(AdminNavigation.DATA_PATH, AdminNavigation.NAVI_DIR_NAME, file_name)
         return file_path
 
     def get_section_by_code(self, code):
@@ -167,44 +178,74 @@ class AdminNavigation(AdminConf):
                     break
         return current
 
-    def gen_map(self):
-        lst = self.get_sections()
-        if lst:
-            _id = 0
-            for sec in lst:
-                code = sec['code']
-                navi = self.get_sections_navi(code)
-                _id += 1
-                sec['id'] = _id
-                sec['mapid'] = _id-1
-                sec['parid'] = -1
-                self._map.append(sec)
-                if navi:
-                    for ni in navi:
-                        _id += 1
-                        ni['id'] = _id
-                        ni['mapid'] = _id-1
-                        ni['parid'] = sec['mapid']
-                        self._map.append(ni)
+    def _tree_snail(self, code):
+        roots = self.get_sections_navi(code)
+        _t = []
+        if roots:
+            for root in roots:
+                key = root['code']
+                leafs = self._tree_snail(key)
+                root['childs'] = leafs
+                _t.append(root)
+        return _t
+
+    def gen_map(self, start=''):
+        _t = self._register.split('.')[0]
+        if '' == start:
+            start = _t
+        _a = self._tree_snail(start)
+        if _a:
+            for _i in _a:
+                self._map.append(_i)
+
+    def get_map(self):
+        if not self._map:
+            self.gen_map()
+        return self._map
+
+    def _get_structure(self):
+        start = self._register.split('.')[0]
+        _t = {}
+        _ind = 1
+        _indexed = []
+
+        def _snail(code):
+            roots = self.get_sections_navi(code)
+            if roots:
+                for root in roots:
+                    key = root['code']
+                    if key not in _indexed:
+                        _indexed.append(key)
+                    root['parid'] = _t[code]['id'] if code in _t else 0
+                    _ind = _indexed.index(key)
+                    root['id'] = _ind + 1
+                    root['parent'] = code
+                    if key not in _t:
+                        _t[key] = root
+                    _snail(key)
+
+        _snail(start)
+        return _t
 
     def get_current_section(self, flask_request):
         current = None
         # надо собрать карту из секций и разделов
         # по подразделам или разделам определить
         # какая секция и какая подсекция
-        if not self._map:
-            self.gen_map()
-        if self._map:
+        # if not self._map:
+        #     self.gen_map()
+        # if self._map:
+        if self._navi_struct:
             #print("flask_request.path", flask_request.path)
             match = flask_request.path
-            for ptn in self._map:
-                #print("ptn['href']", ptn['href'])
-                if match.startswith(ptn['href']):
-                    #print("ptn", ptn)
-                    if -1 == ptn['parid']:
+            for key, ptn in self._navi_struct.items():
+                # print("ptn['href']", ptn['href'])
+                if '' != ptn['href'] and match.startswith(ptn['href']):
+                    # print("ptn", ptn)
+                    if 0 == ptn['parid']:
                         current = ptn
                     else:
-                        current = self._map[ptn['parid']]
+                        current = self._navi_struct[ptn['parent']]
                     #print("current", current)
                     break
         return current
@@ -214,14 +255,16 @@ class AdminNavigation(AdminConf):
         # надо собрать карту из секций и разделов
         # по подразделам или разделам определить
         # какая секция и какая подсекция
-        if not self._map:
-            self.gen_map()
-        if self._map:
+        # if not self._map:
+        #     self.gen_map()
+        # if self._map:
+        if self._navi_struct:
             # print("flask_request.path", flask_request.path)
             match = flask_request.path
-            for ptn in self._map:
+            for key, ptn in self._navi_struct.items():
+                # print("ptn", ptn)
                 # print("ptn['href']", ptn['href'])
-                if match.startswith(ptn['href']) and 0 < ptn['mapid']:
+                if '' != ptn['href'] and match.startswith(ptn['href']) and 0 < ptn['id']:
                     # print("ptn", ptn)
                     current = ptn
                     break
@@ -229,46 +272,37 @@ class AdminNavigation(AdminConf):
 
     def get_sections(self):
         lst = []
-        sections_file = 'admin_sections.json'
-        sections_path = os.path.join(self._files_path, sections_file)
-        if CodeHelper.check_file(sections_path):
-            lst = self._read_json_file(sections_path, [])
+        _t = 'admin_sections'
+        lst = self.get_sections_navi(_t)
         return lst
 
     def get_sections_navi(self, section_code):
         lst = []
         sections_file = section_code + '.json'
         sections_path = os.path.join(self._files_path, sections_file)
+        file_source = False
         if CodeHelper.check_file(sections_path):
             lst = self._read_json_file(sections_path, [])
+            file_source = True
         else:
             """ выполняем поиск функциональности? которая вернет список ссылок для кода """
             lst = self._try_call_customs(section_code)
         if lst:
-            lst = self._sort_items(lst)
+            _a = [lst]
+            # print(self._debug_name + '.get_sections_navi.file_source', file_source)
+            if file_source:
+                _a.append('asc')
+                _a.append('srtid') # если источник file то наверно специальная сортировка
+            # print(self._debug_name + '.get_sections_navi._a', _a)
+            lst = self._sort_items(*_a)
         return lst
 
     def get_navi_blocks(self):
         lst = []
-        sections_file = 'navi_blocks.json'
-        sections_path = os.path.join(self._files_path, sections_file)
-        if CodeHelper.check_file(sections_path):
-            lst = self._read_json_file(sections_path, [])
+        lst = self.get_file_source()
         return lst
 
-    def _read_json_file(self, file_path, default=''):
-        data = None
-        if os.path.exists(file_path):
-            with open(file_path, 'r', encoding='utf8') as fp:
-                _cont = fp.read()
-                if _cont:
-                    try:
-                        data = json.loads(_cont)
-                    except Exception as ex:
-                        raise Exception(self._debug_name + '._read_json_file.Exception: {}'.format(str(ex)))
-        if data is None:
-            data = default
-        return data
+    def remove_navi_item(self, code): pass
 
     @staticmethod
     def get_link_tpl():
@@ -288,9 +322,9 @@ class AdminNavigation(AdminConf):
                 _lst = mod_manager.get_mod_admin_urls(modx)
                 lst += _lst
         if lst:
-            print('search_path', search_path)
+            # print('search_path', search_path)
             for io in lst:
-                print("io['href']", io['href'])
+                # print("io['href']", io['href'])
                 if search_path.startswith(io['href']):
                     flg = True
                     break

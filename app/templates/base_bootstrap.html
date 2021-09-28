@@ -28,7 +28,7 @@
                 {% if check_module('user_mgt') %}
                     {% if current_user.is_anonymous %}
                         <ul class="nav navbar-nav navbar-left">
-                            <li><a href="{{ url_for('admin_mgt.login') }}">Авторизация</a></li>
+                            <li><a href="{{ url_for('portal.login') }}">Авторизация</a></li>
                         </ul>
                     {% else %}
                         {% set tnavi = top_navi(current_user) %}

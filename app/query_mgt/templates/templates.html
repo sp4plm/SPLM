@@ -18,23 +18,23 @@
 		<ul>
 			{% for template in templates %}
 				<li>
-					<a href="{{url_for('query.template', file = file, template = template)}}">{{template}}</a>
+					<a href="{{url_for(module + '.sparqt_template', file = file, template = template)}}">{{template}}</a>
 				</li>
 			{% endfor %}
 		</ul>
 
 		{% if file %}
-			<input type="submit" value="Создать шаблон" name="create" formaction="{{url_for('query.template', file = file, template = '')}}">
+			<input type="submit" value="Создать шаблон" name="create" formaction="{{url_for(module + '.sparqt_template', file = file, template = '')}}">
 		{% else %}
-			<input type="submit" value="Сохранить" name="save" formaction="{{url_for('query.file')}}">
+			<input type="submit" value="Сохранить" name="save" formaction="{{url_for(module + '.sparqt_file')}}">
 		{% endif %}
-		<input type="submit" value="Удалить" name="delete" formaction="{{url_for('query.file', file = file)}}">
+		<input type="submit" value="Удалить" name="delete" formaction="{{url_for(module + '.sparqt_file', file = file)}}">
 
 		<br/>
 
 	</form>
 	<form method="get">
-		<input type="submit" value="К списку файлов" formaction="{{url_for('query.manager')}}">
+		<input type="submit" value="К списку файлов" formaction="{{url_for(module + '.sparqt_manager')}}">
 	</form>
 {% endblock %}
 

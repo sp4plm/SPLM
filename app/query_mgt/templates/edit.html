@@ -49,13 +49,13 @@
 		<br/>
 
 
-		<input type="submit" value="Сохранить" name="save" formaction="{{url_for('query.template', file = file, template = template)}}">
-		<input type="submit" value="Удалить" name="delete" formaction="{{url_for('query.template', file = file, template = template)}}">
+		<input type="submit" value="Сохранить" name="save" formaction="{{url_for(module + '.sparqt_template', file = file, template = template)}}">
+		<input type="submit" value="Удалить" name="delete" formaction="{{url_for(module + '.sparqt_template', file = file, template = template)}}">
 		<br/>
 	</form>
 
 	<form method="get">
-		<input type="submit" value="К списку шаблонов" formaction="{{url_for('query.file', file = file)}}">
+		<input type="submit" value="К списку шаблонов" formaction="{{url_for(module + '.sparqt_file', file = file)}}">
 	</form>
 {% endblock %}
 

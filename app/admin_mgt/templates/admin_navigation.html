@@ -25,7 +25,9 @@
             <tr>
                 <td class="">
                     <span class="act-btn ui-state-default ui-corner-all toolbar-btn" action="edit"><span class="edit-navi-block ui-icon ui-icon-pencil"></span></span>
+                    {% if blk['code'] not in def_blocks %}
                     <span class="act-btn ui-state-default ui-corner-all toolbar-btn" action="delete"><span class="del-navi-block ui-icon ui-icon-trash"></span></span>
+                    {% endif %}
                     <span class="act-btn ui-state-default ui-corner-all toolbar-btn" action="add_links"><span class="del-navi-block ui-icon ui-icon-gear"></span></span>
                 </td>
                 <td>{{ blk['label'] }}</td>
@@ -40,7 +42,10 @@
 <div id="navi-edit-form" style="display:none;">
 <form name="NaviEditForm" onsubmit="return false;" action="{{ save_action }}">
     <input type="hidden" name="NaviCode" value="" />
-    <input type="hidden" name="next_page" value="admin_mgt.admin_navigation" />
+    <input type="hidden" name="next_page" value="portal_management.admin_navigation" />
+    {% if def_blocks %}
+        <input type="hidden" name="DefCodes" value="{{def_blocks|join(',')}}" />
+    {% endif %}
     <table class="simple-tbl">
         <tbody>
             <tr>

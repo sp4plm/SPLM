@@ -51,6 +51,7 @@ class PortalNavi:
             block_code = app_cfg.get(conf_key)
             data = PortalNavi.get_portal_navi(block_code, user)
         except Exception as ex:
+            print(PortalNavi._debug_name + '._get_navi_block_links.Exception: ', ex)
             data = []
         return data
 

@@ -3,7 +3,7 @@ import os
 import json
 from math import ceil
 
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, session
 from app import app, app_api
 from flask_login import login_required
 
@@ -11,6 +11,11 @@ MOD_NAME = 'onto'
 
 
 mod = Blueprint(MOD_NAME, __name__, url_prefix='/onto', template_folder="templates")
+
+MOD_PATH = os.path.dirname(os.path.abspath(__file__))
+NAVIGATION_GRAPH_PATH = os.path.join(MOD_PATH, "navigation_graphs")
+if not os.path.exists(NAVIGATION_GRAPH_PATH):
+	os.mkdir(NAVIGATION_GRAPH_PATH)
 
 from app.admin_mgt.mod_api import ModApi
 
@@ -40,82 +45,217 @@ from app.app_api import tsc_query, compile_query, compile_query_result
 
 from urllib.parse import quote, unquote
 
-from rdflib import Graph
+from rdflib import Graph, URIRef
 
-@mod.route('/navigation')
+import networkx as nx
+
+import traceback, sys
+
+from app.utilites.axiom_reader import getClassAxioms
+
+
+from app.utilites.data_serializer import DataSerializer
+
+
+
+
+def js_code_tree(tree):
+	if tree:
+		parent_id = json.loads(tree)[0]['id']
+
+		js = '''<script type="text/javascript">
+		$(function() {
+
+			$('#tree3').hide()
+
+			$('#tree3').tree({
+				saveState: 'tree3',
+				data: %s
+			});
+
+
+			$('#tree3').bind(
+			    'tree.click',
+			    function(event) {
+			        // The clicked node is 'event.node'
+			        var node = event.node;
+
+			        url = window.location.href.split('?')[0];
+			        params = window.location.href.split('?')[1].split('&');
+			        for (let i = 0; i < params.length; i++) {
+					  p = params[i].split('=')
+					  if (p[0] == "onto") {
+					  	url += "?" + params[i]
+					  	break
+					  }
+					}
+					url += "&uri=" + encodeURIComponent(node.uri)
+					location.href = url
+
+			    }
+			);
+
+			$('#tree3').show()
+
+
+		});
+		</script>''' % (tree)
+	else:
+		js = ''
+
+	return js
+
+
+
+def get_className(ontology_class):
+	prefixes = {"http://www.w3.org/2002/07/owl" : "owl"}
+	try:
+		ontology, ontology_class = ontology_class.split("#")
+		if ontology in list(prefixes.keys()):
+			ontology_class = prefixes[ontology] + ":" + ontology_class
+	except Exception as e:
+		pass
+
+	return ontology_class
+
+
+
+
+# 2 функции по рендеру таблицы ОТНОШЕНИЯ
+def create_table(table):
+    return '<table class="simple-tbl report-data create_table_publics"><tbody>' + ''.join(["<tr>" + ''.join(row) + "</tr>" for row in table]) + '</tbody></table>'
+
+
+
+
+def compileTableRow(value, is_header, column, colors_class = "", total = False, base_width = ""):
+    base_width = 'width:' + (base_width if base_width else '40%') + ';'
+    colors_class = colors_class if colors_class else "table_text_color_397927"
+
+    if not isinstance(value, str):
+        value = str(value)
+
+    if total:
+        if column == 1:
+            return '<th style="' + base_width + 'text-align:left;" scope="col">' + value + '</th>'
+        else:
+            return '<th class="report-main ' + colors_class + '" scope="col">' + value + '</th>'
+
+    if is_header:
+        return '<th class="TableRow_header" align="center" style="' + (base_width if column == 1 else '') + '">' + value + '</th>'
+    else:
+        if column == 1:
+            return '<td align="center" style="vertical-align: middle; ' + base_width + '">' + value + '</td>'
+        else:
+            return '<td class="TableRow_not_header ' + colors_class + '" align="center">' + value + '</td>'
+
+
+
+
+
+# Создание дерева
+
+def load_graph(gr):
+	path = []
+
+	qrslt = gr.query('SELECT ?s ?o { ?s ^rdfs:subClassOf ?o . filter (isIRI(?s) && isIRI(?o))} order by ?s')
+
+	for row in qrslt:
+		path.append([str(row[0]),str(row[1])])
+
+	return path
+
+def create_graph_by_node(node, g):
+
+	ontology_file_format = "ttl"
+
+	# Циклическая функция сбора подчиненных узлов
+	def get_children(n):
+		i = ''
+		child = []
+		for k in G.successors(n):
+			i = Defrag(n) + '_' + Defrag(k)
+			ch2 = sorted(get_children(k), key=lambda x: x['name'])
+			child.append({'id' : i, 'name' : get_className(k), 'uri' : k, 'children' : ch2})
+
+		return child
+
+	input = load_graph(g)
+
+	G = nx.DiGraph()
+	G.add_edges_from(input)
+
+	ch1 = sorted(get_children(node), key=lambda x: x['name'])
+	data = [{'id' : Defrag(node), 'name' : get_className(node), "uri" : node, 'children' : ch1}]  # Начинаем создавать дерево с указанного узла
+
+	return data
+
+
+def Defrag(URL):
+    if "#" in URL:
+        q = URIRef(URL).partition("#")
+        return q[2]
+    else:
+        return ""
+
+
+
+
+
+
+
+
+
+@mod.route('/nav_ontology')
 #@login_required
-def onto_navigation():
+def nav_ontology():
     owl_Thing = "http://www.w3.org/2002/07/owl#Thing"
-
 
     _onto = unquote(request.args.get('onto') if request.args.get('onto') else "")
     uri = unquote(request.args.get('uri') if request.args.get('uri') else "")
-
-    # codes = get_structure_codes_sparqt("navigation")
-    codes = ["query_mgt.navigation.object", "query_mgt.navigation.subject", "query_mgt.navigation.base"]
-
-
-    if _onto:
-        df = FilesManagment()
-        onto_path = df.get_dir_realpath("ontos")
-
-        g = Graph().parse(os.path.join(onto_path, _onto), format='ttl')
+    if not uri:
+        uri = owl_Thing
 
 
-        if not uri:
-        	uri = owl_Thing
 
-        result = {code: compile_query_result( json.loads( g.query(compile_query(code, {"URI" : uri})).serialize(format="json").decode("utf-8") )  ) for code in codes}
+
+    df = FilesManagment()
+    onto_path = df.get_dir_realpath("ontos")
+
+    onto_file = os.path.join(onto_path, _onto)
+
+    if _onto not in session:
+        graph = Graph().parse(onto_file, format='ttl')
+
+        navigation_graph_file = os.path.join(NAVIGATION_GRAPH_PATH, _onto)
+        DataSerializer().dump(navigation_graph_file, graph)
+
+        session[_onto] = navigation_graph_file
     else:
-        result = {code: tsc_query(code, {"URI": uri}) for code in codes}
+        graph = DataSerializer().restore(session[_onto])
+
+    TREE = json.dumps(create_graph_by_node(owl_Thing, graph))
 
 
 
 
-    navigation_base = codes[2]
-    navigation_subject = codes[1]
-    navigation_object = codes[0]
 
 
-    navigation_base = result[navigation_base][0] if result[navigation_base] else {}
 
-    navigation_base_uri = navigation_base['o'] if 'o' in navigation_base else ""
-    if _onto:
-        navigation_base['href'] = url_for('onto.onto_navigation', uri = navigation_base_uri, onto = _onto)
-    else:
-        navigation_base['href'] = url_for('onto.onto_navigation', uri = navigation_base_uri)
+    	
 
+    relations_code = "query_mgt.navigation.subject_nav_onto"
+    RELATIONS = compile_query_result( json.loads( graph.query(compile_query(relations_code, {"URI" : uri})).serialize(format="json").decode("utf-8") )  )
 
-    # ПЕРЕХОД В КАРТОЧКУ УЗЛА
-    # if 'o_cls' in navigation_base:
-    #     current_class = get_className(navigation_base['o_cls'])
-    #     current_class_base = current_class
-    #     while not os.path.exists(os.path.join(templates_path, current_class + ".html")):
-    #         QUERY = "SELECT ?parent WHERE { %s:%s rdfs:subClassOf ?parent .}" % (ONTOLOGY_NAME, current_class)
-    #         parent = _query(QUERY)
-    #         if parent:
-    #             current_class = get_className(parent[0]['parent'])
-    #         else:
-    #             break
-
-    #     my_class_object = get_class(current_class_base)
-    #     if my_class_object:
-    #         navigation_base['href'] = url_for('onto.uri_class', class_object = current_class_base, uri = navigation_base_uri)
-
-
-    # SUBJECT
 
     firstPKey = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
     secondPKey = 'http://www.w3.org/2000/01/rdf-schema#label'
-
-    firstPKey_data = {}
-    secondPKey_data = {}
 
     subject_P = {}
     subject_O = {}
     subject_P_O = {}
 
-    for item in result[navigation_subject]:
+    for item in RELATIONS:
         if item['p'] == firstPKey:
             firstPKey_data = item
         elif item['p'] == secondPKey:
@@ -135,44 +275,100 @@ def onto_navigation():
 
 
 
-    # OBJECT
 
-    object_P = {}
-    object_S = {}
-    object_P_S = {}
-
-    for item in result[navigation_object]:
-        if item['p'] not in list(object_P.keys()):
-            object_P[item['p']] = item['p_lbl'] if 'p_lbl' in list(item.keys()) and item['p_lbl'] else item['p']
-
-        if item['s'] not in list(object_S.keys()):
-            object_S[item['s']] = item['s_lbl'] if 's_lbl' in list(item.keys()) and item['s_lbl'] else item['s']
-
-        object_P_S[item['s']] = item['p']
+    table_cols_names = ["Свойство", "Значение", "Язык"]
+    table_cols_names = [compileTableRow(table_cols_names[i], True, i + 1) for i in range(0, len(table_cols_names))]
+    table_data = []
+    for p_item in subject_P:
+    	for item in total_subject_P_O[p_item]:
+    		row = [subject_P[p_item], subject_O[item], ""]
+    		table_data.append([compileTableRow(row[i], False, i + 1) for i in range(0, len(row))])
 
 
-    total_object_P_S = {}
-    for p_item in object_P:
-        total_object_P_S[p_item] = [key for key in object_P_S if object_P_S[key] == p_item]
-
-    if 'o_lbl' not in firstPKey_data and 'o' in firstPKey_data:
-        firstPKey_data['o_lbl'] = firstPKey_data['o']
-    if 'p_lbl' not in secondPKey_data and 'p' in secondPKey_data:
-        secondPKey_data['p_lbl'] = secondPKey_data['p']
+    relations_html = create_table([table_cols_names] + table_data)
 
 
-    return render_template("/onto_navigation.html",
-       base=navigation_base,
-       firstPKey=firstPKey_data,
-       secondPKey=secondPKey_data,
-       total_subject_P_O=total_subject_P_O,
-       subject_P=subject_P,
-       subject_O=subject_O,
-       total_object_P_S=total_object_P_S,
-       object_P=object_P,
-       object_S=object_S,
-       onto = _onto
-    )
+
+
+
+
+    base_uri = getBaseUri(onto_file)
+    AXIOMS = getClassAxioms(URIRef(uri), graph, base_uri + "#")
+
+    table_data = []
+    for ax in range(0, len(AXIOMS)):
+    		AXIOMS[ax] = re.sub(r"\n", "<br>", AXIOMS[ax])
+    		row = [str(ax + 1), AXIOMS[ax]]
+    		table_data.append([compileTableRow(row[i], False, i + 1) for i in range(0, len(row))])
+
+
+    axioms_html = create_table(table_data)
+
+
+
+
+
+
+
+    instances_query = "SELECT ?instance ?instance_lbl WHERE { ?instance a <%s> . OPTIONAL { ?instance rdfs:label ?instance_lbl . } }" % (uri)
+    INSTANCES = compile_query_result( json.loads( graph.query(instances_query).serialize(format="json").decode("utf-8") )  )
+
+
+
+    instances_html = ""
+    for instance in INSTANCES:
+        instances_html += "<li>" + (instance['instance_lbl'] if 'instance_lbl' in instance and instance['instance_lbl'] else instance['instance']) + "</li>"
+
+    instances_html = "<div>" + "<ul>" + instances_html + "<ul>" + "</div>"
+
+
+    _js = """
+    <script type="text/javascript">
+		$(function() {
+
+			$('.header-section-toggler').click(function(){
+
+	            var $elem, $welem, $wgt0;
+
+	            $elem = $(this);
+
+	            if ($elem.hasClass('xicon-close')) {
+
+	                $elem.removeClass('xicon-close');
+	                $elem.addClass('xicon-open');
+
+	                // теперь надо создать виджет если не создан
+	                if ($elem.next('.content-header').next().length > 0) {
+	                    $elem.next('.content-header').next().show()
+	                }
+	                
+	            } else {
+	                $elem.removeClass('xicon-open');
+	                $elem.addClass('xicon-close');
+
+	                // теперь просто скроем виджет
+	                if ($elem.next('.content-header').next().length > 0) {
+	                    $elem.next('.content-header').next().hide()
+	                }
+	            }
+
+	       
+			}); 
+
+
+		});
+	</script>
+    """
+
+
+
+    return render_template("/nav_ontology.html", relations = relations_html, axioms = axioms_html, instances = instances_html, js = js_code_tree(TREE) + _js, class_name = get_className(uri))
+
+
+
+
+
+
 
 
 
@@ -182,6 +378,7 @@ def onto_navigation():
 def ontologies():
 	_base_url = '/' + MOD_NAME
 
+	# Таблица онтологий
 	cols_ontos = [
 		{"label": "", "index": "toolbar", "name": "toolbar", "width": 40, "sortable": False, "search": False},
 		# {name: 'Type', index: 'Type', label: 'Type', hidden: True, sortable: False}
@@ -283,14 +480,7 @@ def get_files():
         """ теперь после поиска надо отсортировать """
         file_list = df.sort_files(file_list, sord, columns_map[sidx])
         file_list1 = file_list[offset:offset + limit] if len(file_list) > limit else file_list
-        """
-        array( "label" => "", "index" => "toolbar", "name" => "toolbar", "width" => 120, "sortable" => false),
-        array( "label" => "ID", "index" => "id", "name" => "id", "width" => 55 , "hidden" => true),
-        array( "label" => "Имя", "index" => "name", "name" => "Name", "width" => 90 ),
-        array( "label" => "Дата загрузки", "index" => "loaddate", "name" => "loaddate", "width" => 80, "align" => "center" )
-        //array( "name" => "usemap", "width" => 80, "align" => "center" ),
-        //array( "name" => "loadresult", "width" => 80, "align" => "center" )
-        """
+       
 
         rows = []
         for item in file_list1:
@@ -324,21 +514,20 @@ def get_files():
 def upload_files():
     """ загружаем файлы в определенную директорию """
 
+
     dir_name = "ontos"
 
 
     answer = {'Msg': '', 'Data': None, 'State': 404}
     args = {"method": "POST"}
-    # print('Start upload')
     if request.method == "POST":
-        # print('Catch post')
         appended = []
         # answer = {'Status': 500, 'msg': 'No files to save!'}
         answer['Msg'] = 'Нет файлов для сохранения.'
         if request.files and 'File[]' in request.files:
-            # print('Catch files')
             file = None # type: werkzeug.datastructures.FileStorage
             errors = []
+
 
         
             _existed = []
@@ -347,7 +536,6 @@ def upload_files():
             _tmp_path = os.path.join(_tmp_path, _upload_dir)
             meta = FilesManagment()
             if meta.set_current_dir(dir_name):
-                # print('Set directory', dir_name)
                 path = meta.get_current_dir()
                 flg = False
                 cnt = 0
@@ -356,7 +544,6 @@ def upload_files():
 
                 for file in request.files.getlist('File[]'):
                     flg = False
-                    # print('try file:', file.filename)
                     if bool(file.filename):
                         # print('save file:', file.filename)
                         # file_bytes = file.read(MAX_FILE_SIZE)
@@ -881,3 +1068,5 @@ def normalize_file_name(file_name):
 def translit_rus_string(ru_str):
     res = CodeHelper.translit_rus_string(ru_str)
     return res
+
+

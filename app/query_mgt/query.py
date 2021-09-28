@@ -10,8 +10,6 @@ from app import app
 from app.utilites.utilites import Utilites
 
 
-from rdflib import Namespace
-
 module = "query_mgt"
 
 class Query:
@@ -24,15 +22,14 @@ class Query:
         os.mkdir(LOG_DIR)
 
     LOG_FILE = os.path.join(LOG_DIR, "Query.log")
-    SPARQT_DATA_PATH = os.path.join(app.config['APP_ROOT'], "app", "query_mgt", "sparqt", "")
 
     format_json = ".sparqt"
 
-    SPARQT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sparqt")
+    SPARQT_DIR = ""
     TEMPLATE_PARAMS = ['_CMT_', '#VARS', '#TXT']
 
 
-    def __init__(self):
+    def __init__(self, module = None):
         self.url = ""
         self.http_headers = ""
         self.namespaces = ""
@@ -41,6 +38,16 @@ class Query:
         self.PREFIX = ''.join(["PREFIX " + key + ": <" + self.namespaces[key] + "> " for key in self.namespaces])
 
         self.logger = self.initLoggerComponent().getAppLogger()
+
+        try:
+            if module:
+                from app.app_api import get_module_sparqt_dir
+                self.SPARQT_DIR = get_module_sparqt_dir(module)
+
+                if not os.path.exists(self.SPARQT_DIR):
+                    os.mkdir(self.SPARQT_DIR)
+        except:
+            pass
 
 
 
@@ -133,19 +140,13 @@ class Query:
         :param params: dict {VARNAME : VALUE}
         """
         try:
-            from app.app_api import get_mod_decscription, get_mod_path
+            from app.app_api import get_module_sparqt_dir
 
             delimeter = "."
             module, file, key_in_file = code.split(delimeter)
-            g = get_mod_decscription(module)
+          
 
-            OSPLM = Namespace("http://splm.portal.web/osplm#")
-            path_sparqt = ""
-            for path in g.objects(predicate=OSPLM.hasPathForSPARQLquery):
-                path_sparqt = path
-                break
-
-            self.SPARQT_DATA_PATH = os.path.join(get_mod_path(module), path_sparqt)
+            self.SPARQT_DATA_PATH = get_module_sparqt_dir(module)
             input_json = open(os.path.join(self.SPARQT_DATA_PATH, file + self.format_json), "r", encoding="utf-8")
 
             content = multiline.load(input_json, multiline=True)
@@ -183,7 +184,6 @@ class Query:
 
 
 
-    @classmethod
     def get_full_path_sparqt(self, file):
         """
         Метод возвращает абсолютный путь файла
@@ -192,7 +192,6 @@ class Query:
         """
         return os.path.join(self.SPARQT_DIR, file + self.format_json)
 
-    @classmethod
     def get_list_sparqt(self):
         """
         Метод возвращает список названий sparqt файлов без расширений
@@ -205,7 +204,6 @@ class Query:
         files.sort()
         return files
 
-    @classmethod
     def get_file_object_sparqt(self, file):
         """
         Метод возвращает содержимое sparqt файла
@@ -220,7 +218,6 @@ class Query:
 
         return templates
 
-    @classmethod
     def edit_file_object_sparqt(self, file, templates):
         """
         Метод редактирует содержимое sparqt файла
@@ -232,7 +229,6 @@ class Query:
             json_text = json_text.replace('\\n', '\n').replace('\\r', '')
             f.write(json_text)
 
-    @classmethod
     def delete_file_object_sparqt(self, file):
         """
         Метод удаляет sparqt файл
@@ -241,7 +237,6 @@ class Query:
         if os.path.exists(self.get_full_path_sparqt(file)):
             os.remove(self.get_full_path_sparqt(file))
 
-    @classmethod
     def get_templates_names_sparqt(self, file):
         """
         Метод возвращает список ключей в sparqt файле
@@ -251,7 +246,6 @@ class Query:
         return list(self.get_file_object_sparqt(file).keys())
 
 
-    @classmethod
     def get_structure_codes_sparqt(self, file):
         """
         Метод возвращает список кодов запросов для sparqt файла
@@ -260,7 +254,6 @@ class Query:
         """
         return [module + "." + file + "." + key for key in self.get_templates_names_sparqt(file)]
 
-    @classmethod
     def get_template_sparqt(self, file, template_name):
         """
         Метод возвращает объект с ключом template_name в sparqt файле
@@ -287,7 +280,6 @@ class Query:
 
         return result
 
-    @classmethod
     def edit_template_sparqt(self, file, template_name, template_params):
         """
         Метод редактирует объект с ключом template_name в sparqt файле
@@ -303,9 +295,10 @@ class Query:
 
             var_s = templates[template_name][self.TEMPLATE_PARAMS[1]].split(",")
             dict_var_s = {}
-            for var in var_s:
-                var = var.split("=")
-                dict_var_s[var[0]] = {"mark":"#{" + var[0] + "}","default": var[1]}
+            if templates[template_name][self.TEMPLATE_PARAMS[1]]:
+                for var in var_s:
+                    var = var.split("=")
+                    dict_var_s[var[0]] = {"mark":"#{" + var[0] + "}","default": var[1]}
 
             templates[template_name][self.TEMPLATE_PARAMS[1]] = json.dumps(dict_var_s)
 
@@ -314,7 +307,6 @@ class Query:
 
         self.edit_file_object_sparqt(file, templates)
 
-    @classmethod
     def delete_template_sparqt(self, file, template):
         """
         Метод удаляет объект с ключом template в sparqt файле

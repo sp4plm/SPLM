@@ -28,12 +28,6 @@ from ..utilites.extend_processes import ExtendProcesses
 admin_mod_api = None
 admin_mod_api = app_api.get_mod_api('admin_mgt')
 
-_app_cfg = app_api.get_app_config()
-STORAGE_DRIVER = _app_cfg.get('data_storages.Main.default_driver')
-
-USE_NAMED_GRAPHS = False
-USE_NAMED_GRAPHS = _app_cfg.get('data_storages.Main.use_named_graphs')
-
 mod = Blueprint(PublishModConf.MOD_NAME, __name__, url_prefix=PublishModConf.MOD_WEB_ROOT,
                 static_folder=PublishModConf.get_web_static_path(),
                 template_folder=PublishModConf.get_web_tpl_path())
@@ -247,6 +241,10 @@ def get_files(dir_name=''):
     sord = 'asc' # get the direction
     search_flag = False
     filters = ''
+
+    _app_cfg = app_api.get_app_config()
+    USE_NAMED_GRAPHS = False
+    USE_NAMED_GRAPHS = _app_cfg.get('data_storages.Main.use_named_graphs')
 
     columns_map = FilesManagmentView.get_columns_map()
     jq_grid = JQGridHelper()
@@ -724,9 +722,12 @@ def is_empty_upload_temp(_check_path):
 @_auth_decorator
 def accept_new_file(dir_name):
     answer = {'Msg': '', 'Data': None, 'State': 404}
-    print(request.form)
+    # print(request.form)
+    _app_cfg = app_api.get_app_config()
+    USE_NAMED_GRAPHS = False
+    USE_NAMED_GRAPHS = _app_cfg.get('data_storages.Main.use_named_graphs')
     recive_data = reqform_2_dict(request.form)
-    print(recive_data)
+    # print(recive_data)
     files = recive_data['exfiles'] if 'exfiles' in recive_data else list(recive_data.values())
     meta = FilesManagment()
     answer['Msg'] = 'No files'

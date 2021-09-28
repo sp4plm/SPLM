@@ -101,10 +101,12 @@ if res_meta.set_current_dir('res'):
 onto_list = []
 process_protocol.write('Try add ontology files for publishing')
 # получим онтологии
-# ontos_api = app_api.get_mod_api('onto_mgt')
+ontos_api = app_api.get_mod_api('onto_mgt')
 # элемент списка файлов онтологий - список: 0 - полный путь к файлу, 1 - базовый URL онтологии (префикс)
 # onto_list.append([os.path.join(PublishModConf.DATA_PATH, 'qudt_units.ttl'), ''])
 # onto_list.append([os.path.join(PublishModConf.DATA_PATH, 'requirements_ontology.ttl'), ''])
+onto_utils = ontos_api.get_onto_utils()
+onto_list = onto_utils.get_ontos()
 cnt_ontos = len(onto_list)
 if onto_list:
     for onto_info in onto_list:
@@ -192,6 +194,7 @@ if for_publish:
         process_protocol.write('Sync backup files directory description')
     else:
         """ надо ли прекращать если не смогли """
+        process_protocol.write('Creating backup FAIL!')
 
     # запускаем непосредственно процесс публикации
     process_protocol.write('Start upload/update process')
