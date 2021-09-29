@@ -33,7 +33,7 @@
 
     # apt install python3.8
     # apt install python3-venv
-    # mkdir venv
+    # apt install python3.8-venv
 
 Разворачиваем в папке "venv" среду для соответствующей версии Pythonи и активируем ее:
 
