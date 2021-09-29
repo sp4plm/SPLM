@@ -32,8 +32,10 @@
 .. code-block:: console
 
     # apt install python3.8
-    # mkdir venv
     # apt install python3-venv
+
+После последней команды в папке "SPLM" должна появиться пака для вируальной среды с именем "venv". Разворачиваем в ней среду для соответствующей версии Python:
+
     # python3.8 -m venv venv
     # source venv/bin/activate
     # cd ..
