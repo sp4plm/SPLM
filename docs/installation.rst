@@ -23,7 +23,7 @@
 
 .. code-block:: console
 
-    cd SPLM
+    # cd SPLM
 
 2) Подготовьте виртуальное окружение VirtualEnv для Python. Желательно иметь Python 3.7 или следующий. Дополнительно смотрите: https://python-scripts.com/virtualenv. Если у вас уже есть необходиммая версия Python, то первую команду из указанных ниже можно пропустить. Создайте virtual environment:
 
