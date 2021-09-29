@@ -33,7 +33,7 @@
 
     # apt install python3.8
     # mkdir venv
-    # apt install python3.8-venv
+    # apt install python3-venv
     # python3.8 -m venv venv
     # source venv/bin/activate
     # cd ..
