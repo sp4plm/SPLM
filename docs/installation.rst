@@ -40,8 +40,6 @@
 
     # python3.8 -m venv venv
     # source venv/bin/activate
-    # cd ..
-
 
 4) Установите необходимые дополнительные пакеты (python dependencies):
 
