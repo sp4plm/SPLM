@@ -32,8 +32,8 @@
 .. code-block:: console
 
     # apt install python3.8
-    # apt install python3.8-venv
     # mkdir venv
+    # apt install python3.8-venv
     # python3.8 -m venv venv
     # source venv/bin/activate
     # cd ..
