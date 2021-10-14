@@ -66,7 +66,7 @@
             </button>
             <nav id="pagenavbar" class="navbar-collapse collapse navbar-inverse page-nav">
                 <ul class="nav navbar-nav">
-                {# set page_navi = main_navi(current_user) #}
+                {% set page_navi = main_navi(current_user) %}
                 {% if page_navi %}
                     {% for nav_item in page_navi %}
                         <li><a href="{{ nav_item.href }}" id="{{ nav_item.id }}">{{ nav_item.label }}</a></li>
