@@ -83,7 +83,7 @@
 
 http://127.0.0.1:5001/portal
 
-для входа используйте логин manager и пароль testadmin
+для входа используйте логин **manager** и пароль **testadmin**
 
 .. image:: screenshot_5.png
 
