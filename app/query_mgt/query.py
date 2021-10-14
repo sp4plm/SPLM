@@ -10,6 +10,7 @@ from app import app
 from app.utilites.utilites import Utilites
 
 
+
 module = "query_mgt"
 
 class Query:
@@ -28,13 +29,18 @@ class Query:
     SPARQT_DIR = ""
     TEMPLATE_PARAMS = ['_CMT_', '#VARS', '#TXT']
 
+    portal_data_json_file = "portal_data.json"
+    portal_data_json_file = os.path.join(os.path.dirname(__file__), "data", portal_data_json_file)
+
 
     def __init__(self, module = None):
         self.url = ""
         self.http_headers = ""
         self.namespaces = ""
 
-        self.url, self.http_headers, self.namespaces = Utilites.getQueryData()
+        self.url, self.http_headers = Utilites.get_query_data()
+
+        self.namespaces = self.getNamespaces()
         self.PREFIX = ''.join(["PREFIX " + key + ": <" + self.namespaces[key] + "> " for key in self.namespaces])
 
         self.logger = self.initLoggerComponent().getAppLogger()
@@ -48,6 +54,18 @@ class Query:
                     os.mkdir(self.SPARQT_DIR)
         except:
             pass
+
+
+
+
+
+    def getPortalData(self):
+        with open(self.portal_data_json_file, "r", encoding="utf-8") as f:
+            return json.load(f)
+
+
+    def getNamespaces(self):
+        return self.getPortalData()['Namespaces']
 
 
 

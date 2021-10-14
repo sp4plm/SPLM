@@ -1,0 +1,32 @@
+# baseURI: http://splm.portal.web/osplm
+# prefix: osplm
+
+@prefix osplm: <http://splm.portal.web/osplm#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix data: <http://splm.portal.web/osplm/data#> .
+
+<http://splm.portal.web/osplm#files_mgt> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://splm.portal.web/osplm#Module> ;
+  <http://purl.org/dc/elements/1.1/contributor> "Антон Новиков"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://www.w3.org/2000/01/rdf-schema#label> "Files management"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/title> "Модуль управления файлами портала"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/subject> "Files management module"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/description> "Модуль предоставляет функционал файлового менеджера для загружаемых файлов портала"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/date> "$Date: 2021-10-11 10:20:00 0300 (Mon, 11 Oct 2021) $"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/creator> "Антон Новиков"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/rights> "GNU"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/type> <http://purl.org/dc/dcmitype/Software> ;
+  <http://purl.org/dc/elements/1.1/format> "text/html, application"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#versionInfo> "$Id: 0.0.1 1 2021-10-11 10:20:00Z $"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#type> "webservice"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#hasWebPrefix> "/mediadata"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#httpEnabled> xsd:true .
+
+<http://splm.portal.web/osplm#files_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_filesmgt_21> .
+<http://splm.portal.web/osplm/data#url_filesmgt_21> osplm:value "/mediadata"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_filesmgt_21> rdfs:label "Управление файлами"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_filesmgt_21> osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> .
+<http://splm.portal.web/osplm/data#url_filesmgt_21> osplm:hasHTMLtemplate "media_files.html"^^<http://www.w3.org/2001/XMLSchema#string> .

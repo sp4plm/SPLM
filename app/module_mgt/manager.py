@@ -23,6 +23,8 @@ class Manager:
             if 'modules_ttl' in self._current_app.config and 0 == len(self._current_app.config['modules_ttl']):
                 self._restore_cache()
         self._work_g = None # временное хранение графа - части общего описания всех модулей
+        self._web_handlers_file = 'views.py'
+        self._web_handlers_var = 'mod'
 
     def _init_flask_app(self, flask_app):
         self._current_app = flask_app
@@ -36,6 +38,51 @@ class Manager:
 
         self._current_app.extensions['SPLMModuleManager'] = _SingletonState(self)
 
+    def load_modules_http_handlers(self):
+        mods_list = self._current_app.config['modules_list']
+        if mods_list:
+            for _mod in mods_list:
+                if self.is_internal_module(_mod):
+                    continue
+                # по идее тут можно выбрать из описания модулей информацию о том что загружать
+                load_flag = self.load_module_http_handler(_mod)
+                if not load_flag:
+                    print(self._debug_name + '.load_modules_http_handlers: Web handlers are not loaded for {}'.format(_mod))
+
+    def load_module_http_handler(self, mod_name):
+        flg = False
+        if not self.module_exists(mod_name):
+            return flg
+        _inf0 = self._current_app.config['modules_ttl']
+        if 0 < len(_inf0):
+            mod_uri = self._get_mod_uri(mod_name)
+            mod_uri = mod_uri.lstrip('<').rstrip('>')
+            OSPLM = self._resolve_graph_ns(_inf0, 'osplm')
+            _mod_http = _inf0.triples((rdflib.URIRef(mod_uri), OSPLM.httpEnabled, rdflib.namespace.XSD.true))
+            load_http_mod = None
+            if 0 < len([_r for _r in _mod_http]):
+                try:
+                    load_http_mod = self.__dyn_load_mod_file(mod_name, self._web_handlers_file)
+                except Exception as ex:
+                    print(self._debug_name + '.load_module_http_handler: {}' . format(ex.args[0]))
+                    load_http_mod = None
+            if load_http_mod is not None:
+                try:
+                    views_mod = getattr(load_http_mod, self._web_handlers_var)
+                except KeyError as e:
+                    # можно также присвоить значение по умолчанию вместо бросания исключения
+                    # raise ValueError(self._debug_name + '.load_module_http_handler: No web module var: {}'.format(e.args[0]))
+                    print(self._debug_name + '.load_module_http_handler: No web module var: {}'.format(e.args[0]))
+                # call app.register_blueprint(views_mod)
+                try:
+                    self._current_app.register_blueprint(views_mod)
+                    flg = True
+                except Exception as ex:
+                    # можно также присвоить значение по умолчанию вместо бросания исключения
+                    # raise ValueError('Undefined component: {}'.format(e.args[0]))
+                    print(self._debug_name + '.load_module_http_handler: Error on module web register action:', ex)
+        return flg
+
     def compile_modules_info(self):
         from flask import Flask
         if not isinstance(self._current_app, Flask):
@@ -48,15 +95,9 @@ class Manager:
         self._current_app.config['modules_info'] = {}
         if mods_list:
             for mn, mt in mods_list.items():
-                # print('mn', mn)
-                # print('mt', mt)
                 self._current_app.config['modules_ttl'] = self._current_app.config['modules_ttl'].parse(data=mt, format="n3")
             # нужно сделать дамп
             self._current_app.config['modules_list'] = list(mods_list.keys())
-            # print(self._debug_name + '.compile_modules_info.modules:', self._current_app.config['modules_list'])
-
-            # print(self._current_app.config['modules_ttl'].serialize(destination='output.txt', format="turtle"))
-
             # требуется создать файл для кеширования данных о модулях приложения
             self._dump_cache()
 
@@ -83,28 +124,11 @@ class Manager:
         :return: None или экземпляр класса ModApi
         """
         from time import sleep
-        # print(self._debug_name + '.get_mod_api -> exists modules:', self._current_app.config['modules_list'])
         if not self.module_exists(modname):
             raise ModuleNotFoundError('Undefined component: {}'.format(modname))
         api_mod_ext = 'py'
         api_mod_name = 'mod_api'
-        mod_path = os.path.join(self._get_mods_path(), modname)
-        if not os.path.exists(mod_path) or not os.path.isdir(mod_path):
-            return None
-        load_path = os.path.join(mod_path, api_mod_name + '.' + api_mod_ext)
-        spec_path = 'app.' + modname + '.' + api_mod_name
-        from importlib import invalidate_caches, import_module, util as impmod_utils
-        if not os.path.exists(load_path) or not os.path.isfile(load_path):
-            return None
-        try:
-            invalidate_caches()
-            module_spec = impmod_utils.spec_from_file_location(
-                api_mod_name, load_path
-            )
-            comp_mod = impmod_utils.module_from_spec(module_spec)
-            module_spec.loader.exec_module(comp_mod)
-        except ModuleNotFoundError as ex:
-            raise ModuleNotFoundError('Undefined component: {}'.format(ex.args[0]))
+        comp_mod = self.__dyn_load_mod_file(modname, api_mod_name + '.' + api_mod_ext)
         try:
             obj_comp = getattr(comp_mod, 'ModApi')()
         except AttributeError as e:
@@ -112,6 +136,35 @@ class Manager:
             obj_comp = self._get_empty_api()()
             # raise ValueError('Undefined component: {}'.format(e.args[0]))
         return obj_comp
+
+    def __dyn_load_mod_file(self, import_mod: str, file_name=None):
+        if file_name is None:
+            file_name = import_mod + '.py' # may be use __init__.py
+        mod_path = os.path.join(self._get_mods_path(), import_mod)
+        if not os.path.exists(mod_path) or not os.path.isdir(mod_path):
+            raise ModuleNotFoundError(self._debug_name + '.__dyn_load_mod_file: Undefined module: {}'.format(import_mod))
+        load_path = os.path.join(mod_path, file_name)
+        from importlib import invalidate_caches, import_module, util as impmod_utils
+
+        if not os.path.exists(load_path) or not os.path.isfile(load_path):
+            return None
+        mod_not_found = False
+        if impmod_utils.find_spec(import_mod) is None:
+            mod_not_found = True
+        try:
+            invalidate_caches()
+            if not mod_not_found:
+                comp_mod = import_module(import_mod)
+            else:
+                _fname = os.path.basename(file_name)
+                _fname = _fname[:_fname.rfind('.')]
+                load_name = os.path.basename(os.path.dirname(mod_path)) + '.' + import_mod + '.' + _fname
+                module_spec = impmod_utils.spec_from_file_location(load_name, load_path)
+                comp_mod = impmod_utils.module_from_spec(module_spec)
+                module_spec.loader.exec_module(comp_mod)
+        except Exception as ex:
+            raise ModuleNotFoundError(self._debug_name + '.__dyn_load_mod_file.LoadFileEx: {}'.format(ex.args[0]))
+        return comp_mod
 
     def _get_empty_api(self):
 
@@ -335,7 +388,6 @@ class Manager:
                 if OSPLM is None:
                     OSPLM = rdflib.Namespace('http://splm.portal.web/osplm')
                 mods = self._current_app.config['modules_ttl'].subjects(rdflib.namespace.RDF.type, OSPLM.Module)
-                # print('Catched modules', mods)
                 lst = self._parse_rdflib_gen(mods)
                 app_uri = self._get_app_uri()
                 self._current_app.config['modules_list'] = [m.replace(app_uri, '') for m in lst]

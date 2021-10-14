@@ -6,7 +6,6 @@ from json import loads, dumps
 
 from app import CodeHelper
 from app.utilites.some_config import SomeConfig
-# from app.data_management.constants import MOD_DATA_PATH
 
 MOD_DATA_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -78,19 +77,13 @@ class FilesManagment():
         _json = self.read_description()
         descr = {}
         descr = loads(_json)
-        #print('FilesManagment.set_file_description.has_descr', descr)
         if descr:
-            #print('FilesManagment.set_file_description.checked', file)
             _t = []
             flg = False
-            #for ind in range(0, len(descr)):
             for row in descr:
-                #print('FilesManagment.set_file_description.compare_with', row['name'])
                 if file == row['name']:
-                    #descr[ind] = {**descr[ind], **descr_part}
                     new_row = {**row, **descr_part}
                     flg = True
-                    #print('FilesManagment.set_file_description.FIND')
                 else:
                     new_row = row
                 _t.append(new_row)
@@ -98,7 +91,6 @@ class FilesManagment():
                 descr = _t
         if flg:
             _json = ''
-            #print('FilesManagment.set_file_description.new_descr', descr)
             _json = dumps(descr)
             with open(self.get_description_file(), 'w', encoding='utf8') as file_p:
                 file_p.write(_json)
@@ -184,7 +176,6 @@ class FilesManagment():
         else:
             dir_cfg = '[]'
 
-        print(self.get_description_file())
         with open(self.get_description_file(), 'w', encoding='utf8') as file_p:
             # сперва надо очистить файл
             file_p.write('')
@@ -264,11 +255,7 @@ class FilesManagment():
 
     def create_item_description(self, item):
         info = {}
-        # print('create_item_description item:', item)
-        # print('create_item_description to clear:', self._root_dir + os.path.sep)
         relative = item.replace(self._root_dir + os.path.sep, '')
-        # print('create_item_description item:', item)
-        # print('create_item_description relative:', relative)
         info['fullname'] = item
         if os.path.isdir(item):
             roles = self._admin_role
@@ -283,6 +270,9 @@ class FilesManagment():
             t = relative.split(os.path.sep)
             info['name'] = t[1]
             info['mdate'] = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+
+            from app.onto_mgt.ontology import Ontology
+            info['prefix'] = Ontology().getOntoPrefix(item)
 
 
             if -1 < relative.find('maps'):
@@ -351,10 +341,8 @@ class FilesManagment():
         if '' != relative and self.has_dir(relative):
             try_dir = self.get_dir_realpath(relative)
         files = []
-        # print('get_dir_content try_dir', try_dir)
         list_items = os.scandir(try_dir)
         if list_items:
-            # print('get_dir_content catch files')
             _is_root_dir = (try_dir == self._root_dir)
             for item in list_items:
                 if not _is_root_dir and item.is_dir():
@@ -365,11 +353,8 @@ class FilesManagment():
         return files
 
     def set_current_dir(self, relative):
-        # print('set_current_dir')
-        # print('has dir', self.has_dir(relative))
         if '' != relative and self.has_dir(relative):
             self._current_dir = self.get_dir_realpath(relative)
-            # print('current', self._current_dir)
             return True
         return False
 
@@ -384,9 +369,6 @@ class FilesManagment():
                 os.path.isdir(try_dir)
 
     def get_dir_realpath(self, relative):
-        # print('get_dir_realpath')
-        # print('get_dir_realpath relative:', relative)
-        # print('get_dir_realpath root dir:', self._root_dir)
         return os.path.join(self._root_dir, relative)
 
     def edit_file(self, file_name, new_name='', http_file=None, dirname=''):
@@ -404,7 +386,6 @@ class FilesManagment():
                     flg = True
                 except Exception as ex:
                     flg = False
-                    # print(str(ex))
                     raise Exception(str(ex))
                 if flg:
                     flg = self.remove_file(file_name, dirname) # удалять надо если сохранили
@@ -502,14 +483,14 @@ class FilesManagment():
     def __get_dir_label(dir_name):
         if 'ontos' == dir_name:
             return 'Онтологии'
-        elif 'maps' == dir_name:
-            return 'Карты'
-        elif 'backups' == dir_name:
-            return 'Резерв. копии'
-        elif 'data' == dir_name:
-            return 'Данные'
-        elif 'res' == dir_name:
-            return 'Результаты'
-        elif 'media' == dir_name:
-            return 'Медиа файлы'
+        # elif 'maps' == dir_name:
+        #     return 'Карты'
+        # elif 'backups' == dir_name:
+        #     return 'Резерв. копии'
+        # elif 'data' == dir_name:
+        #     return 'Данные'
+        # elif 'res' == dir_name:
+        #     return 'Результаты'
+        # elif 'media' == dir_name:
+        #     return 'Медиа файлы'
         return dir_name

@@ -6,8 +6,8 @@
     {{super()}}
     <link rel="stylesheet" href="{{url_for('static', filename='css/portal.manager.css')}}" />
 {% endblock %}
-{% if not sections %} {% set sections=admin_sections() %} {% endif %}
-{% if not current_section %} {% set current_section=admin_current_section(flask_request) %} {% endif %}
+{% if sections is not defined %} {% set sections=admin_sections() %} {% endif %}
+{% if current_section is not defined %} {% set current_section=admin_current_section(flask_request) %} {% endif %}
 {% block page_nav %}
 <div id="page-nav-container" class="container page-nav-container_st">
     <button type="button" class="navbar-toggle collapsed pagenavbar" data-toggle="collapse" data-target="#pagenavbar" aria-expanded="false" aria-controls="pagenavbar">
@@ -32,9 +32,9 @@
 </div>
 {% endblock %}
 {% block bread_crumbs %}{% endblock %}
-{% if not current_subitem %} {% set current_subitem=admin_current_subitem(flask_request) %} {% endif %}
+{% if current_subitem is not defined %} {% set current_subitem=admin_current_subitem(flask_request) %} {% endif %}
 {% block page_sidenav %}
-{% if not navi %}
+{% if navi is not defined %}
     {% if current_section %}
         {% set navi=admin_section_navi(current_section.code) %}
     {% endif %}

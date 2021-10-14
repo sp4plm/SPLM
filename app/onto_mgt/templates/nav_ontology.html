@@ -1,4 +1,4 @@
-{% extends "base_bootstrap.html" %}
+{% extends admin_root_tpl() %}
 
 {% block title %}
     {% if title %}SPLM: {{ title }}{% else %}Навигация по онтологии{% endif %}
@@ -7,22 +7,6 @@
 
 {% block styles %}
     {{super()}}
-	<style type="text/css">
-	    .scroll-ul-list {
-			max-height: 450px;
-			overflow-y: scroll !important;
-		}
-		.scroll-well {
-			max-width: 500px;
-			overflow-x: scroll !important;
-			padding: 5px;
-		}
-		.xicon-pos {
-			margin-top: 10px;
-		}
-  	</style>
-
-
     <link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid.css')}}" />
     <link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid-bootstrap.css')}}" />
 

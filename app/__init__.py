@@ -56,6 +56,9 @@ app.register_blueprint(portal_mod)
 app.register_blueprint(installer_mod)
 app.register_blueprint(management_mod)
 
+from app.files_mgt.views import mod as files_mgt_web
+app.register_blueprint(files_mgt_web)
+
 if app_api.is_app_module_enabled('user_mgt'):
     from app.user_mgt.models.users import User
     from app.user_mgt.models.roles import Role
@@ -73,6 +76,10 @@ app.register_blueprint(ontoModule)
 
 from app.publish_mgt.views import mod as publisherModule
 app.register_blueprint(publisherModule)
+
+# динамическая загрузка сторонних модулей
+mod_manager.load_modules_http_handlers()
+
 
 @app.errorhandler(404)
 def not_found(error):

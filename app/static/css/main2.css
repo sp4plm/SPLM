@@ -250,3 +250,20 @@ img {
 .tz_section_left {width: 49%; float: left; margin-right: 1%;}
 
 .tz_section_right_values {text-align: center;}
+
+
+
+
+.scroll-well {
+    max-width: 500px;
+    overflow-x: scroll !important;
+    padding: 5px;
+}
+.xicon-pos {
+    margin-top: 10px;
+}
+
+.scroll-ul-list1 {
+    max-height: 500px;
+    overflow-y: scroll !important;
+}

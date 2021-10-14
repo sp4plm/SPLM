@@ -111,5 +111,3 @@ def create_sparqt_manager(URL, blueprint_mod):
 	# @login_required
 	def sparqt_template(file, template = ''):
 		return query_manager.sparqt_template(file, template, blueprint_mod_name, module_name)
-
-

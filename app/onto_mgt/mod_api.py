@@ -2,7 +2,7 @@
 import os
 
 from app.onto_mgt.onto_conf import OntoConf
-from app.onto_mgt.onto_utils import OntoUtils
+from app.onto_mgt.ontology import Ontology
 
 
 class ModApi(OntoConf):
@@ -10,18 +10,31 @@ class ModApi(OntoConf):
     _debug_name = 'OntoModApi'
 
     @staticmethod
-    def get_onto_utils():
-        return OntoUtils
+    def get_prefixes():
+        """ Возвращает список списков префиксов и baseURI онтологий [prefix, baseUri] """
+        return Ontology().getPrefixes()
 
     @staticmethod
-    def get_prefixes(onto_file):
-        return OntoUtils().get_prefixes(onto_file)
+    def get_all_prefixes(onto = ""):
+        """ onto - префикс онтологии """
+        """ Возвращает словарь префиксов онтологии onto {prefix : uri} ; """
+        """ Если onto = "", то возвращает словарь префиксов всех онтологий {prefix : uri} """
+        return Ontology().getAllPrefixes(onto)
 
     @staticmethod
-    def get_classes(onto_file):
-        return OntoUtils().get_classes(onto_file)
+    def get_classes(onto):
+        """ onto - префикс онтологии """
+        """ Возвращает словарь классов онтологии {uri : label} """
+        return Ontology().getClasses(onto)
 
     @staticmethod
     def get_ontos():
-        return OntoUtils().get_ontos()
+        """ Возвращает список списков [fullname, baseURI] """
+        return Ontology().getOntos()
+    
+    @staticmethod
+    def get_parent(onto, child):
+        """ onto - префикс онтологии, child - название класса без baseUri """
+        """ Возвращает родителя класса child для онтологии onto"""
+        return Ontology().getParent(onto, child)
     

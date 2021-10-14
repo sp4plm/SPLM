@@ -207,8 +207,9 @@ def Defrag(URL):
 
 
 @mod.route('/nav_ontology')
-#@login_required
+@login_required
 def nav_ontology():
+    """ Метод отвечает за навигацию по файлу онтологии и возвращает информацию об отношениях, аксиомах и экземплярах класса"""
     owl_Thing = "http://www.w3.org/2002/07/owl#Thing"
 
     _onto = unquote(request.args.get('onto') if request.args.get('onto') else "")
@@ -292,7 +293,7 @@ def nav_ontology():
 
 
 
-    base_uri = getBaseUri(onto_file)
+    base_uri = Ontology().getBaseUri(onto_file)
     AXIOMS = getClassAxioms(URIRef(uri), graph, base_uri + "#")
 
     table_data = []
@@ -374,8 +375,9 @@ def nav_ontology():
 
 
 @mod.route('/ontologies')
-#@login_required
+@login_required
 def ontologies():
+	""" Метод отдает структуру таблицы онтологий и рисует ее"""
 	_base_url = '/' + MOD_NAME
 
 	# Таблица онтологий
@@ -387,6 +389,10 @@ def ontologies():
 		{"label": "Имя", "index": "name", "name": "Name", "width": 90, "search": True, "stype": 'text',
 		 "searchoptions": {"sopt": ['cn', 'nc', 'eq', 'ne', 'bw', 'bn', 'ew', 'en']}
 		 },
+		{"label": "Префикс", "index": "prefix", "name": "prefix", "width": 20, "align": "center",
+		 "search": True, 'stype': 'text',
+		 "searchoptions": {"sopt": ['cn', 'nc', 'eq', 'ne', 'bw', 'bn', 'ew', 'en']}
+		 },
 		{"label": "Дата загрузки", "index": "loaddate", "name": "loaddate", "width": 40, "align": "center",
 		 "search": True, 'stype': 'text',
 		 "searchoptions": {"sopt": ['cn', 'nc', 'eq', 'ne', 'bw', 'bn', 'ew', 'en']}
@@ -396,7 +402,6 @@ def ontologies():
 	cfg_ontos = {
 		"datatype": "json",
 		"mtype": "POST",
-		# "colNames": ["-", "id", "Имя", "Дата загрузки", "Карта", "Результат"],
 		"colModel": [],
 		"pager": '',
 		"rowNum": 10,
@@ -426,11 +431,9 @@ def ontologies():
 
 
 @mod.route('/getFiles/ontos', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def get_files():
-    """ААААААААААААААААААААААААААААААААААА"""
-
-
+    """ Метод получает информацию о загруженных онтологиях"""
     dir_name = "ontos"
 
 
@@ -442,7 +445,7 @@ def get_files():
     search_flag = False
     filters = ''
     # row = {'id': '', 'toolbar': '', 'Type': '', 'Name': '', 'loaddate': '', 'usemap': '', 'loadresult': ''}
-    columns_map = {'id': 'name', 'toolbar': 'name', 'Type': 'name', 'name': 'name', 'Name': 'name', 'loaddate': 'mdate', 'usemap': 'map', 'loadresult': 'result'}
+    columns_map = {'id': 'name', 'toolbar': 'name', 'Type': 'name', 'name': 'name', 'Name': 'name', 'prefix' : 'name', 'loaddate': 'mdate', 'usemap': 'map', 'loadresult': 'result'}
     # теперь добавим колонки для медиа
     # backups
     columns_map['cmt'] = 'comment'
@@ -472,7 +475,6 @@ def get_files():
 
     df = FilesManagment()
     file_list = df.get_dir_source(dir_name)
-    # print(file_list)
     if file_list:
         if search_flag:
             file_list = apply_jqgrid_filters(file_list, filters)
@@ -481,19 +483,15 @@ def get_files():
         file_list = df.sort_files(file_list, sord, columns_map[sidx])
         file_list1 = file_list[offset:offset + limit] if len(file_list) > limit else file_list
        
-
         rows = []
         for item in file_list1:
-            row = {'id': '', 'toolbar': '', 'Type': '', 'Name': '', 'loaddate': ''}
+            row = {'id': '', 'toolbar': '', 'Type': '', 'Name': '', 'prefix' : '', 'loaddate': ''}
 
             row['id'] = item['name']
             row['Name'] = item['name']
-            
+            row['prefix'] = item['prefix']
             row['loaddate'] = item['mdate'] if 'mdate' in item else ""
-
             row['Type'] = 'f'
-            # if item.is_dir():
-            #    row['Type'] = 'd'
             rows.append(row)
 
     if file_list:
@@ -510,11 +508,9 @@ def get_files():
 
 
 @mod.route('/loadFiles/ontos', methods=['GET', 'POST'])
-# # @login_required
+@login_required
 def upload_files():
     """ загружаем файлы в определенную директорию """
-
-
     dir_name = "ontos"
 
 
@@ -522,7 +518,6 @@ def upload_files():
     args = {"method": "POST"}
     if request.method == "POST":
         appended = []
-        # answer = {'Status': 500, 'msg': 'No files to save!'}
         answer['Msg'] = 'Нет файлов для сохранения.'
         if request.files and 'File[]' in request.files:
             file = None # type: werkzeug.datastructures.FileStorage
@@ -545,7 +540,6 @@ def upload_files():
                 for file in request.files.getlist('File[]'):
                     flg = False
                     if bool(file.filename):
-                        # print('save file:', file.filename)
                         # file_bytes = file.read(MAX_FILE_SIZE)
                         # args["file_size_error"] = len(file_bytes) == MAX_FILE_SIZE
                         # сохранялись пустые файлы
@@ -554,11 +548,8 @@ def upload_files():
                         # # snippet to read code below
                         file.stream.seek(0)  # seek to the beginning of file
                         try:
-                            # print('try save upload')
                             secure_name = normalize_file_name(file.filename)
-                            # print('secure_name', secure_name)
                             file_name = os.path.join(path, secure_name)
-                            # print('try save file', file_name)
                             # для начала надо проверить существует ли файл с таким же именем
 
                             if os.path.exists(file_name):
@@ -584,35 +575,44 @@ def upload_files():
 
                                 FN = file_name
 
-
+                            #######################
+                            # Блок добавлен maxef для проверки уникальности префиксов и baseURI загружаемых онтологий
+                            #######################
 
                             # Проверка base_uri
-                            _baseURI = getBaseUri(FN)
+                            _baseURI = Ontology().getBaseUri(FN)
+                            _prefix = Ontology().getOntoPrefix(FN)
+
 
                             for item in meta.get_dir_source(dir_name):
                                 if "fullname" in item:
-                                    if getBaseUri(item['fullname']) == _baseURI:
-                                    	# удаляем только что загруженный файл!
+                                    if Ontology().getBaseUri(item['fullname']) == _baseURI:
+                                        # удаляем только что загруженный файл!
                                         os.remove(FN)
 
                                         answer['Msg'] = 'Невозможно загрузить файл. Такой baseURI ({}) уже существует в {}'.format(_baseURI, item['name'])
                                         errors.append('Невозможно загрузить файл. Такой baseURI ({}) уже существует в {}'.format(_baseURI, item['name']))
                                         return json.dumps(answer)
 
+                                if "prefix" in item:
+                                    if Ontology().getOntoPrefix(item['fullname']) == _prefix:
+	                                    # удаляем только что загруженный файл!
+	                                    os.remove(FN)
+
+	                                    answer['Msg'] = 'Невозможно загрузить файл. Такой префикс ({}) уже существует в {}'.format(item["prefix"], item['name'])
+	                                    errors.append('Невозможно загрузить файл. Такой префикс ({}) уже существует в {}'.format(item["prefix"], item['name']))
+	                                    return json.dumps(answer)
 
 
 
                         except Exception as ex:
-                            print(ex)
                             answer['Msg'] = 'Cann`t upload file: {}. Error: {}'.format(file.filename, ex)
                             errors.append('Cann`t upload file: {}. Error: {}'.format(file.filename, ex))
                         if flg:
                             cnt += 1
                             data.append(secure_name)
-                            # TODO: Включаем функциональность по добавлению медиа данных для файла если есть
                             
 
-                # print('count saved', cnt)
                 if 0 < cnt:
                     answer['State'] = 200
                     answer['Msg'] = ''
@@ -640,14 +640,10 @@ def upload_files():
 
 
 @mod.route('/removeFile/ontos', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def remove_file():
     """ сохраняем изменения связанные с файлом """
-
-
-
     dir_name = "ontos"
-
 
 
     answer = {'Msg': '', 'Data': None, 'State': 404}
@@ -660,14 +656,11 @@ def remove_file():
         meta = FilesManagment()
         if meta.set_current_dir(dir_name):
             path = meta.get_current_dir()
-            # print('file to remove', name)
             if '' != name:
                 flg = False
 
                 flg = meta.remove_file(name, dir_name)
-                # print('file is removed', str(flg))
                 if flg:
-                    # print('Operation dir', dir_name)
                     file_info = meta.get_item_description(dir_name, name)
                     if 'result' in file_info and '' != file_info['result']:
                         if USE_NAMED_GRAPHS:
@@ -709,12 +702,11 @@ def remove_file():
 
 
 @mod.route('/removeSelection/ontos', methods=['POST'])
-# @login_required
+@login_required
 def remove_selection():
     """ сохраняем изменения связанные с файлом """
-
-
     dir_name = "ontos"
+
 
     answer = {'Msg': '', 'Data': None, 'State': 404}
     answer['State'] = 500
@@ -731,15 +723,12 @@ def remove_selection():
             path = meta.get_current_dir()
             rp = ''
             for fi in items:
-                """"""
                 rp = os.path.join(path, fi)
                 if not os.path.exists(rp):
                     continue
                 if os.path.isdir(rp):
-                    """"""
                     rmtree(rp, ignore_errors=True)
                 else:
-                    """"""
                     flg = False
                     os.unlink(rp)
 
@@ -755,7 +744,6 @@ def remove_selection():
                 deleted.append(fi)
                 """ end loop of deleted items """
             if 0 < len(deleted):
-                """"""
                 answer['State'] = 200
                 answer['Msg'] = ''
                 answer['Data'] = {'deleted': deleted, 'all': items}
@@ -771,10 +759,9 @@ def remove_selection():
 
 
 @mod.route('/downloadFile/ontos', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def download_file():
     """ отдаем файл на скачивание """
-
     dir_name = "ontos"
 
 
@@ -796,7 +783,6 @@ def download_file():
             _mime = CodeHelper.get_mime4file_ext(file_ext)
             if '' != _mime:
                 mime = _mime
-            # print('Catch download file: ' + download_file)
             return send_file(download_file, mimetype=mime,
                              as_attachment=True, attachment_filename=download_file_name)
     return render_template("errors/404.html", message=errorMsg)
@@ -809,10 +795,11 @@ def download_file():
 
 
 @mod.route('/accept_newfile/ontos', methods=['POST'])
-# @login_required
+@login_required
 def accept_new_file():
-
+    """ Метод принимает новый файл в случае совпадения имен"""
     dir_name = "ontos"
+
 
     answer = {'Msg': '', 'Data': None, 'State': 404}
     recive_data = reqform_2_dict(request.form)
@@ -829,6 +816,7 @@ def accept_new_file():
                 continue
             existed_names.append(item[0])
             """ copy from 2 to 1 """
+            
             # сперва удаляем 1
             os.unlink(item[1])
             # затем копируем 2 в 1
@@ -849,10 +837,11 @@ def accept_new_file():
 
 
 @mod.route('/reject_newfile/ontos', methods=['POST'])
-# @login_required
+@login_required
 def reject_new_file():
-
+    """ Метод игнорирует новый файл в случае совпадения имен"""
     dir_name = "ontos"
+
 
     answer = {'Msg': '', 'Data': None, 'State': 404}
     recive_data = reqform_2_dict(request.form)
@@ -879,19 +868,6 @@ def reject_new_file():
 
 
 
-
-
-def getBaseUri(file_name):
-    # Проверка base_uri
-    _baseURI = ""
-    mfile = open(file_name, "r", encoding="utf-8")
-    for line in mfile.readlines():
-        baseURI = re.findall(r'^\s*#\s*baseURI:\s*(.*)\s*$', line.strip())
-        if baseURI:
-            _baseURI = baseURI[0]
-
-    mfile.close()
-    return _baseURI
 
 
 
@@ -958,9 +934,9 @@ def reqform_2_dict(reqform):
 
 def map_file_descr_property(col):
     prop = ''
-    cols = {'toolbar': '', 'id': 'name', 'name': 'name', 'Name': 'name',
+    cols = {'toolbar': '', 'id': 'name', 'name': 'name', 'Name': 'name', 'prefix' : 'name',
             'loaddate': 'mdate', 'usemap': 'map', 'loadresult': 'result'}
-    cols = {'id': 'name', 'toolbar': 'name', 'Type': 'name', 'name': 'name', 'Name': 'name',
+    cols = {'id': 'name', 'toolbar': 'name', 'Type': 'name', 'name': 'name', 'Name': 'name', 'prefix' : 'prefix',
                    'loaddate': 'mdate', 'usemap': 'map', 'loadresult': 'result'}
     # теперь добавим колонки для медиа
     # backups

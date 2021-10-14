@@ -109,55 +109,6 @@ def local_db_reconfigure():
     _flg = _portal_configurator.configure_db(app_api.get_app_root_dir())
     steps = _portal_configurator.get_db_configure_steps()
 
-    # # проверка что DB неинициализирована - flask db init
-    # cmd = 'flask db init'
-    # app_root_dir = app_api.get_app_root_dir()
-    # migrate_dir = os.path.join(os.path.dirname(app_root_dir), 'migrations')
-    # versions_dir = os.path.join(migrate_dir, 'versions')
-    # errors = None
-    # output = None
-    # steps = []
-    #
-    # print('os.getcwd()', os.getcwd())
-    # is_init = False
-    # if os.path.exists(migrate_dir) and os.path.isdir(migrate_dir)\
-    #     and os.path.exists(versions_dir) and os.path.isdir(versions_dir):
-    #     """ будем считать что директория инициализирована"""
-    #     is_init = True
-    # else:
-    #     """ запускаем инициализацию """
-    #     # print('sys.path', sys.path)
-    #     cmd_args = cmd.split(' ')
-    #     run_cmd = subprocess.Popen(cmd_args)
-    #     output, errors = run_cmd.communicate()
-    #     is_init = True
-    #     if errors:
-    #         is_init = False
-    #         return errors
-    # if is_init:
-    #     scripts = [it.name for it in os.scandir(versions_dir)]
-    #     # создаем комментарий о дате реконфигурации
-    #     cmt = 'DB autoreconfiguration ' + AdminUtils.get_dbg_now()
-    #     # создаем скрипт реконфигурации
-    #     cmd = 'flask db migrate -m'
-    #     cmd_args = cmd.split(' ')
-    #     cmd_args.append('"' + cmt + '"')
-    #     run_cmd = subprocess.Popen(cmd_args)
-    #     output, errors = run_cmd.communicate()
-    #     scripts1 = [it.name for it in os.scandir(versions_dir)]
-    #     if errors:
-    #         return errors
-    #     # выполняем реконфигурацию
-    #     cmd = 'flask db upgrade'
-    #     if 0 < len(scripts1) - len(scripts):
-    #         cmd_args = cmd.split(' ')
-    #         run_cmd = subprocess.Popen(cmd_args)
-    #         output, errors = run_cmd.communicate()
-    #         if errors:
-    #             return errors
-    #         steps.insert(0, 'DB upgrade done!')
-    #     steps.insert(0, 'Create migration scripts!')
-    #     steps.insert(0, 'DB initialization done!')
     steps_str = ''
     if steps:
         steps_str = '<br />'.join(steps)
