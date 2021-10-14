@@ -294,7 +294,7 @@ def navigation_remove_item():
         answer['state'] = 300
         answer['msg'] = 'Пункт навигации с кодом {} отсутствует!' . format(item)
         items_lst = admin_navi.get_sections_navi(block)
-        has_childs = not admin_navi.is_empty(item)
+        has_childs = admin_navi.is_empty(item)
         if not has_childs:
             if items_lst:
                 _t = []
