@@ -40,11 +40,8 @@
                         </ul>
                         {% endif %}
                         {# вставка формы поиска в шапке портала - если есть модуль поиска #}
-                        {% if check_module('search') %}
-                        <form name="MainPortalSearch" method="get" class="navbar-form navbar-left" action="/search/?lng=ru">
-                            <input type="hidden" name="lng" value="ru" />
-                            <input type="text" name="arg" value="" class="form-control" placeholder="Поиск...">
-                        </form>
+                        {% if check_module('search_mgt') %}
+                            {% include "search_form.html" %}
                         {% endif %}
                         {% include "user_navi.html" ignore missing %}
                     {% endif %}

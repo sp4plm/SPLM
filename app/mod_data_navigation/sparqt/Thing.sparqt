@@ -1,0 +1,56 @@
+{
+        "one_instances":{
+        "_CMT_":"Возвращает один экземпляр класса для определения префикса данных",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"select ?inst ?inst_lbl {
+                ?inst a #{URI} .
+                ?inst rdfs:label ?inst_lbl .
+                } limit 1"
+    },
+    "list_of_instances":{
+        "_CMT_":"Возвращает список экземпляров класса",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"select ?inst ?inst_lbl {
+                ?inst a #{URI} .
+                ?inst rdfs:label ?inst_lbl .
+                } limit 1000"
+    },
+    "instance":{
+        "_CMT_":"Возвращает список экземпляров класса",
+        "#VARS":{"PREF":{"mark":"#{PREF}","default":""}, "URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"prefix onto: <#{PREF}>
+                select distinct ?inst_lbl ?att_cls_lbl ?att_val where {
+                ?uri rdfs:label ?inst_lbl . {
+                select ?uri ?att_cls_lbl ?att_val {
+                BIND (<#{URI}> as ?uri )
+                Optional {
+                  ?uri onto:hasAttribute ?att .
+                  ?att a ?att_cls .
+                  ?att_cls rdfs:label ?att_cls_lbl .
+                  ?att onto:hasAttributeValue/rdfs:label ?att_val . }}
+                } UNION {
+                select ?uri ?att_cls_lbl ?att_val {
+                BIND (<#{URI}> as ?uri )
+                Optional {
+                  ?uri onto:hasAttribute ?att .
+                  ?att a ?att_cls .
+                  ?att_cls rdfs:label ?att_cls_lbl .
+                  ?att onto:hasAttributeValue/onto:value ?att_val . }}
+                }}"
+    },
+    "list_of_subclasses":{
+        "_CMT_":"Возвращает список экземпляров класса",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"select ?cls ?cls_lbl {
+                ?cls rdfs:subClassOf #{URI} .
+                ?cls rdfs:label ?cls_lbl .
+                } order by ?cls"
+    },
+    "parent":{
+        "_CMT_":"Возвращает список экземпляров класса",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"select ?cls {
+                 #{URI} rdfs:subClassOf ?cls.
+                } limit 1"
+    }
+}

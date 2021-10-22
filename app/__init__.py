@@ -46,6 +46,10 @@ app.add_template_global(app_api.get_portal_labels, name='portal_labels')
 # app.add_template_global(PortalSettings.get_jquery_info, name='portal_jquery')
 # app.add_template_global(PortalSettings.get_js_libs_info, name='portal_js_libs')
 
+# обработка запроса корня портала
+from app.views import mod as app_views
+app.register_blueprint(app_views)
+
 # регистрируем модули приложения
 from app.admin_mgt.models.links import Link
 from app.admin_mgt.models.embedded_user import EmbeddedUser
@@ -76,6 +80,9 @@ app.register_blueprint(ontoModule)
 
 from app.publish_mgt.views import mod as publisherModule
 app.register_blueprint(publisherModule)
+
+from app.search_mgt.views import mod as searchModule
+app.register_blueprint(searchModule)
 
 # динамическая загрузка сторонних модулей
 mod_manager.load_modules_http_handlers()

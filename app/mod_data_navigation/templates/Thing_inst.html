@@ -1,0 +1,55 @@
+{% extends "base_bootstrap.html" %}
+
+{% block title %}
+    {% if title %}SPLM: {{ title }}{% else %}Навигация по данным{% endif %}
+{% endblock %}
+
+
+{% block styles %}
+    {{super()}}
+	<style type="text/css">
+	    .scroll-ul-list {
+			max-height: 450px;
+			overflow-y: scroll !important;
+		}
+		.scroll-well {
+			max-width: 500px;
+			overflow-x: scroll !important;
+			padding: 5px;
+		}
+		.xicon-pos {
+			margin-top: 10px;
+		}
+  	</style>
+
+
+    <link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid-bootstrap.css')}}" />
+
+
+    <link rel="stylesheet" href="{{url_for('static', filename='css/portal.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static', filename='css/portal.datamanager.css')}}" />
+    <link rel="stylesheet" href="{{url_for('static', filename='css/portal.jqgrid.css')}}" />
+
+    <link rel="stylesheet" href="{{url_for('static', filename='css/jqtree.css')}}" />
+
+{% endblock %}
+
+{% block page_sidenav %}
+	{% if js and "#tree3" in js %}
+		<div class="scroll-well">
+			<div id="tree3"></div>
+		</div>
+	{% else %}
+		{{super()}}
+	{% endif %}
+{% endblock %}
+
+
+{% block page_main_content %}
+	<h2 class="content-header">{{class_name | safe }}</h2>
+	<br>
+		<h3>Свойства экземпляра:</h3>
+		{{ instance | safe }}
+	<br>
+{% endblock %}

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-
-import requests
 import json
 import multiline
 import os
@@ -38,10 +36,10 @@ class Query:
         self.http_headers = ""
         self.namespaces = ""
 
-        self.url, self.http_headers = Utilites.get_query_data()
+        self.storage_driver = Utilites.get_storage_driver()
 
-        self.namespaces = self.getNamespaces()
-        self.PREFIX = ''.join(["PREFIX " + key + ": <" + self.namespaces[key] + "> " for key in self.namespaces])
+        # self.namespaces = self.getNamespaces()
+        # self.PREFIX = ''.join(["PREFIX " + key + ": <" + self.namespaces[key] + "> " for key in self.namespaces])
 
         self.logger = self.initLoggerComponent().getAppLogger()
 
@@ -59,13 +57,13 @@ class Query:
 
 
 
-    def getPortalData(self):
-        with open(self.portal_data_json_file, "r", encoding="utf-8") as f:
-            return json.load(f)
+    # def getPortalData(self):
+    #     with open(self.portal_data_json_file, "r", encoding="utf-8") as f:
+    #         return json.load(f)
 
 
-    def getNamespaces(self):
-        return self.getPortalData()['Namespaces']
+    # def getNamespaces(self):
+    #     return self.getPortalData()['Namespaces']
 
 
 
@@ -99,16 +97,11 @@ class Query:
         :param _query: string
         """
         try:
-            response = requests.post(self.url, data={'query': _query}, headers=self.http_headers)
-            if response.status_code != 200:
-                self.logger.error("Request error: " + response.text)
-                return []
+            response = self.storage_driver._exec_query(_query)
+            return json.loads(response)
         except Exception as e:
             self.logger.error("Request error: " + str(e))
             return []
-
-        with response:
-            return json.loads(response.text)
 
 
     def compileQueryResult(self, answer):
@@ -118,7 +111,8 @@ class Query:
             for binding_set in answer['results']['bindings']:
                 FINAL_RESULT.append(
                     {var_name: binding_set[var_name]['value'] if var_name in binding_set else "" for var_name in
-                     answer['head']['vars']})
+                     answer['head']['vars']}
+                 )
 
             return FINAL_RESULT
 
@@ -138,13 +132,12 @@ class Query:
         if not _query:
             return []
 
-        _query = self.PREFIX + " " + _query
         try:
             answer = self.runQuery(_query)
 
             FINAL_RESULT = self.compileQueryResult(answer)
             
-        except:
+        except Exception as e:
             return []
 
         return FINAL_RESULT

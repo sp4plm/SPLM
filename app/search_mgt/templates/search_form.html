@@ -1,0 +1,6 @@
+{% block search_form %}
+<form name="MainPortalSearch" method="get" class="navbar-form navbar-left" action="{{url_for('search_mgt.search')}}">
+	<input type="hidden" name="lng" value="ru" />
+	<input type="text" name="arg" value="" class="form-control" placeholder="Поиск...">
+</form>
+{% endblock %}

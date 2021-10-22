@@ -41,7 +41,7 @@ from app.onto_mgt.ontology import Ontology
 
 
 
-from app.app_api import tsc_query, compile_query, compile_query_result
+from app.app_api import compile_query, compile_query_result
 
 from urllib.parse import quote, unquote
 
@@ -489,7 +489,7 @@ def get_files():
 
             row['id'] = item['name']
             row['Name'] = item['name']
-            row['prefix'] = item['prefix']
+            row['prefix'] = item['prefix'] if 'prefix' in item else ""
             row['loaddate'] = item['mdate'] if 'mdate' in item else ""
             row['Type'] = 'f'
             rows.append(row)

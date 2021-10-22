@@ -1,0 +1,44 @@
+<h2 style="text-align:center;">{{ name }}</h2>
+
+<style>
+	table {
+		width: 100%;
+		border:0px;
+		border-collapse: collapse;
+		}
+	th {
+		font-size:20px;
+		border-top: 2px solid #555;
+		background-color:#efefef;
+		text-align:left;
+		padding:10px;
+		}
+	td:first-child {
+		width: 20%;
+		text-align:right;
+		font-weight:700;
+		}
+	td {
+		border-bottom:1px #cdcdcd solid;
+		padding:10px;
+		}
+</style>
+
+
+{% block page_main_content %}
+<table>
+	{% for key, val in data.items() %}
+	<tr>
+		<th colspan="2">Элемент: {{ key }}</th>
+	</tr>
+	{% for row in val %}
+	<tr>
+		<td>{{ row[0] }}</td>
+		<td>{{ row[1] }}</td>
+	</tr>
+	{% endfor %}
+	{% endfor %}
+</table>
+
+{% endblock %}
+

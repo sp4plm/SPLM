@@ -1,0 +1,27 @@
+# baseURI: http://splm.portal.web/osplm
+# prefix: osplm
+
+@prefix osplm: <http://splm.portal.web/osplm#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://splm.portal.web/osplm#search_mgt> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://splm.portal.web/osplm#Module> .
+
+<http://splm.portal.web/osplm#search_mgt> <http://purl.org/dc/elements/1.1/contributor> "Максим Ефимовский"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://www.w3.org/2000/01/rdf-schema#label> "Search Module"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/title> "Модуль поиска"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/subject> "Search management"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/description> "Модуль предоставляет функциональность для поиска по данным портала"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/date> "$Date: 2021-10-18 12:00:00 0300 (Mon, 18 Oct 2021) $"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/creator> "Максим Ефимовский"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/rights> "GNU"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/type> <http://purl.org/dc/dcmitype/Service> ;
+  <http://purl.org/dc/elements/1.1/format> "text/html, application"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#versionInfo> "$Id: 0.0.1 1 2021-10-18 12:00:00Z $"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#type> "webservice"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#web_prefix> "/search"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#httpEnambled> xsd:true .
+

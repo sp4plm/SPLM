@@ -235,7 +235,8 @@ class Manager:
             _urls = _inf0.subjects(predicate=OSPLM.shallBeShownInMenu, object=rdflib.namespace.XSD.true)
             open_urls = [url for url in _urls]
             if 0 == len(open_urls):
-                _urls = _inf0.subjects(predicate=OSPLM.shallBeShownInMenu, object=rdflib.namespace.XS.true)
+                XS = rdflib.Namespace(str(rdflib.namespace.XSD))
+                _urls = _inf0.subjects(predicate=OSPLM.shallBeShownInMenu, object=XS.true)
                 open_urls = [url for url in _urls]
             _urls = [_u for _u in open_urls if _u in mod_urls] # оставляем только URL указанного модуля
             opened = self._compile_mod_urls(_urls)
@@ -260,7 +261,8 @@ class Manager:
             _urls = _inf0.subjects(predicate=OSPLM.forAdminPurpose, object=rdflib.namespace.XSD.true)
             adm_urls = [url for url in _urls]
             if 0 == len(adm_urls):
-                _urls = _inf0.subjects(predicate=OSPLM.forAdminPurpose, object=rdflib.namespace.XS.true)
+                XS = rdflib.Namespace(str(rdflib.namespace.XSD))
+                _urls = _inf0.subjects(predicate=OSPLM.forAdminPurpose, object=XS.true)
                 adm_urls = [url for url in _urls]
             _urls = [_u for _u in adm_urls if _u in mod_urls] # оставляем только URL указанного модуля
             res = self._compile_mod_urls(_urls)

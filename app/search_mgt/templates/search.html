@@ -1,0 +1,87 @@
+{% extends "base_bootstrap.html" %}
+{% block page_sidenav %}{% endblock %}
+{% block page_main_content %}
+<div id="search-form-box">
+    <form name="MainPortalSearch" method="get" action="{{ url_for('search_mgt.search') }}" onsubmit="" >
+        <input type="text" name="arg" value="{{ str_request }}" style="padding:3px 4px;width:90%;margin:2px 6px;" />
+        <button>Поиск</button>
+        <p>
+            {% if search_in %}
+            <input type="checkbox" id="SearchIn" name="SearchIn" checked value="1" />
+            {% else %}
+            <input type="checkbox" id="SearchIn" name="SearchIn" value="0" />
+            {% endif %}
+            <label for="SearchIn">&nbsp;Искать в найденном</label>
+        </p>
+        {% if classFilter %}
+            <hr style="margin-top:5px;margin-bottom:8px;"/>
+            <p>
+            <span style="font-weight:bold;">Уточните запрос по предмету поиска:</span></br />
+            <ul>
+            {% for cls_key, clsInfo in classFilter.items() %}
+                <li style="list-style: none;clear:none;padding:4px;display:inline-block;">
+                {% set checked_p = "" %}
+                {% set cls_arg = "cls_" + cls_key %}
+                {% if cls_arg in request_args %}
+                    {% set checked_p = " checked" %}
+                {% endif %}
+                <input type="checkbox" id="cls_{{cls_key}}" name="cls_{{cls_key}}"{{checked_p}} value="{{clsInfo['name']}}" />
+                <label style="font-weight:normal;cursor:pointer;" for="cls_{{cls_key}}">&nbsp;{{clsInfo['name']}}</label>
+                </li>
+            {% endfor %}
+            </ul>
+            </p>
+        {% endif %}
+    </form>
+</div>
+{% if result_list %}
+    <hr />
+    {% set starts = offset+1 %}
+    <ol class="search-result" start="{{ starts }}">
+        {% for res_item in result_list %}
+        <li class="search-item"><p class="result-label">{{ res_item | safe }}</p></li>
+        {% endfor %}
+    </ol>
+    {% set pager_display = "" %}
+    {% if 2 > cnt_pages %}
+        {% set pager_display = "display:none;" %}
+    {% endif %}
+    <div class="pager" style="{{ pager_display }}">
+        <!--
+        start: {{start}}
+        stop: {{stop}}
+        cntPages: {{cntPages}}
+        PonP: {{PonP}}
+        pageOff: {{pageOff}}
+        -->
+        {% if cntPages>PonP %}
+            {% if curPage>PonP %}
+                <a class="pagenum" href="{{base_url}}&page=1">|&lt;</a>
+                {% if pageOff > 0 %}
+                <a class="pagenum" href="{{base_url}}&page={{pageOff}}">&lt;&lt;</a>
+                {% else %}
+                <a class="pagenum" href="{{base_url}}&page=1">&lt;&lt;</a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+        {% for kx in range(start, stop) %}
+            {% set link_cur = "" %}
+            {% if kx==curPage %}
+                {% set link_cur = "font-weight:bold;" %}
+            {% endif %}
+            <a style="{{link_cur}}" class="pagenum" href="{{base_url}}&page={{kx}}">{{kx}}</a>
+        {% endfor %}
+        {% if cntPages>PonP %}
+            {% if cntPages>PonP+pageOff %}
+                <a class="pagenum" href="{{base_url}}&page={{stop}}">&gt;&gt;</a>
+                <a class="pagenum" href="{{base_url}}&page={{cntPages}}">&gt;|</a>
+            {% endif %}
+        {% endif %}
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+    <script type="text/javascript" charset="UTF-8" name="portal_search" vers="latest" src="{{ url_for('search_mgt.static', filename='js/search.portal.js') }}"></script>
+{% endblock %}
