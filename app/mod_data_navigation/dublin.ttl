@@ -27,7 +27,7 @@
   <http://splm.portal.web/osplm#hasPathForSPARQLquery> "sparqt/"^^<http://www.w3.org/2001/XMLSchema#string> .
 
 <http://splm.portal.web/osplm#mod_data_navigation> osplm:hasURL <http://splm.portal.web/osplm/data#url_data_nav_1> .
-<http://splm.portal.web/osplm/data#url_data_nav_1> osplm:value "/datanav/Thing"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_data_nav_1> osplm:value "/datanav/Thing?prefix=owl"^^<http://www.w3.org/2001/XMLSchema#string> .
 <http://splm.portal.web/osplm/data#url_data_nav_1> rdfs:label "Навигация по данным"^^<http://www.w3.org/2001/XMLSchema#string> .
 <http://splm.portal.web/osplm/data#url_data_nav_1> osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> .
 <http://splm.portal.web/osplm/data#url_data_nav_1> osplm:hasHTMLtemplate "index.html"^^<http://www.w3.org/2001/XMLSchema#string> .

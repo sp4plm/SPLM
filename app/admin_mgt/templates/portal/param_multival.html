@@ -1,0 +1,13 @@
+{% set val_key=key %}
+{% set val_val=val %}
+<div class="multival-row">
+    <div class="multival-row-toolbar">
+        <button class="del-section-param">Удалить</button>
+    </div>
+    <div class="param-name">
+        <input class="value-editor" type="text" name="" value="{{ val_key }}" />
+    </div>
+    <div class="param-value">
+        <input class="value-editor" type="text" name="" value="{{ val_val }}" />
+    </div>
+</div>

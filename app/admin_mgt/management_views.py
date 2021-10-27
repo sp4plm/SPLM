@@ -10,6 +10,7 @@ from .admin_utils import os # import embeded pythons
 from .admin_utils import app_api, CodeHelper, mod_manager # import application globals
 from .admin_utils import AdminConf, AdminUtils # import current module libs
 from .admin_navigation import AdminNavigation
+from .configurator_utils import ConfiguratorUtils
 
 from .decorators import requires_auth
 
@@ -598,6 +599,18 @@ def section_view(code, sub_item):
                 if it['code'] == sub_item:
                     current_subitem = it
                     break
+    else:
+        # hook hook hook
+        if 'Configurator' == current_section['code']:
+            tmpl_vars['navi'] = []
+            conf_list = ConfiguratorUtils.get_configs_list()
+            for ci in conf_list:
+                tpl = AdminNavigation.get_link_tpl()
+                tpl['label'] = ci
+                tpl['href'] = url_for(ConfiguratorUtils.get_webeditor_endpoint(), config_name=ci)
+                tpl['roles'] = []
+                tpl['code'] = 'Config_' + ci
+                tmpl_vars['navi'].append(tpl)
     if current_subitem is not None:
         tmpl_vars['page_title'] += ':' + current_subitem['label']
     return render_template(AdminConf.get_root_tpl(), **tmpl_vars)

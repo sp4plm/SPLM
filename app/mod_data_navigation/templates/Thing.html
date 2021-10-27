@@ -4,7 +4,6 @@
     {% if title %}SPLM: {{ title }}{% else %}Навигация по данным{% endif %}
 {% endblock %}
 
-
 {% block styles %}
     {{super()}}
 	<style type="text/css">
@@ -22,10 +21,8 @@
 		}
   	</style>
 
-
     <link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid.css')}}" />
     <link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid-bootstrap.css')}}" />
-
 
     <link rel="stylesheet" href="{{url_for('static', filename='css/portal.css')}}" />
     <link rel="stylesheet" href="{{url_for('static', filename='css/portal.datamanager.css')}}" />
@@ -49,12 +46,9 @@
 {% block page_main_content %}
 	<h2 class="content-header">{{class_name}}</h2>
 	<br>
-		<h3>Родительский класс: {{ parent | safe }}</h3>
-
+		{% if parent %}<h3>Родительский класс: {{ parent | safe }}</h3>{% endif %}
 	<br>
-		<h3>Экземпляры:</h3>
-		{{ instances | safe }}
+		{% if instances %}<h3>Экземпляры:</h3>{{ instances | safe }}{% endif %}
 	<br>
-		<h3>Подклассы:</h3>
-		{{ subclasses | safe }}
+		{% if subclasses %}<h3>Подклассы:</h3>{{ subclasses | safe }}{% endif %}
 {% endblock %}

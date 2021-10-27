@@ -209,6 +209,45 @@ class AdminUtils(AdminConf):
         return data
 
     @staticmethod
+    def dict2ini(file_path, data: dict):
+        flg = False
+        if os.path.exists(file_path) and os.path.isfile(file_path):
+            _ini_text = AdminUtils._dict2ini_text(data)
+            _parser = configparser.ConfigParser(strict=False, allow_no_value=True)
+            # https://stackoverflow.com/questions/19359556/configparser-reads-capital-keys-and-make-them-lower-case
+            # _parser.optionxform = str
+            # _parser.read_dict(data)
+            with open(file_path, 'w', encoding='utf8') as fp:
+                # _parser.write(fp)
+                fp.write(_ini_text)
+                flg = True
+        return flg
+
+    @staticmethod
+    def _dict2ini_text(dt):
+        ini = ''
+        # первый уровень ключи секций
+        for sec, content in dt.items():
+            ini += '[' + sec + ']' + "\n"
+            if not isinstance(content, dict):
+                ini += "\n"
+                continue
+            if content:
+                for parK, parV in content.items():
+                    if isinstance(parV, dict):
+                        for mvk, mvd in parV.items():
+                            ini += parK + '[' + mvk + ']' + '=' + str(mvd) + "\n"
+                    elif isinstance(parV, list):
+                        _ind = 0
+                        for mvd in parV:
+                            ini += parK + '[' + str(_ind) + ']' + '=' + str(mvd) + "\n"
+                            _ind += 1
+                    else:
+                        ini += parK + '=' + str(parV) + "\n"
+            ini += "\n"
+        return ini
+
+    @staticmethod
     def _section_to_dict(section):
         d = {}
         for k in section:

@@ -36,6 +36,9 @@ class Document:
         '''
 
         pref = self.argm['prefix']
+        parent = self.parent
+        subclasses = ''
+        instances = ''
 
         # Если есть аргумент URI, то значит показываем страничку "Экземпляра класса"
         if 'uri' in self.argm.keys():
@@ -75,13 +78,20 @@ class Document:
 
             if self.parent == 'Thing':
                 pref = 'owl'
-            templ = render_template("/Document.html", title="TEST",
-                                    class_name=self.argm['class'],
-                                    parent='<a href="/datanav/{}?prefix={}">{}</a>'.format(self.parent,
-                                                                                                   pref,
-                                                                                                   self.parent),
-                                    subclasses=df.to_html(escape=False),
-                                    instances = df2.to_html(escape=False),
-                                    argm=self.argm.items())
+
+            if self.parent:
+                parent = '<a href="/datanav/{}?prefix={}">{}</a>'.format(self.parent,pref, self.parent)
+
+            if len(df) > 0:
+                subclasses = df.to_html(escape=False)
+
+            if len(df2) > 0:
+                instances = df2.to_html(escape=False)
+
+            templ = render_template("/Document.html", title="TEST", class_name=self.argm['class'],
+                                                                            parent=parent,
+                                                                            subclasses=subclasses,
+                                                                            instances = instances,
+                                                                            argm=self.argm.items())
 
         return templ

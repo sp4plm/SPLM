@@ -50,6 +50,7 @@ try:
     from .portal_views import mod as portal_mod
     from .installer_views import mod as installer_mod
     from .management_views import mod as management_mod
+    from .configurator_views import mod as configurator_mod
 except Exception as ex:
     print(AdminConf.MOD_NAME + '.ImportBlueprintsException: Try import in views:', ex)
 # импорт дочерних модулей {

@@ -54,11 +54,12 @@ app.register_blueprint(app_views)
 from app.admin_mgt.models.links import Link
 from app.admin_mgt.models.embedded_user import EmbeddedUser
 
-from app.admin_mgt.views import mod as adminModule, portal_mod, installer_mod, management_mod
+from app.admin_mgt.views import mod as adminModule, portal_mod, installer_mod, management_mod, configurator_mod
 app.register_blueprint(adminModule)
 app.register_blueprint(portal_mod)
 app.register_blueprint(installer_mod)
 app.register_blueprint(management_mod)
+app.register_blueprint(configurator_mod)
 
 from app.files_mgt.views import mod as files_mgt_web
 app.register_blueprint(files_mgt_web)

@@ -43,12 +43,14 @@ class Thing:
         '''
 
         pref = self.argm['prefix']
+        parent = self.parent
+        subclasses = ''
+        instances = ''
 
         # Если есть аргумент URI, то значит показываем страничку "Экземпляра класса"
         if 'uri' in self.argm.keys():
             query_inst = tsc_query('mod_data_navigation.Thing.instance',
                                    {'PREF': self.pref_unquote, 'URI': self.argm['uri']})
-            print(query_inst)
             df = pd.DataFrame(query_inst)
 
             if len(df) > 0:
@@ -86,16 +88,23 @@ class Thing:
                            df2.inst.str.replace(self.pref_4_data, quote(self.pref_4_data)) + '">' + df2.inst_lbl + '</a>'
                 df2.drop('inst_lbl', axis=1, inplace=True)
 
-
             if self.parent == 'Thing':
                 pref = 'owl'
-            templ = render_template("/Thing.html", title="TEST",
+
+            if self.parent:
+                parent = '<a href="/datanav/{}?prefix={}">{}</a>'.format(self.parent,pref, self.parent)
+
+            if len(df) > 0:
+                subclasses = df.to_html(escape=False)
+
+            if len(df2) > 0:
+                instances = df2.to_html(escape=False)
+
+            templ = render_template("/Thing.html", title="",
                                     class_name=self.argm['class'],
-                                    parent='<a href="/datanav/{}?prefix={}">{}</a>'.format(self.parent,
-                                                                                                   pref,
-                                                                                                   self.parent),
-                                    subclasses=df.to_html(escape=False),
-                                    instances = df2.to_html(escape=False),
+                                    parent=parent,
+                                    subclasses=subclasses,
+                                    instances = instances,
                                     argm=self.argm.items())
 
         return templ
