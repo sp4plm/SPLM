@@ -2,6 +2,7 @@
 
 from app.drivers.store_driver_agraph import StoreDriverAgraph
 from app.drivers.store_driver_fuseki import StoreDriverFuseki
+from app.drivers.store_driver_blazegraph import StoreDriverBlazegraph
 
 
 class StoreManager:
@@ -13,4 +14,6 @@ class StoreManager:
             return StoreDriverFuseki()
         if 'agraph' == name:
             return StoreDriverAgraph()
+        if 'blazegraph' == name:
+            return StoreDriverBlazegraph()
         raise Exception('Undefined store driver name -> "{}"!' . format(name))

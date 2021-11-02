@@ -58,7 +58,7 @@ class Manager:
             mod_uri = self._get_mod_uri(mod_name)
             mod_uri = mod_uri.lstrip('<').rstrip('>')
             OSPLM = self._resolve_graph_ns(_inf0, 'osplm')
-            _mod_http = _inf0.triples((rdflib.URIRef(mod_uri), OSPLM.httpEnabled, rdflib.namespace.XSD.true))
+            _mod_http = _inf0.triples((rdflib.URIRef(mod_uri), OSPLM.httpEnabled, rdflib.URIRef(str(rdflib.namespace.XSD) + 'true')))
             load_http_mod = None
             if 0 < len([_r for _r in _mod_http]):
                 try:
@@ -232,11 +232,11 @@ class Manager:
             OSPLM = self._resolve_graph_ns(_inf0, 'osplm')
             _mod_urls = _inf0.objects(subject=rdflib.URIRef(mod_uri), predicate=OSPLM.hasURL)
             mod_urls = [url for url in _mod_urls]
-            _urls = _inf0.subjects(predicate=OSPLM.shallBeShownInMenu, object=rdflib.namespace.XSD.true)
+            _urls = _inf0.subjects(predicate=OSPLM.shallBeShownInMenu, object=rdflib.URIRef(str(rdflib.namespace.XSD) + 'true'))
             open_urls = [url for url in _urls]
             if 0 == len(open_urls):
                 XS = rdflib.Namespace(str(rdflib.namespace.XSD))
-                _urls = _inf0.subjects(predicate=OSPLM.shallBeShownInMenu, object=XS.true)
+                _urls = _inf0.subjects(predicate=OSPLM.shallBeShownInMenu, object=rdflib.URIRef(str(XS) + 'true'))
                 open_urls = [url for url in _urls]
             _urls = [_u for _u in open_urls if _u in mod_urls] # оставляем только URL указанного модуля
             opened = self._compile_mod_urls(_urls)
@@ -258,11 +258,11 @@ class Manager:
             OSPLM = self._resolve_graph_ns(_inf0, 'osplm')
             _mod_urls = _inf0.objects(subject=rdflib.URIRef(mod_uri), predicate=OSPLM.hasURL)
             mod_urls = [url for url in _mod_urls]
-            _urls = _inf0.subjects(predicate=OSPLM.forAdminPurpose, object=rdflib.namespace.XSD.true)
+            _urls = _inf0.subjects(predicate=OSPLM.forAdminPurpose, object=rdflib.URIRef(str(rdflib.namespace.XSD) + 'true'))
             adm_urls = [url for url in _urls]
             if 0 == len(adm_urls):
                 XS = rdflib.Namespace(str(rdflib.namespace.XSD))
-                _urls = _inf0.subjects(predicate=OSPLM.forAdminPurpose, object=XS.true)
+                _urls = _inf0.subjects(predicate=OSPLM.forAdminPurpose, object=rdflib.URIRef(str(XS) + 'true'))
                 adm_urls = [url for url in _urls]
             _urls = [_u for _u in adm_urls if _u in mod_urls] # оставляем только URL указанного модуля
             res = self._compile_mod_urls(_urls)

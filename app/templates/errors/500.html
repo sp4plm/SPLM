@@ -1,1 +1,12 @@
-The administrator has been notified. Sorry for the inconvenience!
+{% extends app_root_tpl() %}
+{% block bread_crumbs %}{% endblock %}
+{% block page_sidenav %}<b>500</b>{% endblock %}
+{% set page_title="Произошла непредвиденная ошибка" %}
+{% block page_main_content %}
+    {% if not message %}
+        <p>Администратор портала был уведомлен. Приносим извинения за доставленные неудобства!</p>
+    {% else %}
+        {{messsage}}
+    {% endif %}
+    <p><a href="/">На главную</a></p>
+{% endblock %}

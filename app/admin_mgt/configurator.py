@@ -87,7 +87,7 @@ class Configurator:
         if os.path.exists(migrate_dir) and os.path.isdir(migrate_dir):
             from shutil import rmtree
             rmtree(migrate_dir, ignore_errors=True)
-            flg = os.path.exists(migrate_dir)
+            flg = not os.path.exists(migrate_dir)
         return flg
 
     def create_inst_marker(self):
@@ -101,7 +101,7 @@ class Configurator:
         _marker = self.get_inst_marker()
         if os.path.exists(_marker) and os.path.isfile(_marker):
             os.remove(_marker)
-        return os.path.exists(_marker)
+        return not os.path.exists(_marker)
 
     def check_inst_marker(self):
         _marker = self.get_inst_marker()

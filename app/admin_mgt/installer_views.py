@@ -76,7 +76,7 @@ def run_uninstall():
         db_path = db_path.replace('sqlite:///', '')
         if os.path.exists(db_path):
             os.unlink(db_path)
-            flg_db = os.path.exists(db_path)
+            flg_db = not os.path.exists(db_path)
         if flg_db and flg_mark and flg_db_cfg:
             html = 'Деинсталляция успешно произведена!'
     return html
