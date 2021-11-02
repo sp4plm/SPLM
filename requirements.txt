@@ -41,3 +41,4 @@ Werkzeug==2.0.1
 WTForms==2.3.3
 WTForms-Ext==0.5
 zipp==3.5.0
+bs4==0.0.1
