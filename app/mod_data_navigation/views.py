@@ -33,6 +33,12 @@ def getParent(cur_class, argms, list_of_templates):
 
     return new_class
 
+@mod.route(url_prefix)
+@_auth_decorator
+def startPage():
+
+    return render_template("/index.html", heading='Hello', message='This is start page')
+
 @mod.route(url_prefix + '/<class_object>')
 @_auth_decorator
 def uri_class(class_object):

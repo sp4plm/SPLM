@@ -65,7 +65,8 @@ class Pizza:
             df = pd.DataFrame(query_subclass)
             if len(df) > 0:
                 df.cls = '<a href="/datanav/' + df.cls.str.replace(self.pref_unquote,'') + \
-                         '?prefix=' + self.argm['prefix'] + '">' + df.cls.str.replace(self.pref_unquote,'') + '</a>'
+                         '?prefix=' + self.argm['prefix'] + '">' + df.cls_lbl + '</a>'
+                df.drop('cls_lbl', axis=1, inplace=True)
 
             query_list_inst = tsc_query('mod_data_navigation.Pizza.list_of_instances',
                                         {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
@@ -84,15 +85,14 @@ class Pizza:
                 parent = '<a href="/datanav/{}?prefix={}">{}</a>'.format(self.parent,pref, self.parent)
 
             if len(df) > 0:
-                subclasses = df.to_html(escape=False)
+                subclasses = df.to_html(escape=False, index=False, header=False)
 
             if len(df2) > 0:
-                instances = df2.to_html(escape=False)
+                instances = df2.to_html(escape=False, index=False, header=False)
 
             templ = render_template("/Pizza.html", title="TEST", class_name=self.argm['class'],
                                                                             parent=parent,
                                                                             subclasses=subclasses,
-                                                                            instances = instances,
-                                                                            argm=self.argm.items())
+                                                                            instances = instances)
 
         return templ

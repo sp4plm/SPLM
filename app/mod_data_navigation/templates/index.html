@@ -47,12 +47,8 @@
 
 
 {% block page_main_content %}
-	<h2 class="content-header">{{class_name | safe }}</h2>
-	<h3>pizza</h3>
-	<br>
-		{% if parent %}<h3>Родительский класс: {{ parent | safe }}</h3>{% endif %}
-	<br>
-		{% if instances %}<h3>Доступные варианты пиццы для заказа:</h3>{{ instances | safe }}{% endif %}
-	<br>
-		{% if subclasses %}<h3>Виды пиццы:</h3>{{ subclasses | safe }}{% endif %}
+	<h2 class="content-header">{{ heading }}</h2>
+	<h3> {{ message }}</h3>
+	<h3><a href="datanav/Thing?prefix=owl">Thing</a></h3>
+	<h3><a href="datanav/Pizza?prefix=pizza">Pizza</a></h3>
 {% endblock %}

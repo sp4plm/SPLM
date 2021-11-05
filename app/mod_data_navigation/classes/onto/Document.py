@@ -65,7 +65,7 @@ class Document:
             df = pd.DataFrame(query_subclass)
             if len(df) > 0:
                 df.cls = '<a href="/datanav/' + df.cls.str.replace(self.pref_unquote,'') + \
-                         '?prefix=' + self.argm['prefix'] + '">' + df.cls.str.replace(self.pref_unquote,'') + '</a>'
+                         '?prefix=' + self.argm['prefix'] + '">' + df.cls_lbl + '</a>'
 
             query_list_inst = tsc_query('mod_data_navigation.Document.list_of_instances',
                                         {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
