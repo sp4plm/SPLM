@@ -1,5 +1,5 @@
 {
-        "one_instances":{
+    "one_instances":{
         "_CMT_":"Возвращает один экземпляр класса для определения префикса данных",
         "#VARS":{"URI":{"mark":"#{URI}","default":""}},
         "#TXT":"select ?inst ?inst_lbl {
@@ -13,8 +13,8 @@
         "#TXT":"select ?inst ?inst_lbl {
                 ?inst a #{URI} .
                 Optional {
-                        ?inst rdfs:label ?inst_lbl . }
-                } limit 1000"
+                            ?inst rdfs:label ?inst_lbl . }
+                } limit 200"
     },
     "instance":{
         "_CMT_":"Возвращает список экземпляров класса",

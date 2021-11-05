@@ -54,7 +54,7 @@ class Document:
 
             else:
                 templ = render_template("/Document_inst.html", title="TEST",
-                                class_name=self.argm['class'],
+                                class_name='<a href="{}?prefix={}">{}</a>'.format(self.argm['class'], self.argm['prefix'], self.argm['class']),
                                 instances="No data about this instance.",
                                 argm=self.argm.items())
 
