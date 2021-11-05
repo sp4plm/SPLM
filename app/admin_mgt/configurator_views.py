@@ -142,13 +142,13 @@ def _count_symbols(source, target):
 
 def _get_configurator_navi():
     lst = []
-    conf_list = ConfiguratorUtils.get_configs_list()
+    conf_list = ConfiguratorUtils.get_configurator_navi()
     for ci in conf_list:
         tpl = AdminNavigation.get_link_tpl()
-        tpl['label'] = ci
-        tpl['href'] = _cook_conf_link(ci)
-        tpl['roles'] = []
-        tpl['code'] = 'Config_' + ci
+        tpl['label'] = ci['label']
+        tpl['href'] = _cook_conf_link(ci['href'])
+        tpl['roles'] = ci['roles']
+        tpl['code'] = 'Config_' + ci['code']
         lst.append(tpl)
     return lst
 

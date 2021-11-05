@@ -476,8 +476,8 @@ class FilesManagment():
         return sort_result
 
     def _init_roles(self):
-        self._admin_role = self._app_config.get('main.DataStorage.adminRole')
-        self._oper_role = self._app_config.get('main.DataStorage.operRole')
+        self._admin_role = self._app_config.get('data_storages.Manage.adminRole')
+        self._oper_role = self._app_config.get('data_storages.Manage.operRole')
 
     @staticmethod
     def __get_dir_label(dir_name):

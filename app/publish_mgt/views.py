@@ -53,8 +53,8 @@ def index(sidenav_view='files', view_item='data', tool_action=None):
     # надо получить текущего пользователя и получить его роли
     view = FilesManagmentView()
     if g.user:
-        data_admin_role = app_cfg.get('main.DataStorage.adminRole')
-        data_oper_role = app_cfg.get('main.DataStorage.operRole')
+        data_admin_role = app_cfg.get('data_storages.Manage.adminRole')
+        data_oper_role = app_cfg.get('data_storages.Manage.operRole')
         if g.user.has_role(data_oper_role):
             view.set_data_role(data_oper_role)
         if g.user.has_role(data_admin_role):
@@ -326,9 +326,9 @@ def make_backup():
     meta = FilesManagment()
     portal_cfg = app_api.get_app_config()
     if meta.set_current_dir('backups'):
-        endpoint = portal_cfg.get('main.DataStorage.endPoints.main')
+        endpoint = portal_cfg.get('data_storages.endPoints.main')
         data_backuper = DataBackuper()
-        data_backuper.use_named_graph = bool(portal_cfg.get('main.DataStorage.use_named_graphs'))
+        data_backuper.use_named_graph = bool(portal_cfg.get('data_storages.Main.use_named_graphs'))
         backup_file = os.path.join(meta.get_dir_realpath('backups'), data_backuper.generate_filename())
         flg_backup = data_backuper.create(backup_file)
         if flg_backup:
@@ -363,9 +363,9 @@ def rollback_backup(dir_name):
             portal_cfg = app_api.get_app_config()
             fileroll = request.form['bfile'] if 'bfile' in request.form else ''
             file = os.path.join(meta.get_dir_realpath('backups'), fileroll)
-            endpoint = portal_cfg.get('main.DataStorage.endPoints.main')
+            endpoint = portal_cfg.get('data_storages.endPoints.main')
             data_backuper = DataBackuper()
-            data_backuper.use_named_graph = bool(portal_cfg.get('main.DataStorage.use_named_graphs'))
+            data_backuper.use_named_graph = bool(portal_cfg.get('data_storages.Main.use_named_graphs'))
             # сперва сделаем резервную копию
             backup_file = os.path.join(meta.get_dir_realpath('backups'), data_backuper.generate_filename())
             flg_backup = data_backuper.create(backup_file)

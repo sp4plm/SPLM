@@ -42,6 +42,8 @@ class SomeConfig:
                     file_driver = self._get_file_driver(splited[1])
                     file_driver.set_file(catch_file)
                     last_steps = _parsed_key[_parsed_key.index(step)+1:]
+                    if not last_steps:
+                        break # когда оказывается последнее значение ключа - имя файла
                     val = file_driver.get(last_steps)
                     if val is not None:
                         self._catched_vals[key] = val

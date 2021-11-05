@@ -603,13 +603,13 @@ def section_view(code, sub_item):
         # hook hook hook
         if 'Configurator' == current_section['code']:
             tmpl_vars['navi'] = []
-            conf_list = ConfiguratorUtils.get_configs_list()
+            conf_list = ConfiguratorUtils.get_configurator_navi()
             for ci in conf_list:
                 tpl = AdminNavigation.get_link_tpl()
-                tpl['label'] = ci
-                tpl['href'] = url_for(ConfiguratorUtils.get_webeditor_endpoint(), config_name=ci)
-                tpl['roles'] = []
-                tpl['code'] = 'Config_' + ci
+                tpl['label'] = ci['label']
+                tpl['href'] = url_for(ConfiguratorUtils.get_webeditor_endpoint(), config_name=ci['href'])
+                tpl['roles'] = ci['roles']
+                tpl['code'] = ci['code']
                 tmpl_vars['navi'].append(tpl)
     if current_subitem is not None:
         tmpl_vars['page_title'] += ':' + current_subitem['label']

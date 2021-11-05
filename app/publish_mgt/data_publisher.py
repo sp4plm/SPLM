@@ -282,7 +282,7 @@ class DataPublisher(DataManager):
 
     def _get_timer_file(self):
         if '' == self._timer_file:
-            self._timer_file = os.path.join(self.DATA_PATH, 'last_publish')
+            self._timer_file = os.path.join(self.DATA_PATH, 'last_publish') # data_storages.Manage.publishTimeFile
         if not os.path.exists(self._timer_file):
             with open(self._timer_file, 'w') as file_p:
                 file_p.write('')

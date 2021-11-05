@@ -60,10 +60,10 @@ def users_page():
 @_auth_decorator
 def home():
     app_cfg = app_api.get_app_config()
-    debug_role = app_cfg.get('main.Info.debugRole')
+    debug_role = app_cfg.get('users.Roles.debugRole')
     cur_prj = app_cfg.get('main.Info.project')
     auth_type = app_cfg.get('main.Auth.type')
-    ext_adm_role = app_cfg.get('main.Info.extAdminRole')
+    ext_adm_role = app_cfg.get('users.Roles.extAdminRole')
     is_ext_admin = False
     use_debug_mode = False
     use_debug_role = False
@@ -380,7 +380,7 @@ def toggle_debug_mode(flag):
         """"""
         app_cfg = app_api.get_app_config()
         use_debug_role = False
-        debug_role = app_cfg.get('main.Info.debugRole')
+        debug_role = app_cfg.get('users.Roles.debugRole')
         if g.user:
             if g.user.has_role(debug_role):
                 """"""

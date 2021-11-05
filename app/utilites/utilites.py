@@ -26,8 +26,8 @@ class Utilites:
     @staticmethod
     def get_storage_driver():
         app_cfg = SomeConfig(AdminConf.CONFIGS_PATH)
-        _endpoint = app_cfg.get("main.DataStorage.endPoints.main")
-        _driver_name = app_cfg.get("main.DataStorage.drivers.main")
+        _endpoint = app_cfg.get("data_storages.EndPoints.main")
+        _driver_name = app_cfg.get("data_storages.Drivers.main")
         _driver = StoreManager.get_driver(_driver_name)
         _driver.set_endpoint(_endpoint)
         return _driver

@@ -32,7 +32,7 @@ from app.publish_mgt.data_publish_logger import DataPublishLogger
 USE_NAMED_GRAPHS = False
 app_cfg = app_api.get_app_config()
 try:
-    USE_NAMED_GRAPHS = bool(int(app_cfg.get('main.DataStorage.use_named_graphs')))
+    USE_NAMED_GRAPHS = bool(int(app_cfg.get('data_storages.Main.use_named_graphs')))
 except Exception as ex:
     print('data_publish_process.py: Error -> {}'.format(ex))
     process_protocol.write('Error on set constants USE_NAMED_GRAPHS: {}'.format(ex))
