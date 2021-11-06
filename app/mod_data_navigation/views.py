@@ -24,12 +24,16 @@ _auth_decorator = app_api.get_auth_decorator()
 
 def getParent(cur_class, argms, list_of_templates):
 
-    class_name = onto_mod_api.get_parent(argms['prefix'],cur_class)
+    if any(argms['prefix'] in sl for sl in onto_mod_api.get_prefixes()):
 
-    if class_name != '' and class_name not in list_of_templates:
-        new_class = getParent(class_name, argms, list_of_templates)
+        class_name = onto_mod_api.get_parent(argms['prefix'],cur_class)
+
+        if class_name != '' and class_name not in list_of_templates:
+            new_class = getParent(class_name, argms, list_of_templates)
+        else:
+            new_class = class_name
     else:
-        new_class = class_name
+        new_class = ''
 
     return new_class
 

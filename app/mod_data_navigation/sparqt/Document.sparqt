@@ -16,7 +16,7 @@
                 } limit 200"
     },
     "instance":{
-        "_CMT_":"Возвращает список экземпляров класса",
+        "_CMT_":"Возвращает экземпляр класса",
         "#VARS":{"PREF":{"mark":"#{PREF}","default":""}, "URI":{"mark":"#{URI}","default":""}},
         "#TXT":"prefix onto: <#{PREF}>
                 select distinct ?inst_lbl ?att_cls_lbl ?att_val where {

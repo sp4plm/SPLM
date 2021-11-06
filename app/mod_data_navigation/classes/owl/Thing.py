@@ -54,9 +54,10 @@ class Thing:
             df = pd.DataFrame(query_inst)
 
             if len(df) > 0:
+                df.columns = ['Наименование','Атрибут', 'Значение']
                 templ = render_template("/Thing_inst.html", title="TEST",
                                 class_name='<a href="{}?prefix={}">{}</a>'.format(self.argm['class'], self.argm['prefix'], self.argm['class']),
-                                instance=df.to_html(escape=False),
+                                instance=df.to_html(escape=False, index=False),
                                 argm=self.argm.items())
 
             else:
@@ -73,13 +74,17 @@ class Thing:
             else:
                 pref4req = self.pref_unquote
 
+            # -------------- SUBCLASS --------------
             query_subclass = tsc_query('mod_data_navigation.Thing.list_of_subclasses',
                                        {'URI': "<" + pref4req + self.argm['class'] + ">"})
             df = pd.DataFrame(query_subclass)
             if len(df) > 0:
                 df.cls = '<a href="/datanav/' + df.cls.str.replace(self.pref_unquote,'') + \
                          '?prefix=' + self.argm['prefix'] + '">' + df.cls_lbl + '</a>'
+                df.drop('cls_lbl', axis=1, inplace=True)
+                df.columns = ['Наименование']
 
+            # -------------- INST--------------
             query_list_inst = tsc_query('mod_data_navigation.Thing.list_of_instances',
                                         {'URI': "<" + pref4req + self.argm['class'] + ">"})
             df2 = pd.DataFrame(query_list_inst)
@@ -95,6 +100,7 @@ class Thing:
                            df2.inst.str.replace(self.pref_4_data, quote(self.pref_4_data)) + '">' + df2.inst_lbl + '</a>'
 
                 df2.drop('inst_lbl', axis=1, inplace=True)
+                df2.columns = ['Наименование']
 
             if self.parent == 'Thing':
                 pref = 'owl'
@@ -103,10 +109,10 @@ class Thing:
                 parent = '<a href="/datanav/{}?prefix={}">{}</a>'.format(self.parent,pref, self.parent)
 
             if len(df) > 0:
-                subclasses = df.to_html(escape=False)
+                subclasses = df.to_html(escape=False, index=False)
 
             if len(df2) > 0:
-                instances = df2.to_html(escape=False)
+                instances = df2.to_html(escape=False, index=False)
 
             templ = render_template("/Thing.html", title="",
                                     class_name=self.argm['class'],

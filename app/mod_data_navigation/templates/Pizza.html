@@ -20,18 +20,14 @@
 		.xicon-pos {
 			margin-top: 10px;
 		}
-  	</style>
+</style>
 
-
-    <link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid.css')}}" />
-    <link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid-bootstrap.css')}}" />
-
-
-    <link rel="stylesheet" href="{{url_for('static', filename='css/portal.css')}}" />
-    <link rel="stylesheet" href="{{url_for('static', filename='css/portal.datamanager.css')}}" />
-    <link rel="stylesheet" href="{{url_for('static', filename='css/portal.jqgrid.css')}}" />
-
-    <link rel="stylesheet" href="{{url_for('static', filename='css/jqtree.css')}}" />
+<link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid.css')}}" />
+<link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid-bootstrap.css')}}" />
+<link rel="stylesheet" href="{{url_for('static', filename='css/portal.css')}}" />
+<link rel="stylesheet" href="{{url_for('static', filename='css/portal.datamanager.css')}}" />
+<link rel="stylesheet" href="{{url_for('static', filename='css/portal.jqgrid.css')}}" />
+<link rel="stylesheet" href="{{url_for('static', filename='css/jqtree.css')}}" />
 
 {% endblock %}
 
@@ -47,12 +43,10 @@
 
 
 {% block page_main_content %}
-	<h2 class="content-header">{{class_name | safe }}</h2>
-	<h3>pizza</h3>
-	<br>
-		{% if parent %}<h3>Родительский класс: {{ parent | safe }}</h3>{% endif %}
+	<h2 class="content-header">Теукщая категория пиццы: {{class_name | safe }}</h2>
+		{% if parent %}<h4>Родительская категория пиццы: {{ parent | safe }}</h4>{% endif %}
 	<br>
 		{% if instances %}<h3>Доступные варианты пиццы для заказа:</h3>{{ instances | safe }}{% endif %}
 	<br>
-		{% if subclasses %}<h3>Виды пиццы:</h3>{{ subclasses | safe }}{% endif %}
+		{% if subclasses %}<h3>Дополнительные под-категорий:</h3>{{ subclasses | safe }}{% endif %}
 {% endblock %}

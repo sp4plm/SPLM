@@ -17,7 +17,7 @@
                 } limit 200"
     },
     "instance":{
-        "_CMT_":"Возвращает список экземпляров класса",
+        "_CMT_":"Возвращает экземпляр класса",
         "#VARS":{"PREF":{"mark":"#{PREF}","default":""}, "URI":{"mark":"#{URI}","default":""}},
         "#TXT":"prefix onto: <#{PREF}>
                 select distinct ?inst_lbl ?att_cls_lbl ?att_val where {
@@ -25,27 +25,26 @@
                 select ?uri ?att_cls_lbl ?att_val {
                 BIND (<#{URI}> as ?uri )
                 Optional {
-                  ?uri onto:hasAttribute ?att .
-                  ?att a ?att_cls .
-                  ?att_cls rdfs:label ?att_cls_lbl .
-                  ?att onto:hasAttributeValue/rdfs:label ?att_val . }}
+                  ?uri rdfs:comment ?att_val .
+                  BIND ('Comment' as ?att_cls_lbl) . }}
                 } UNION {
-                select ?uri ?att_cls_lbl ?att_val {
+                 select ?uri ?att_cls_lbl ?att_val {
                 BIND (<#{URI}> as ?uri )
                 Optional {
-                  ?uri onto:hasAttribute ?att .
-                  ?att a ?att_cls .
-                  ?att_cls rdfs:label ?att_cls_lbl .
-                  ?att onto:hasAttributeValue/onto:value ?att_val . }}
+                  ?uri onto:hasPrice ?att_val .
+                  BIND ('Price' as ?att_cls_lbl) . }}
                 }}"
     },
     "list_of_subclasses":{
         "_CMT_":"Возвращает список экземпляров класса",
         "#VARS":{"URI":{"mark":"#{URI}","default":""}},
-        "#TXT":"select ?cls ?cls_lbl {
+        "#TXT":"select ?cls ?cls_lbl (count(distinct ?inst) as ?cnt)  {
                 ?cls rdfs:subClassOf #{URI} .
                 ?cls rdfs:label ?cls_lbl .
-                } order by ?cls"
+                Optional {?cls2 rdfs:subClassOf+ ?cls .
+                        ?inst a ?cls2 .}
+                Optional { ?inst a ?cls .}
+                } group by ?cls ?cls_lbl order by ?cls"
     },
     "parent":{
         "_CMT_":"Возвращает список экземпляров класса",
