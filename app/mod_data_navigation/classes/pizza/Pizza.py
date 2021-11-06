@@ -51,14 +51,12 @@ class Pizza:
             myHash = sha1(self.argm['uri'].encode('utf-8')).hexdigest()
             gravatar_url = "http://www.gravatar.com/avatar/{}?d=identicon&s=300".format(myHash)
             Avatar = '<img src=\"' + gravatar_url + '\" width=\"400\" height=\"400\" alt=\"pizza\">'
-            # ------------------------------------------------------------------
 
             d = {}
             for ind, row in df.iterrows():
                 if not row.inst_lbl in d:
                     d.update({row.inst_lbl:{} })
                 d[row.inst_lbl].update({row.att_cls_lbl : row.att_val})
-
             d[row.inst_lbl].update({'Avatar':Avatar})
 
             if len(df) > 0:

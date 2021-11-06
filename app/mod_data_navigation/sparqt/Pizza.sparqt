@@ -33,6 +33,19 @@
                 Optional {
                   ?uri onto:hasPrice ?att_val .
                   BIND ('Price' as ?att_cls_lbl) . }}
+                } UNION {
+                select ?uri ?att_cls_lbl ?att_val {
+                  BIND (<#{URI}> as ?uri )
+                  Optional {
+                    ?uri onto:hasSize ?att_val .
+                    BIND ('Size' as ?att_cls_lbl) . }}
+                  } UNION {
+                select ?uri ?att_cls_lbl ?att_val {
+                  BIND (<#{URI}> as ?uri )
+                  Optional {
+                    ?uri onto:hasIngredient ?topp .
+                    ?topp rdfs:label ?att_val .
+                    BIND ('Topping' as ?att_cls_lbl) . }}
                 }}"
     },
     "list_of_subclasses":{

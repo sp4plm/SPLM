@@ -18,11 +18,12 @@ class Thing:
         if self.argm['class'] == 'Thing':
             self.parent = ''
             q = tsc_query('mod_data_navigation.Thing.list_of_subclasses',{'URI':"owl:Thing"})
-            self.pref_unquote = q[0]['cls'].split("#")[0] + "#"
-            self.pref_4_data = ''
-            for p in prefixes:
-                if p[1] == self.pref_unquote:
-                    self.argm['prefix'] = p[0]
+            if q:
+                self.pref_unquote = q[0]['cls'].split("#")[0] + "#"
+                self.pref_4_data = ''
+                for p in prefixes:
+                    if p[1] == self.pref_unquote:
+                        self.argm['prefix'] = p[0]
         else:
             self.parent = onto_mod_api.get_parent(argm['prefix'], argm['class'])
             for p in prefixes:
