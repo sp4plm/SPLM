@@ -50,7 +50,7 @@
  	text-align: left;
  }
  .brand-bg .brand-box:hover {
- 	background: #FCFBDD;
+ 	background: #ecf1f7;
  }
  .brand-bg .brand-box span {
  	color: #31372b;
@@ -88,7 +88,7 @@
 
 
 {% block page_main_content %}
-	<h2 class="content-header">{{class_name | safe }}</h2>
+	<h2 class="content-header">Категория: {{class_name | safe }}</h2>
 	<br>
 <div class="brand-bg">
 	{% for key, val in instance.items() %}

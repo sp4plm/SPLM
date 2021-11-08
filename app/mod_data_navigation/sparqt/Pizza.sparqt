@@ -59,11 +59,11 @@
                 Optional { ?inst a ?cls .}
                 } group by ?cls ?cls_lbl order by ?cls"
     },
-    "parent":{
-        "_CMT_":"Возвращает список экземпляров класса",
+    "class_lbl":{
+        "_CMT_":"Возвращает лейбл класса",
         "#VARS":{"URI":{"mark":"#{URI}","default":""}},
-        "#TXT":"select ?cls {
-                 #{URI} rdfs:subClassOf ?cls.
+        "#TXT":"select ?cls_lbl {
+                 #{URI} rdfs:label ?cls_lbl.
                 } limit 1"
     }
 }

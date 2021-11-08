@@ -40,8 +40,10 @@ def getParent(cur_class, argms, list_of_templates):
 @mod.route(url_prefix)
 @_auth_decorator
 def startPage():
+    heading = 'Начальная страница'
+    message = 'Начните навигацию по порталу с любой из указанных ниже страниц'
 
-    return render_template("/index.html", heading='Hello', message='This is start page')
+    return render_template("/index.html", heading=heading, message=message)
 
 @mod.route(url_prefix + '/<class_object>')
 @_auth_decorator

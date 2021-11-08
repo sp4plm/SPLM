@@ -48,6 +48,24 @@ class Thing:
         subclasses = ''
         instances = ''
 
+        query_class_lbl = tsc_query('mod_data_navigation.Thing.class_lbl',
+                     {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
+        df_cls = pd.DataFrame(query_class_lbl)
+
+        if len(df_cls):
+            class_lbl = df_cls.cls_lbl[0]
+        else:
+            class_lbl = self.argm['class']
+
+        query_paretn_lbl = tsc_query('mod_data_navigation.Thing.class_lbl',
+                                    {'URI': "<" + self.pref_unquote + self.parent + ">"})
+        df_prnt = pd.DataFrame(query_paretn_lbl)
+
+        if len(df_prnt):
+            parent_lbl = df_prnt.cls_lbl[0]
+        else:
+            parent_lbl = self.parent
+
         # Если есть аргумент URI, то значит показываем страничку "Экземпляра класса"
         if 'uri' in self.argm.keys():
             query_inst = tsc_query('mod_data_navigation.Thing.instance',
@@ -57,13 +75,13 @@ class Thing:
             if len(df) > 0:
                 df.columns = ['Наименование','Атрибут', 'Значение']
                 templ = render_template("/Thing_inst.html", title="TEST",
-                                class_name='<a href="{}?prefix={}">{}</a>'.format(self.argm['class'], self.argm['prefix'], self.argm['class']),
+                                class_name='<a href="{}?prefix={}">{}</a>'.format(self.argm['class'], self.argm['prefix'], class_lbl),
                                 instance=df.to_html(escape=False, index=False),
                                 argm=self.argm.items())
 
             else:
                 templ = render_template("/Thing_inst.html", title="TEST",
-                                class_name='<a href="{}?prefix={}">{}</a>'.format(self.argm['class'], self.argm['prefix'], self.argm['class']),
+                                class_name='<a href="{}?prefix={}">{}</a>'.format(self.argm['class'], self.argm['prefix'], class_lbl),
                                 instances="No data about this instance.",
                                 argm=self.argm.items())
 
@@ -107,7 +125,7 @@ class Thing:
                 pref = 'owl'
 
             if self.parent:
-                parent = '<a href="/datanav/{}?prefix={}">{}</a>'.format(self.parent,pref, self.parent)
+                parent = '<a href="/datanav/{}?prefix={}">{}</a>'.format(self.parent,pref, parent_lbl)
 
             if len(df) > 0:
                 subclasses = df.to_html(escape=False, index=False)
@@ -116,7 +134,7 @@ class Thing:
                 instances = df2.to_html(escape=False, index=False)
 
             templ = render_template("/Thing.html", title="",
-                                    class_name=self.argm['class'],
+                                    class_name=class_lbl,
                                     parent=parent,
                                     subclasses=subclasses,
                                     instances = instances,

@@ -43,7 +43,7 @@
 
 
 {% block page_main_content %}
-	<h2 class="content-header">Теукщая категория пиццы: {{class_name | safe }}</h2>
+	<h2 class="content-header">Теукщая категория: {{class_name | safe }}</h2>
 		{% if parent %}<h4>Родительская категория пиццы: {{ parent | safe }}</h4>{% endif %}
 	<br>
 		{% if instances %}<h3>Доступные варианты пиццы для заказа:</h3>{{ instances | safe }}{% endif %}
