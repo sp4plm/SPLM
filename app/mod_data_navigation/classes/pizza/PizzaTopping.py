@@ -12,7 +12,7 @@ from app import app_api
 from hashlib import sha1
 onto_mod_api = app_api.get_mod_api('onto_mgt')
 
-class Pizza:
+class PizzaTopping:
     def __init__(self, argm):
 
         self.argm = argm
@@ -24,7 +24,7 @@ class Pizza:
             if p[0] == argm['prefix']:
                 self.pref_unquote = p[1]
 
-        query = tsc_query('mod_data_navigation.Pizza.one_instances',
+        query = tsc_query('mod_data_navigation.PizzaTopping.one_instances',
                           {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
         if query:
             self.pref_4_data = query[0]['inst'].split("#")[0] + "#"
@@ -51,7 +51,7 @@ class Pizza:
         instances = ''
         d = {}
 
-        query_class_lbl = tsc_query('mod_data_navigation.Pizza.class_lbl',
+        query_class_lbl = tsc_query('mod_data_navigation.PizzaTopping.class_lbl',
                      {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
         df_cls = pd.DataFrame(query_class_lbl)
 
@@ -60,7 +60,7 @@ class Pizza:
         else:
             class_lbl = self.argm['class']
 
-        query_paretn_lbl = tsc_query('mod_data_navigation.Pizza.class_lbl',
+        query_paretn_lbl = tsc_query('mod_data_navigation.PizzaTopping.class_lbl',
                                     {'URI': "<" + self.pref_unquote + self.parent + ">"})
         df_prnt = pd.DataFrame(query_paretn_lbl)
 
@@ -72,14 +72,14 @@ class Pizza:
 
         # Если есть аргумент URI, то значит показываем страничку "Экземпляра класса"
         if 'uri' in self.argm.keys():
-            query_inst = tsc_query('mod_data_navigation.Pizza.instance',
+            query_inst = tsc_query('mod_data_navigation.PizzaTopping.instance',
                                    {'PREF': self.pref_unquote, 'URI': self.argm['uri']})
             df = pd.DataFrame(query_inst)
 
             # INSERT PICTURE ----------------------------------------------------
             myHash = sha1(self.argm['uri'].encode('utf-8')).hexdigest()
             gravatar_url = "http://www.gravatar.com/avatar/{}?d=identicon&s=300".format(myHash)
-            Avatar = '<img src=\"' + gravatar_url + '\" width=\"400\" height=\"400\" alt=\"pizza\">'
+            Avatar = '<img src=\"' + gravatar_url + '\" width=\"400\" height=\"400\" alt=\"pizza topping\">'
 
 
             if len(df) > 0:
@@ -102,13 +102,13 @@ class Pizza:
 
                 d[row.inst_lbl].update({'Avatar':Avatar})
 
-                templ = render_template("/Pizza_inst.html", title="Пицца",
+                templ = render_template("/PizzaTopping_inst.html", title="Пицца",
                                 class_name=self.__make_href__(cls=self.argm['class'], prf=self.argm['prefix'], uri='',lbl=class_lbl),
                                 instance=d,
                                 argm=self.argm.items())
 
             else:
-                templ = render_template("/Pizza_inst.html", title="Пицца",
+                templ = render_template("/PizzaTopping_inst.html", title="Пицца",
                                 class_name=self.__make_href__(cls=self.argm['class'], prf=self.argm['prefix'], uri='', lbl=class_lbl),
                                 instances="No data about this instance.",
                                 argm=self.argm.items())
@@ -116,7 +116,7 @@ class Pizza:
         # В остальных случаях показываем страничку со "Списком экземпляров класса и его подклассами"
         else:
             # ------------- subclasses --------------------------
-            query_subclass = tsc_query('mod_data_navigation.Pizza.list_of_subclasses',
+            query_subclass = tsc_query('mod_data_navigation.PizzaTopping.list_of_subclasses',
                                        {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
             df = pd.DataFrame(query_subclass)
             if len(df) > 0:
@@ -126,7 +126,7 @@ class Pizza:
                 df.columns = ['Наименование','Доступно для заказа']
 
             # ------------- list of instances --------------------------
-            query_list_inst = tsc_query('mod_data_navigation.Pizza.list_of_instances',
+            query_list_inst = tsc_query('mod_data_navigation.PizzaTopping.list_of_instances',
                                         {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
             df2 = pd.DataFrame(query_list_inst)
 
@@ -135,7 +135,7 @@ class Pizza:
                 for ind, row in df2.iterrows():
                     myHash = sha1(row.inst.encode('utf-8')).hexdigest()
                     gravatar_url = "http://www.gravatar.com/avatar/{}?d=identicon&s=50".format(myHash)
-                    df2.iloc[ind]['Avatar'] = '<img src=\"' + gravatar_url + '\" width=\"40\" height=\"40\" alt=\"pizza\">'
+                    df2.iloc[ind]['Avatar'] = '<img src=\"' + gravatar_url + '\" width=\"40\" height=\"40\" alt=\"pizza topping\">'
 
                 df2.inst = '<a href="' + self.argm['class']  + '?prefix=' + self.argm['prefix'] + '&uri=' + \
                            df2.inst.str.replace(self.pref_4_data, quote(self.pref_4_data)) + '">' + df2.inst_lbl + '</a>'
@@ -154,7 +154,7 @@ class Pizza:
             if len(df2) > 0:
                 instances = df2.to_html(escape=False, index=False)
 
-            templ = render_template("/Pizza.html", title="Пицца", class_name=class_lbl,
+            templ = render_template("/PizzaTopping.html", title="Пицца", class_name=class_lbl,
                                                                             parent=parent,
                                                                             subclasses=subclasses,
                                                                             instances = instances)

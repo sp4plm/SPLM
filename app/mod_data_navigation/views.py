@@ -82,7 +82,7 @@ def uri_class(class_object):
         if class_with_tmpl == 'Document':
             from .classes.onto.Document import Document
             cls = Document(argms)
-        # Добавляем сюда все варианты пренастроенных шаблонов коассов
+        # Добавляем сюда все варианты пренастроенных шаблонов коассов для префикса ONTO
         # elif _____:
 
         # Назначаем шаблон самого верхнего класса, который всегда должен быть
@@ -102,6 +102,15 @@ def uri_class(class_object):
         if class_with_tmpl == 'Pizza':
             from .classes.pizza.Pizza import Pizza
             cls = Pizza(argms)
+        elif class_with_tmpl == 'PizzaTopping':
+            from .classes.pizza.PizzaTopping import PizzaTopping
+            cls = PizzaTopping(argms)
+        elif class_with_tmpl == 'PizzaBase':
+            from .classes.pizza.PizzaBase import PizzaBase
+            cls = PizzaBase(argms)
+        # Добавляем сюда все варианты пренастроенных шаблонов коассов для префикса ONTO
+        # elif _____:
+
         elif class_with_tmpl == 'Thing':
             if class_object == 'Thing':
                 from .classes.onto.Blank import Blank

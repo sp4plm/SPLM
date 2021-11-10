@@ -44,9 +44,9 @@
 
 {% block page_main_content %}
 	<h2 class="content-header">Теукщая категория: {{class_name | safe }}</h2>
-		{% if parent %}<h4>Родительская категория пиццы: {{ parent | safe }}</h4>{% endif %}
+		{% if parent %}<h4>Родительская категория топпига: {{ parent | safe }}</h4>{% endif %}
 	<br>
-		{% if instances %}<h3>Доступные варианты пиццы для заказа:</h3>{{ instances | safe }}{% endif %}
+		{% if instances %}<h3>Доступные варианты топпига:</h3>{{ instances | safe }}{% endif %}
 	<br>
-		{% if subclasses %}<h3>Дополнительные под-категории пиццы:</h3>{{ subclasses | safe }}{% endif %}
+		{% if subclasses %}<h3>Дополнительные под-категории топпига:</h3>{{ subclasses | safe }}{% endif %}
 {% endblock %}

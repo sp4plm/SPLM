@@ -43,21 +43,8 @@
  .brand-bg  {
 	box-shadow: #ddd 0px 0px 19px 8px;
 	margin-bottom: 29px;
+	background-color: #FFC0CB24;
   }
- .brand-bg .brand-box {
- 	background: #fff;
- 	padding: 65px 0px 65px 0px;
- 	text-align: left;
- }
- .brand-bg .brand-box:hover {
- 	background: #ecf1f7;
- }
- .brand-bg .brand-box span {
- 	color: #31372b;
- 	font-weight: normal;
- 	font-size: 24px;
- 	line-height: 24px;
- }
  .brand-bg .img_box {
     width: 100%;
     display: flex;
@@ -102,12 +89,7 @@
 				<div class="title">
 					<h2> {{ key }} </h2>
 					<h3> {{ val.Comment }} </h3>
-					<h3> Ингредиенты: {{ val.Topping | safe }}, {{ val.Base | safe }} </h3>
-					<h3> Размер: {{ val.Size }} см. </h3>
 				</div>
-			<div class="brand-box">
-				<span> Цена: {{ val.Price }} руб.</span>
-			</div>
 		</div>
 	</div>
 	{% endfor %}

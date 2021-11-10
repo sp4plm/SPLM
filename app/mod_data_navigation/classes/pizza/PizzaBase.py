@@ -12,7 +12,7 @@ from app import app_api
 from hashlib import sha1
 onto_mod_api = app_api.get_mod_api('onto_mgt')
 
-class Pizza:
+class PizzaBase:
     def __init__(self, argm):
 
         self.argm = argm
@@ -86,29 +86,19 @@ class Pizza:
                 for ind, row in df.iterrows():
                     if not row.inst_lbl in d:
                         d.update({row.inst_lbl:{} })
-                    if row.att_cls_lbl == 'Topping':
-                        row_topp = row.att_val.split('&&')
-                        d[row.inst_lbl].update({row.att_cls_lbl : self.__make_href__(cls=row_topp[0].split('#')[1],
-                                                                                    prf='pizza', uri=row_topp[1],
-                                                                                     lbl=row_topp[2])})
-                    elif row.att_cls_lbl == 'Base':
-                        row_base = row.att_val.split('&&')
-                        d[row.inst_lbl].update({row.att_cls_lbl: self.__make_href__(cls=row_base[0].split('#')[1],
-                                                                                    prf='pizza', uri=row_base[1],
-                                                                                    lbl=row_base[2])})
                     else:
                         d[row.inst_lbl].update({row.att_cls_lbl : row.att_val})
 
 
                 d[row.inst_lbl].update({'Avatar':Avatar})
 
-                templ = render_template("/Pizza_inst.html", title="Пицца",
+                templ = render_template("/PizzaBase_inst.html", title="Пицца",
                                 class_name=self.__make_href__(cls=self.argm['class'], prf=self.argm['prefix'], uri='',lbl=class_lbl),
                                 instance=d,
                                 argm=self.argm.items())
 
             else:
-                templ = render_template("/Pizza_inst.html", title="Пицца",
+                templ = render_template("/PizzaBase_inst.html", title="Пицца",
                                 class_name=self.__make_href__(cls=self.argm['class'], prf=self.argm['prefix'], uri='', lbl=class_lbl),
                                 instances="No data about this instance.",
                                 argm=self.argm.items())
@@ -116,7 +106,7 @@ class Pizza:
         # В остальных случаях показываем страничку со "Списком экземпляров класса и его подклассами"
         else:
             # ------------- subclasses --------------------------
-            query_subclass = tsc_query('mod_data_navigation.Pizza.list_of_subclasses',
+            query_subclass = tsc_query('mod_data_navigation.PizzaBase.list_of_subclasses',
                                        {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
             df = pd.DataFrame(query_subclass)
             if len(df) > 0:
@@ -126,7 +116,7 @@ class Pizza:
                 df.columns = ['Наименование','Доступно для заказа']
 
             # ------------- list of instances --------------------------
-            query_list_inst = tsc_query('mod_data_navigation.Pizza.list_of_instances',
+            query_list_inst = tsc_query('mod_data_navigation.PizzaBase.list_of_instances',
                                         {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
             df2 = pd.DataFrame(query_list_inst)
 
@@ -154,7 +144,7 @@ class Pizza:
             if len(df2) > 0:
                 instances = df2.to_html(escape=False, index=False)
 
-            templ = render_template("/Pizza.html", title="Пицца", class_name=class_lbl,
+            templ = render_template("/PizzaBase.html", title="Пицца", class_name=class_lbl,
                                                                             parent=parent,
                                                                             subclasses=subclasses,
                                                                             instances = instances)
