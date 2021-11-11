@@ -73,7 +73,7 @@ class Document:
             else:
                 templ = render_template("/Document_inst.html", title="TEST",
                                 class_name='<a href="{}?prefix={}">{}</a>'.format(self.argm['class'], self.argm['prefix'], class_lbl),
-                                instances="No data about this instance.",
+                                instance="No data about this instance.",
                                 argm=self.argm.items())
 
         # В остальных случаях показываем страничку со "Списком экземпляров класса и его подклассами"

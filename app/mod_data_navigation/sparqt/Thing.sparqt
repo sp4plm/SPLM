@@ -13,7 +13,7 @@
         "#TXT":"select ?inst ?inst_lbl {
                 ?inst a #{URI} .
                 Optional {
-                        ?inst rdfs:label ?inst_lbl . }
+                    ?inst rdfs:label ?inst_lbl . }
                 } limit 1000"
     },
     "instance":{

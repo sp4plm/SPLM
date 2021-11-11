@@ -5,6 +5,7 @@ Created on 4 sept. 2021 г.
 '''
 
 import pandas as pd
+import numpy as np
 from flask import render_template
 from urllib.parse import quote
 from app.app_api import tsc_query
@@ -100,7 +101,7 @@ class PizzaBase:
             else:
                 templ = render_template("/PizzaBase_inst.html", title="Пицца",
                                 class_name=self.__make_href__(cls=self.argm['class'], prf=self.argm['prefix'], uri='', lbl=class_lbl),
-                                instances="No data about this instance.",
+                                instance={"No data":{"Comment":"about this instance.","Avatar":""}},
                                 argm=self.argm.items())
 
         # В остальных случаях показываем страничку со "Списком экземпляров класса и его подклассами"
@@ -121,6 +122,10 @@ class PizzaBase:
             df2 = pd.DataFrame(query_list_inst)
 
             if len(df2) > 0:
+                # Если у экземпляра нет лейбла, то вместо него вставляем часть URI
+                df2.inst_lbl.replace('', np.nan, inplace=True)
+                df2.inst_lbl.fillna(value=df2.inst.str.replace(self.pref_unquote, ''), inplace=True)
+
                 df2.insert(loc=2, column='Avatar', value="")
                 for ind, row in df2.iterrows():
                     myHash = sha1(row.inst.encode('utf-8')).hexdigest()

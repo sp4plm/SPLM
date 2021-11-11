@@ -102,7 +102,12 @@
 				<div class="title">
 					<h2> {{ key }} </h2>
 					<h3> {{ val.Comment }} </h3>
-					<h3> Ингредиенты: {{ val.Topping | safe }}, {{ val.Base | safe }} </h3>
+					<h3> Ингредиенты:
+						{% for topp in val.Topping.values() %}
+						{{ topp | safe }}
+						{% endfor %}
+						<p>{{ val.Base | safe }}</p>
+					</h3>
 					<h3> Размер: {{ val.Size }} см. </h3>
 				</div>
 			<div class="brand-box">

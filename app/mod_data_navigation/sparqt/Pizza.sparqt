@@ -13,7 +13,7 @@
         "#TXT":"select ?inst ?inst_lbl {
                 ?inst a #{URI} .
                 Optional {
-                            ?inst rdfs:label ?inst_lbl . }
+                    ?inst rdfs:label ?inst_lbl . }
                 } limit 200"
     },
     "instance":{
@@ -43,7 +43,7 @@
                 select ?uri ?att_cls_lbl ?att_val {
                   BIND (<#{URI}> as ?uri )
                   Optional {
-                    ?uri onto:hasIngredient ?topp .
+                    ?uri onto:hasTopping ?topp .
                     ?topp rdfs:label ?top_lbl .
                     ?topp a ?topp_cls .
                     BIND (CONCAT(STR(?topp_cls), '&&', STR(?topp), '&&', ?top_lbl) as ?att_val )

@@ -114,13 +114,13 @@ def uri_class(class_object):
         elif class_with_tmpl == 'Thing':
             if class_object == 'Thing':
                 from .classes.onto.Blank import Blank
-                cls = Blank(class_with_tmpl, 'NO class "%s" for the prefix "%s"' % (argms['class'], argms['prefix']))
+                cls = Blank(class_with_tmpl, 'Нет класса "%s" в онтологии с префиксом "%s"' % (argms['class'], argms['prefix']))
             else:
                 from .classes.owl.Thing import Thing
                 cls = Thing(argms)
         else:
             from .classes.onto.Blank import Blank
-            cls = Blank(class_with_tmpl, 'NO class "%s" for the prefix "%s"' % (argms['class'], argms['prefix']))
+            cls = Blank(class_with_tmpl, 'Нет класса "%s" в онтологии с префиксом "%s"' % (argms['class'], argms['prefix']))
 
     elif argms['prefix'] == 'req_onto': # ---------------------- REQ_ONTO ------------------------
         if class_with_tmpl == 'Document':
@@ -137,7 +137,7 @@ def uri_class(class_object):
                 cls = Thing(argms)
         else:
             from .classes.onto.Blank import Blank
-            cls = Blank(class_with_tmpl, 'NO class "%s" for the prefix "%s"' % (argms['class'], argms['prefix']))
+            cls = Blank(class_with_tmpl, 'Нет класса "%s" в онтологии с префиксом "%s"' % (argms['class'], argms['prefix']))
 
     elif argms['prefix'] == 'owl': # ---------------------- OWL ------------------------
         if class_with_tmpl == 'Thing':
@@ -145,10 +145,10 @@ def uri_class(class_object):
             cls = Thing(argms)
         else:
             from .classes.onto.Blank import Blank
-            cls = Blank(class_with_tmpl, 'NO class "%s" for the prefix "OWL"' % argms['class'] )
+            cls = Blank(class_with_tmpl, 'Нет класса "%s" в онтологии с префиксом "OWL"' % argms['class'] )
 
     else: # ---------------------- ????????? ------------------------
         from .classes.onto.Blank import Blank
-        cls = Blank(class_with_tmpl, 'Unknow prefix "%s"' % argms['prefix'] )
+        cls = Blank(class_with_tmpl, 'Незарегистрированный префикс "%s"' % argms['prefix'] )
 
     return cls.getTemplate()
