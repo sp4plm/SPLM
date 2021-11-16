@@ -6,6 +6,7 @@ import requests
 
 class StoreDriver:
     _class_file = __file__
+    _debug_name = 'StoreDriver'
     _name = 'undefined'
     _graph_name_field = ''
 
@@ -99,11 +100,13 @@ class StoreDriver:
         answer = None
         if '' != uname and '' != usecret:
             send_data['auth'] = (uname, usecret)
+        print(self._debug_name + '._post_req.url ->', url)
+        print(self._debug_name + '._post_req.send_data ->', send_data)
         try:
             answer = requests.post(url, **send_data)
         except Exception as ex:
             answer_ex = str(ex)
-            raise Exception('_post_req say: Cant not send post request! Exception: {}.'.format(answer_ex))
+            raise Exception(self._debug_name + '._post_req say: Cant not send post request! Exception: {}.'.format(answer_ex))
         return answer
 
     def _get_req(self, url, data, headers=None):
@@ -158,9 +161,9 @@ class StoreDriver:
                     if callable(itri):
                         itri()
                     else:
-                        print('StoreDriver.call_after_modify_storage_triggers: try call not function {}!'.format(itri))
+                        print(self._debug_name + '.call_after_modify_storage_triggers: try call not function {}!'.format(itri))
             except Exception as ex:
-                print('StoreDriver.call_after_modify_storage_triggers: call trigger exception/error: {}' .format(ex))
+                print(self._debug_name + '.call_after_modify_storage_triggers: call trigger exception/error: {}' .format(ex))
                 # raise ex
 
     def _get_file_download_url(self):
@@ -237,8 +240,3 @@ class StoreDriver:
 
     def set_portal_onto_uri(self, uri):
         self._graph_name_prefix_iri = uri + '/' + self._graph_name_prefix + '#'
-
-
-        
-
-

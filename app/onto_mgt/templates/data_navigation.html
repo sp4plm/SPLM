@@ -1,0 +1,128 @@
+{% extends "base_bootstrap.html" %}
+
+{% set title="Навигация по данным портала" %}
+
+{% block app_content %}
+	<h1 class="content-header">Навигация по данным портала</h1>
+		<div class="section cookSection_st">
+			<center>
+				<h2>
+					{% if base %}
+						<span class="searh-data-label" shortl="{{base.o_lbl}}" longl="{{base.o}}"><a href="{{base.href}}">{{base.o_lbl|safe}}</a></span>
+					{% else %}
+						<span class="searh-data-label">Неизвестный объект</a></span>
+					{% endif %}
+				</h2>
+			</center>
+		</div>
+
+	{% if firstPKey or secondPKey %}
+		<div class="section">
+			<div class="section-header"><span class="txt">Класс объекта</span></div>
+			<div class="simple-widget-box round-corners">
+				<table class="width100">
+					{% if firstPKey %}
+					<tr>
+						<td class="navigation_left">
+							<a class="searh-data-label navigation_left_lbl" shortl="{{firstPKey.p}}" longl="{{firstPKey.p}}" href="{{url_for('onto.data_navigation', uri = firstPKey.p)}}">{{firstPKey.p}}</a>
+						</td>
+						<td class="navigation_right">
+							<ul class="predicate-so-list navigation_right_lbl" show="10" step="10">
+								<li class="navigation_right_list">
+									<a class="searh-data-label" shortl="{{firstPKey.o_lbl}}" longl="{{firstPKey.o}}" href="{{url_for('onto.data_navigation', uri = firstPKey.o)}}">{{firstPKey.o_lbl}}</a>
+								</li>
+							</ul>
+						</td>
+					</tr>
+					{% endif %}
+					{% if firstPKey and secondPKey %}
+					<tr>
+						<td colspan="2" class="navigation_hr"><hr class="tbl-tr-brk" /></td>
+					</tr>
+					{% endif %}
+					{% if secondPKey %}
+					<tr>
+						<td class="navigation_left">
+							<a class="searh-data-label navigation_left_lbl" shortl="{{secondPKey.p_lbl}}" longl="{{secondPKey.p}}" href="{{url_for('onto.data_navigation', uri = secondPKey.p)}}">{{secondPKey.p_lbl}}</a>
+						</td>
+						<td class="navigation_right">
+							<ul class="predicate-so-list navigation_right_lbl" show="10" step="10">
+								<li class="navigation_right_list">{{secondPKey.o|safe}}</li>
+							</ul>
+						</td>
+					</tr>
+					{% endif %}
+				</table>
+			</div>
+		</div>
+	{% endif %}
+
+	{% if subject_P %}
+		<div class="section">
+		<div class="section-header"><span class="txt">Прямые связи</span></div>
+			<div class="simple-widget-box round-corners">
+				<table class="width100">
+					{% for p_item in subject_P %}
+						<tr>
+							<td class="navigation_left">
+								<a class="searh-data-label navigation_left_lbl" shortl="{{subject_P[p_item]}}" longl="{{p_item}}" href="{{url_for('onto.data_navigation', uri = p_item)}}">{{subject_P[p_item]}}</a>
+							</td>
+							<td class="navigation_right">
+								<ul class="predicate-so-list scroll-ul-list navigation_right_lbl" show="10" step="10">
+									{% for item in total_subject_P_O[p_item] %}
+									<li class="navigation_right_list">
+										<a class="searh-data-label" shortl="{{subject_O[item]}}" longl="{{item}}" href="{{url_for('onto.data_navigation', uri = item)}}">{{subject_O[item]|safe}}
+										</a>
+									</li>
+									{% endfor %}
+								</ul>
+							</td>
+						</tr>
+						{% if loop.index != subject_P|length %}
+							<tr>
+								<td colspan="2" class="navigation_hr"><hr class="tbl-tr-brk" /></td>
+							</tr>
+						{% endif %}
+					{% endfor %}
+				</table>
+			</div>
+		</div>
+	{% endif %}
+
+	{% if object_P %}
+		<div class="section">
+			<div class="section-header"><span class="txt">Обратные связи</span></div>
+			<div class="simple-widget-box round-corners">
+				<table class="width100">
+					{% for p_item in object_P %}
+						<tr>
+							<td class="navigation_left">
+								<a class="searh-data-label navigation_left_lbl" shortl="{{object_P[p_item]}}" longl="{{p_item}}" href="{{url_for('onto.data_navigation', uri = p_item)}}">{{object_P[p_item]}}</a>
+							</td>
+							<td class="navigation_right">
+								<ul class="predicate-so-list scroll-ul-list navigation_right_lbl" show="10" step="10">
+									{% for item in total_object_P_S[p_item] %}
+									<li class="navigation_right_list">
+										<a class="searh-data-label" shortl="{{object_S[item]}}" longl="{{item}}" href="{{url_for('onto.data_navigation', uri = item)}}">{{object_S[item]|safe}}
+										</a>
+									</li>
+									{% endfor %}
+								</ul>
+							</td>
+						</tr>
+						{% if loop.index != object_P|length %}
+							<tr>
+								<td colspan="2" class="navigation_hr"><hr class="tbl-tr-brk" /></td>
+							</tr>
+						{% endif %}
+					{% endfor %}
+				</table>
+			</div>
+		</div>
+	{% endif %}
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+    <script src="{{url_for('static', filename='js/navigation.js')}}" type="text/javascript"></script>
+{% endblock %}

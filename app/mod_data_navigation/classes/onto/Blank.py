@@ -10,7 +10,7 @@ from flask import render_template
 class Blank:
     def __init__(self, current_class, argm):
         self.argm = argm
-        self.current_class  =current_class
+        self.current_class=current_class
         self.df_inst = pd.DataFrame()
         self.df_subclass = pd.DataFrame()
 

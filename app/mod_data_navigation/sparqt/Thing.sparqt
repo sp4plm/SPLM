@@ -12,11 +12,12 @@
         "#VARS":{"URI":{"mark":"#{URI}","default":""}},
         "#TXT":"select ?inst ?inst_lbl {
                 ?inst a #{URI} .
-                ?inst rdfs:label ?inst_lbl .
+                Optional {
+                    ?inst rdfs:label ?inst_lbl . }
                 } limit 1000"
     },
     "instance":{
-        "_CMT_":"Возвращает список экземпляров класса",
+        "_CMT_":"Возвращает экземпляр класса",
         "#VARS":{"PREF":{"mark":"#{PREF}","default":""}, "URI":{"mark":"#{URI}","default":""}},
         "#TXT":"prefix onto: <#{PREF}>
                 select distinct ?inst_lbl ?att_cls_lbl ?att_val where {
@@ -46,11 +47,11 @@
                 ?cls rdfs:label ?cls_lbl .
                 } order by ?cls"
     },
-    "parent":{
-        "_CMT_":"Возвращает список экземпляров класса",
+    "class_lbl":{
+        "_CMT_":"Возвращает лейбл класса",
         "#VARS":{"URI":{"mark":"#{URI}","default":""}},
-        "#TXT":"select ?cls {
-                 #{URI} rdfs:subClassOf ?cls.
+        "#TXT":"select ?cls_lbl {
+                 #{URI} rdfs:label ?cls_lbl.
                 } limit 1"
     }
 }

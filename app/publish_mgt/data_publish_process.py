@@ -32,7 +32,7 @@ from app.publish_mgt.data_publish_logger import DataPublishLogger
 USE_NAMED_GRAPHS = False
 app_cfg = app_api.get_app_config()
 try:
-    USE_NAMED_GRAPHS = bool(int(app_cfg.get('data_storages.Main.use_named_graphs')))
+    USE_NAMED_GRAPHS = CodeHelper.conf_bool(app_cfg.get('data_storages.Main.use_named_graphs'))
 except Exception as ex:
     print('data_publish_process.py: Error -> {}'.format(ex))
     process_protocol.write('Error on set constants USE_NAMED_GRAPHS: {}'.format(ex))
@@ -105,8 +105,8 @@ ontos_api = app_api.get_mod_api('onto_mgt')
 # элемент списка файлов онтологий - список: 0 - полный путь к файлу, 1 - базовый URL онтологии (префикс)
 # onto_list.append([os.path.join(PublishModConf.DATA_PATH, 'qudt_units.ttl'), ''])
 # onto_list.append([os.path.join(PublishModConf.DATA_PATH, 'requirements_ontology.ttl'), ''])
-onto_utils = ontos_api.get_onto_utils()
-onto_list = onto_utils.get_ontos()
+# onto_utils = ontos_api.get_onto_utils() # метод удален без предупреждения
+onto_list = ontos_api.get_ontos()
 cnt_ontos = len(onto_list)
 if onto_list:
     for onto_info in onto_list:

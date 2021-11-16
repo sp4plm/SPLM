@@ -344,8 +344,10 @@ class Manager:
             with open(try_mod, 'r', encoding='utf8') as fp:
                 graph_descr = rdflib.Graph()
                 graph_descr.load(fp, format="n3")
-                qres = graph_descr.query(
-                    'SELECT ?label WHERE { ' + mod_uri + ' rdfs:label ?label . }')
+                qres = []
+                if 0 < len(graph_descr):
+                    qres = graph_descr.query(
+                        'SELECT ?label WHERE { ' + mod_uri + ' rdfs:label ?label . }')
                 if qres:
                     # чтобы файл не оказался пустым
                     # https://stackoverflow.com/questions/24570066/calculate-md5-from-werkzeug-datastructures-filestorage-without-saving-the-object

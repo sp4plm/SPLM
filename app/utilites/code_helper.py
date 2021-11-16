@@ -146,6 +146,19 @@ class CodeHelper:
         return res
 
     @staticmethod
+    def conf_bool(val):
+        lst_true = ['on', 'On', '1', 'true', 'True', 1]
+        lst_false = ['off', 'Off', '0', 'false', 'False', 0]
+        flg = None
+        if str(val) in lst_true:
+            flg = True
+        if str(val) in lst_false:
+            flg = False
+        if flg is None:
+            flg = bool(val)
+        return flg
+
+    @staticmethod
     def get_counters_object():
         class Counters:
             _class_file = __file__

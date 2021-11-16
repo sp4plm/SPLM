@@ -1,0 +1,121 @@
+{% extends "base_bootstrap.html" %}
+
+{% block title %}
+    {% if title %}SPLM: {{ title }}{% else %}Навигация по данным{% endif %}
+{% endblock %}
+
+
+{% block styles %}
+    {{super()}}
+	<style type="text/css">
+	    .scroll-ul-list {
+			max-height: 450px;
+			overflow-y: scroll !important;
+		}
+		.scroll-well {
+			max-width: 500px;
+			overflow-x: scroll !important;
+			padding: 5px;
+		}
+		.xicon-pos {
+			margin-top: 10px;
+		}
+		img {
+			max-width: 50%;
+			height: auto;
+		}
+.title h2 {
+	font-size: 44px;
+	line-height: 44px;
+	color: #31372b;
+	font-weight: 600;
+	margin-bottom: 0px;
+	padding: 10px 0px;
+}
+.title h3 {
+	font-size: 20px;
+	line-height: 20px;
+	color: #800000;
+	font-weight: normal;
+	margin-bottom: 0px;
+	padding: 5px 0px;
+}
+ .brand-bg  {
+	box-shadow: #ddd 0px 0px 19px 8px;
+	margin-bottom: 29px;
+  }
+ .brand-bg .brand-box {
+ 	background: #fff;
+ 	padding: 65px 0px 65px 0px;
+ 	text-align: left;
+ }
+ .brand-bg .brand-box:hover {
+ 	background: #ecf1f7;
+ }
+ .brand-bg .brand-box span {
+ 	color: #31372b;
+ 	font-weight: normal;
+ 	font-size: 24px;
+ 	line-height: 24px;
+ }
+ .brand-bg .img_box {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 80px 0px;
+}
+</style>
+
+<link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid.css')}}" />
+<link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid-bootstrap.css')}}" />
+<link rel="stylesheet" href="{{url_for('static', filename='css/portal.css')}}" />
+<link rel="stylesheet" href="{{url_for('static', filename='css/portal.datamanager.css')}}" />
+<link rel="stylesheet" href="{{url_for('static', filename='css/portal.jqgrid.css')}}" />
+<link rel="stylesheet" href="{{url_for('static', filename='css/jqtree.css')}}" />
+
+{% endblock %}
+
+{% block page_sidenav %}
+	{% if js and "#tree3" in js %}
+		<div class="scroll-well">
+			<div id="tree3"></div>
+		</div>
+	{% else %}
+		{{super()}}
+	{% endif %}
+{% endblock %}
+
+
+{% block page_main_content %}
+	<h2 class="content-header">Категория: {{class_name | safe }}</h2>
+	<br>
+<div class="brand-bg">
+	{% for key, val in instance.items() %}
+	<div class="row">
+		<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 product_detail_side">
+		 		<div class="img_box">
+			 		{{ val.Avatar | safe }}
+		 		</div>
+		</div>
+		<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 product_detail_side">
+				<div class="title">
+					<h2> {{ key }} </h2>
+					<h3> {{ val.Comment }} </h3>
+					<h3> Ингредиенты:
+						{% for topp in val.Topping.values() %}
+						{{ topp | safe }}
+						{% endfor %}
+						<p>{{ val.Base | safe }}</p>
+					</h3>
+					<h3> Размер: {{ val.Size }} см. </h3>
+				</div>
+			<div class="brand-box">
+				<span> Цена: {{ val.Price }} руб.</span>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+</div>
+
+{% endblock %}

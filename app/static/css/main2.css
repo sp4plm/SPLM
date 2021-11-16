@@ -221,22 +221,50 @@ img {
 
 .dataframe {
     color: Black; /* Цвет текста */
-    border: 1px solid #000;
+    border: none;
     margin:0 auto;
     width: 80%;
+    margin-bottom: 20px;
    }
+.dataframe thead th {
+    font-weight: bold;
+    text-align: left;
+    border: none;
+    background: #d0f0c0;
+    padding: 10px 15px;
+    font-size: 14px;
+}
 .dataframe th {
-   text-align: center; /* Выравнивание по центру */
-   border: 1px solid #000;
-   background: #d0f0c0;
-   padding: 5px;
-   }
-.dataframe td {
-    background: white; /* Цвет фона ячеек */
-    border: 1px solid #000;
-    text-align: center; /* Выравнивание по центру */
-    padding: 5px;
-   }
+    font-weight: bold;
+    text-align: left;
+    border: none;
+    background: #d0f0c0;
+    padding: 10px 15px;
+    font-size: 14px;
+}
+.dataframe thead tr th:first-child {
+    border-radius: 8px 0 0 8px;
+}
+.dataframe thead tr th:last-child {
+    border-radius: 0 8px 8px 0;
+}
+.dataframe tbody td {
+    text-align: left;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    vertical-align: top;
+    border-bottom: 1px solid #d0f0c0;
+}
+.dataframe tbody tr:nth-child(even){
+	# background: #E9F5E3;
+}
+.dataframe tbody tr td:first-child {
+	border-radius: 8px 0 0 8px;
+}
+.dataframe tbody tr td:last-child {
+	border-radius: 0 8px 8px 0;
+}
 
 .datamanagement_info {font-size:14px;}
 

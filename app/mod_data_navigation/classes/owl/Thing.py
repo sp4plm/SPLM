@@ -3,7 +3,7 @@
 Created on 4 sept. 2021 г.
 @author: oleg st
 '''
-
+import numpy as np
 import pandas as pd
 from flask import render_template
 from urllib.parse import quote
@@ -18,11 +18,12 @@ class Thing:
         if self.argm['class'] == 'Thing':
             self.parent = ''
             q = tsc_query('mod_data_navigation.Thing.list_of_subclasses',{'URI':"owl:Thing"})
-            self.pref_unquote = q[0]['cls'].split("#")[0] + "#"
-            self.pref_4_data = ''
-            for p in prefixes:
-                if p[1] == self.pref_unquote:
-                    self.argm['prefix'] = p[0]
+            if q:
+                self.pref_unquote = q[0]['cls'].split("#")[0] + "#"
+                self.pref_4_data = ''
+                for p in prefixes:
+                    if p[1] == self.pref_unquote:
+                        self.argm['prefix'] = p[0]
         else:
             self.parent = onto_mod_api.get_parent(argm['prefix'], argm['class'])
             for p in prefixes:
@@ -47,6 +48,24 @@ class Thing:
         subclasses = ''
         instances = ''
 
+        query_class_lbl = tsc_query('mod_data_navigation.Thing.class_lbl',
+                     {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
+        df_cls = pd.DataFrame(query_class_lbl)
+
+        if len(df_cls):
+            class_lbl = df_cls.cls_lbl[0]
+        else:
+            class_lbl = self.argm['class']
+
+        query_paretn_lbl = tsc_query('mod_data_navigation.Thing.class_lbl',
+                                    {'URI': "<" + self.pref_unquote + self.parent + ">"})
+        df_prnt = pd.DataFrame(query_paretn_lbl)
+
+        if len(df_prnt):
+            parent_lbl = df_prnt.cls_lbl[0]
+        else:
+            parent_lbl = self.parent
+
         # Если есть аргумент URI, то значит показываем страничку "Экземпляра класса"
         if 'uri' in self.argm.keys():
             query_inst = tsc_query('mod_data_navigation.Thing.instance',
@@ -54,15 +73,16 @@ class Thing:
             df = pd.DataFrame(query_inst)
 
             if len(df) > 0:
+                df.columns = ['Наименование','Атрибут', 'Значение']
                 templ = render_template("/Thing_inst.html", title="TEST",
-                                class_name='<a href="{}?prefix={}">{}</a>'.format(self.argm['class'], self.argm['prefix'], self.argm['class']),
-                                instance=df.to_html(escape=False),
+                                class_name='<a href="{}?prefix={}">{}</a>'.format(self.argm['class'], self.argm['prefix'], class_lbl),
+                                instance=df.to_html(escape=False, index=False),
                                 argm=self.argm.items())
 
             else:
                 templ = render_template("/Thing_inst.html", title="TEST",
-                                class_name=self.argm['class'],
-                                instances="No data about this instance.",
+                                class_name='<a href="{}?prefix={}">{}</a>'.format(self.argm['class'], self.argm['prefix'], class_lbl),
+                                instance="No data about this instance.",
                                 argm=self.argm.items())
 
         # В остальных случаях показываем страничку со "Списком экземпляров класса и его подклассами"
@@ -73,35 +93,48 @@ class Thing:
             else:
                 pref4req = self.pref_unquote
 
+            # -------------- SUBCLASS --------------
             query_subclass = tsc_query('mod_data_navigation.Thing.list_of_subclasses',
                                        {'URI': "<" + pref4req + self.argm['class'] + ">"})
             df = pd.DataFrame(query_subclass)
             if len(df) > 0:
                 df.cls = '<a href="/datanav/' + df.cls.str.replace(self.pref_unquote,'') + \
-                         '?prefix=' + self.argm['prefix'] + '">' + df.cls.str.replace(self.pref_unquote,'') + '</a>'
+                         '?prefix=' + self.argm['prefix'] + '">' + df.cls_lbl + '</a>'
+                df.drop('cls_lbl', axis=1, inplace=True)
+                df.columns = ['Наименование']
 
+            # -------------- INST--------------
             query_list_inst = tsc_query('mod_data_navigation.Thing.list_of_instances',
                                         {'URI': "<" + pref4req + self.argm['class'] + ">"})
             df2 = pd.DataFrame(query_list_inst)
+
             if len(df2) > 0:
-                df2.inst = '<a href="/datanav/' + self.argm['class']  + '?prefix=' + self.argm['prefix'] + '&uri=' + \
+                df2.inst_lbl.replace('', np.nan, inplace=True)
+                df2.inst_lbl.fillna(value=df2.inst.str.replace(self.pref_unquote, ''), inplace=True)
+
+                if self.argm['class'] == 'Thing':
+                    df2.inst = df2.inst_lbl
+                else:
+                    df2.inst = '<a href="/datanav/' + self.argm['class']  + '?prefix=' + self.argm['prefix'] + '&uri=' + \
                            df2.inst.str.replace(self.pref_4_data, quote(self.pref_4_data)) + '">' + df2.inst_lbl + '</a>'
+
                 df2.drop('inst_lbl', axis=1, inplace=True)
+                df2.columns = ['Наименование']
 
             if self.parent == 'Thing':
                 pref = 'owl'
 
             if self.parent:
-                parent = '<a href="/datanav/{}?prefix={}">{}</a>'.format(self.parent,pref, self.parent)
+                parent = '<a href="/datanav/{}?prefix={}">{}</a>'.format(self.parent,pref, parent_lbl)
 
             if len(df) > 0:
-                subclasses = df.to_html(escape=False)
+                subclasses = df.to_html(escape=False, index=False)
 
             if len(df2) > 0:
-                instances = df2.to_html(escape=False)
+                instances = df2.to_html(escape=False, index=False)
 
             templ = render_template("/Thing.html", title="",
-                                    class_name=self.argm['class'],
+                                    class_name=class_lbl,
                                     parent=parent,
                                     subclasses=subclasses,
                                     instances = instances,

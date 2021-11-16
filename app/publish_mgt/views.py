@@ -244,7 +244,7 @@ def get_files(dir_name=''):
 
     _app_cfg = app_api.get_app_config()
     USE_NAMED_GRAPHS = False
-    USE_NAMED_GRAPHS = _app_cfg.get('data_storages.Main.use_named_graphs')
+    USE_NAMED_GRAPHS = CodeHelper.conf_bool(_app_cfg.get('data_storages.Main.use_named_graphs'))
 
     columns_map = FilesManagmentView.get_columns_map()
     jq_grid = JQGridHelper()
@@ -326,9 +326,9 @@ def make_backup():
     meta = FilesManagment()
     portal_cfg = app_api.get_app_config()
     if meta.set_current_dir('backups'):
-        endpoint = portal_cfg.get('data_storages.endPoints.main')
+        endpoint = portal_cfg.get('data_storages.EndPoints.main')
         data_backuper = DataBackuper()
-        data_backuper.use_named_graph = bool(portal_cfg.get('data_storages.Main.use_named_graphs'))
+        data_backuper.use_named_graph = CodeHelper.conf_bool(portal_cfg.get('data_storages.Main.use_named_graphs'))
         backup_file = os.path.join(meta.get_dir_realpath('backups'), data_backuper.generate_filename())
         flg_backup = data_backuper.create(backup_file)
         if flg_backup:
@@ -340,7 +340,7 @@ def make_backup():
             name = os.path.basename(backup_file)
             name = os.path.basename(data_backuper.get_last_downloaded_file())
             info_flg = meta.set_file_description(name, call_args)
-            print('update info: ', info_flg)
+            # print('update info: ', info_flg)
             answer['State'] = 200
             answer['Msg'] = ''
         else:
@@ -363,9 +363,9 @@ def rollback_backup(dir_name):
             portal_cfg = app_api.get_app_config()
             fileroll = request.form['bfile'] if 'bfile' in request.form else ''
             file = os.path.join(meta.get_dir_realpath('backups'), fileroll)
-            endpoint = portal_cfg.get('data_storages.endPoints.main')
+            endpoint = portal_cfg.get('data_storages.EndPoints.main')
             data_backuper = DataBackuper()
-            data_backuper.use_named_graph = bool(portal_cfg.get('data_storages.Main.use_named_graphs'))
+            data_backuper.use_named_graph = CodeHelper.conf_bool(portal_cfg.get('data_storages.Main.use_named_graphs'))
             # сперва сделаем резервную копию
             backup_file = os.path.join(meta.get_dir_realpath('backups'), data_backuper.generate_filename())
             flg_backup = data_backuper.create(backup_file)
@@ -725,7 +725,7 @@ def accept_new_file(dir_name):
     # print(request.form)
     _app_cfg = app_api.get_app_config()
     USE_NAMED_GRAPHS = False
-    USE_NAMED_GRAPHS = _app_cfg.get('data_storages.Main.use_named_graphs')
+    USE_NAMED_GRAPHS = CodeHelper.conf_bool(_app_cfg.get('data_storages.Main.use_named_graphs'))
     recive_data = reqform_2_dict(request.form)
     # print(recive_data)
     files = recive_data['exfiles'] if 'exfiles' in recive_data else list(recive_data.values())

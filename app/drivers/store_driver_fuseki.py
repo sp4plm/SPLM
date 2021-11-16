@@ -5,6 +5,7 @@ from app.drivers.store_driver import StoreDriver
 
 class StoreDriverFuseki(StoreDriver):
     _class_file = __file__
+    _debug_name = 'StoreDriverFuseki'
     _name = 'fuseki'
     _graph_name_field = 'graph'
     

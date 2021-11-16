@@ -8,6 +8,7 @@ from app.drivers.store_driver import StoreDriver
 
 class StoreDriverAgraph(StoreDriver):
     _class_file = __file__
+    _debug_name = 'StoreDriverAgraph'
     _name = 'agraph'
     _graph_name_field = 'context'
 
@@ -138,7 +139,7 @@ class StoreDriverAgraph(StoreDriver):
                 flg = True
                 self._last_downloaded = file_path
         except Exception as ex:
-            print('StoreDriverAgraph.backup_to_file.Error:', ex)
+            print(self._debug_name + '.backup_to_file.Error:', ex)
             flg = False
         return flg
 

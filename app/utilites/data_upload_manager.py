@@ -65,7 +65,10 @@ class DataUploadManager:
 
     def clear_named_graph_data(self, graph_name):
         """ clear named graph """
-        query = '''delete { GRAPH <{}> { ?s ?p ?o } } where { ?s ?p ?o . }''' .format(graph_name)
+        graph_name = graph_name.lstrip('<').rstrip('>')
+        query = 'DELETE { GRAPH <' + graph_name + '> { ?s ?p ?o } } WHERE { ?s ?p ?o . }'
+        self._to_log(self._debug_name + '.clear_named_graph_data: try send clear graph request!')
+        self._to_log(self._debug_name + '.clear_named_graph_data: request is ->' + query)
         return self.exec_query(query)
 
     def cook_graph_name(self, item):
@@ -80,11 +83,12 @@ class DataUploadManager:
         return self._storage_driver.query(query)
 
     def _init_storage_driver(self):
+        _store_cred = ''
         try:
             self._storage_driver = Utilites.get_storage_driver()
             if self._storage_driver is not None:
                 self._storage_driver.set_portal_onto_uri(app_api.get_portal_onto_uri())
-            _store_cred = self._app_cfg.get('main.DataStorage.users.main')
+            _store_cred = self._app_cfg.get('data_storages.Accounts.main')
         except Exception as ex:
             self._to_log('_init_storage_driver: Can not get storage driver - Exception: ' + str(ex))
         if '' != _store_cred:
@@ -191,11 +195,5 @@ class DataUploadManager:
 
     def clear_storage(self):
         """ """
-        query = '''delete { ?s ?p ?o } where { ?s ?p ?o . }'''
-        return self.exec_query(query)
-
-    def clear_graph(self, graph_name):
-        """ clear named graph """
-        query = 'DROP GRAPH {}' . format(graph_name)
-        #query = 'DELETE { ?s ?p ?o } WHERE { GRAPH {} { ?s ?p ?o .} }' . format(graph_name)
+        query = '''DELETE { ?s ?p ?o } WHERE { ?s ?p ?o . }'''
         return self.exec_query(query)

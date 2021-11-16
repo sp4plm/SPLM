@@ -24,14 +24,26 @@ _auth_decorator = app_api.get_auth_decorator()
 
 def getParent(cur_class, argms, list_of_templates):
 
-    class_name = onto_mod_api.get_parent(argms['prefix'],cur_class)
+    if any(argms['prefix'] in sl for sl in onto_mod_api.get_prefixes()):
 
-    if class_name != '' and class_name not in list_of_templates:
-        new_class = getParent(class_name, argms, list_of_templates)
+        class_name = onto_mod_api.get_parent(argms['prefix'],cur_class)
+
+        if class_name != '' and class_name not in list_of_templates:
+            new_class = getParent(class_name, argms, list_of_templates)
+        else:
+            new_class = class_name
     else:
-        new_class = class_name
+        new_class = ''
 
     return new_class
+
+@mod.route(url_prefix)
+@_auth_decorator
+def startPage():
+    heading = 'Начальная страница'
+    message = 'Начните навигацию по порталу с любой из указанных ниже страниц'
+
+    return render_template("/index.html", heading=heading, message=message)
 
 @mod.route(url_prefix + '/<class_object>')
 @_auth_decorator
@@ -58,58 +70,85 @@ def uri_class(class_object):
     # Если у текущего класса онтологии нет шаблона, то ищем ближайший по иерархии родительский класс онтологии
     # у которого есть шаблон и переопределяем текущий класс на найденного родителя
     if class_object not in list_of_templates:
-        new_class = getParent(class_object, argms, list_of_templates)
+        class_with_tmpl = getParent(class_object, argms, list_of_templates)
     else:
-        new_class = class_object
+        class_with_tmpl = class_object
 
-    # Обрабатываем классы согласно указанному префиксу
-    if argms['prefix'] == 'onto':
-        if new_class == 'Document':
+    """ 
+    Обрабатываем классы 
+    согласно указанному префиксу
+    """
+    if argms['prefix'] == 'onto':  # ---------------------- ONTO ------------------------
+        if class_with_tmpl == 'Document':
             from .classes.onto.Document import Document
             cls = Document(argms)
-        # Добавляем сюда все варианты пренастроенных шаблонов коассов
+        # Добавляем сюда все варианты пренастроенных шаблонов коассов для префикса ONTO
         # elif _____:
 
         # Назначаем шаблон самого верхнего класса, который всегда должен быть
-        elif new_class == 'Thing':
+        elif class_with_tmpl == 'Thing':
             # Если есть прямое обращение к классу Thing с неправильным префиксом, то выдаем сообщение об ошибке
             if class_object == 'Thing':
                 from .classes.onto.Blank import Blank
-                cls = Blank(new_class, 'NO class "%s" for the prefix "ONTO"' % argms['class'])
+                cls = Blank(class_with_tmpl, 'NO class "%s" for the prefix "ONTO"' % argms['class'])
             else:
                 from .classes.owl.Thing import Thing
                 cls = Thing(argms)
         else:
             from .classes.onto.Blank import Blank
-            cls = Blank(new_class, 'NO class "%s" for the prefix "ONTO"' % argms['class'])
+            cls = Blank(class_with_tmpl, 'NO class "%s" for the prefix "%s"' % (argms['class'], argms['prefix']))
 
-    elif argms['prefix'] == 'req_onto':
-        if new_class == 'Document':
+    elif argms['prefix'] == 'pizza': # ---------------------- PIZZA ------------------------
+        if class_with_tmpl == 'Pizza':
+            from .classes.pizza.Pizza import Pizza
+            cls = Pizza(argms)
+        elif class_with_tmpl == 'PizzaTopping':
+            from .classes.pizza.PizzaTopping import PizzaTopping
+            cls = PizzaTopping(argms)
+        elif class_with_tmpl == 'PizzaBase':
+            from .classes.pizza.PizzaBase import PizzaBase
+            cls = PizzaBase(argms)
+        # Добавляем сюда все варианты пренастроенных шаблонов коассов для префикса ONTO
+        # elif _____:
+
+        elif class_with_tmpl == 'Thing':
+            if class_object == 'Thing':
+                from .classes.onto.Blank import Blank
+                cls = Blank(class_with_tmpl, 'Нет класса "%s" в онтологии с префиксом "%s"' % (argms['class'], argms['prefix']))
+            else:
+                from .classes.owl.Thing import Thing
+                cls = Thing(argms)
+        else:
+            from .classes.onto.Blank import Blank
+            cls = Blank(class_with_tmpl, 'Нет класса "%s" в онтологии с префиксом "%s"' % (argms['class'], argms['prefix']))
+
+    elif argms['prefix'] == 'req_onto': # ---------------------- REQ_ONTO ------------------------
+        if class_with_tmpl == 'Document':
             from .classes.req_onto.Document import Document
             cls = Document(argms)
         # Назначаем шаблон самого верхнего класса, который всегда должен быть
-        elif new_class == 'Thing':
+        elif class_with_tmpl == 'Thing':
             # Если есть прямое обращение к классу Thing с неправильным префиксом, то выдаем сообщение об ошибке
             if class_object == 'Thing':
                 from .classes.onto.Blank import Blank
-                cls = Blank(new_class, 'NO class "%s" for the prefix "ONTO"' % argms['class'])
+                cls = Blank(class_with_tmpl, 'NO class "%s" for the prefix "ONTO"' % argms['class'])
             else:
                 from .classes.owl.Thing import Thing
                 cls = Thing(argms)
         else:
             from .classes.onto.Blank import Blank
-            cls = Blank(new_class, 'NO class "%s" for the prefix "ONTO"' % argms['class'])
+            cls = Blank(class_with_tmpl, 'Нет класса "%s" в онтологии с префиксом "%s"' % (argms['class'], argms['prefix']))
 
-    elif argms['prefix'] == 'owl':
-        if new_class == 'Thing':
+    elif argms['prefix'] == 'owl': # ---------------------- OWL ------------------------
+        if class_with_tmpl == 'Thing':
             from .classes.owl.Thing import Thing
             cls = Thing(argms)
         else:
             from .classes.onto.Blank import Blank
-            cls = Blank(new_class, 'NO class "%s" for the prefix "OWL"' % argms['class'] )
+            cls = Blank(class_with_tmpl, 'Нет класса "%s" в онтологии с префиксом "OWL"' % argms['class'] )
 
-    else:
+    else: # ---------------------- ????????? ------------------------
         from .classes.onto.Blank import Blank
-        cls = Blank(new_class, 'Unknow prefix "%s"' % argms['prefix'] )
+        cls = Blank(class_with_tmpl, 'Незарегистрированный префикс "%s"' % argms['prefix'] )
 
     return cls.getTemplate()

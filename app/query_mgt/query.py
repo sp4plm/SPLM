@@ -31,7 +31,7 @@ class Query:
     portal_data_json_file = os.path.join(os.path.dirname(__file__), "data", portal_data_json_file)
 
 
-    def __init__(self, module = None):
+    def __init__(self, module_name = module):
         self.url = ""
         self.http_headers = ""
         self.namespaces = ""
@@ -44,9 +44,9 @@ class Query:
         self.logger = self.initLoggerComponent().getAppLogger()
 
         try:
-            if module:
+            if module_name:
                 from app.app_api import get_module_sparqt_dir
-                self.SPARQT_DIR = get_module_sparqt_dir(module)
+                self.SPARQT_DIR = get_module_sparqt_dir(module_name)
 
                 if not os.path.exists(self.SPARQT_DIR):
                     os.mkdir(self.SPARQT_DIR)

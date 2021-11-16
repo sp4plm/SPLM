@@ -20,6 +20,38 @@
 		.xicon-pos {
 			margin-top: 10px;
 		}
+		img {
+			max-width: 50%;
+			height: auto;
+		}
+.title h2 {
+	font-size: 44px;
+	line-height: 44px;
+	color: #31372b;
+	font-weight: 600;
+	margin-bottom: 0px;
+	padding: 10px 0px;
+}
+.title h3 {
+	font-size: 20px;
+	line-height: 20px;
+	color: #800000;
+	font-weight: normal;
+	margin-bottom: 0px;
+	padding: 5px 0px;
+}
+ .brand-bg  {
+	box-shadow: #ddd 0px 0px 19px 8px;
+	margin-bottom: 29px;
+	background-color: #FFFFE0;
+  }
+ .brand-bg .img_box {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 80px 0px;
+}
 </style>
 
 <link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid.css')}}" />
@@ -43,6 +75,24 @@
 
 
 {% block page_main_content %}
-	<h2 class="content-header">{{ class_name }}</h2>
-	<h3>Error: {{ error }}</h3>
+	<h2 class="content-header">Категория: {{class_name | safe }}</h2>
+	<br>
+<div class="brand-bg">
+	{% for key, val in instance.items() %}
+	<div class="row">
+		<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 product_detail_side">
+		 		<div class="img_box">
+			 		{{ val.Avatar | safe }}
+		 		</div>
+		</div>
+		<div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 product_detail_side">
+				<div class="title">
+					<h2> {{ key }} </h2>
+					<h3> {{ val.Comment }} </h3>
+				</div>
+		</div>
+	</div>
+	{% endfor %}
+</div>
+
 {% endblock %}

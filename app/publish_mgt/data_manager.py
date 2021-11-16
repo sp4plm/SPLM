@@ -55,7 +55,7 @@ class DataManager(PublishModConf):
             if flg:
                 """ надо сохранить полученый файл """
                 self._last_downloaded = self._app_data_manager.get_last_downloaded_file()
-                print(self._debug_name +'._download_file.last_downloaded', self._last_downloaded)
+                # print(self._debug_name +'._download_file.last_downloaded', self._last_downloaded)
             self.to_log('Try make backup to file {} result: {}'.format(target_file, flg))
         return flg
 

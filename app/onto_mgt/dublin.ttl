@@ -25,9 +25,9 @@
   <http://splm.portal.web/osplm#web_prefix> "/onto"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://splm.portal.web/osplm#httpEnambled> xsd:true .
 
-<http://splm.portal.web/osplm#query_mgt> osplm:hasURL "/onto"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm#onto_mgt> osplm:hasURL "/onto"^^<http://www.w3.org/2001/XMLSchema#string> .
 
-<http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_ontomgt_1> .
+<http://splm.portal.web/osplm#onto_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_ontomgt_1> .
 <http://splm.portal.web/osplm/data#url_ontomgt_1> osplm:value "/onto/ontologies"^^<http://www.w3.org/2001/XMLSchema#string> .
 <http://splm.portal.web/osplm/data#url_ontomgt_1> rdfs:label "Онтологии"^^<http://www.w3.org/2001/XMLSchema#string> .
 <http://splm.portal.web/osplm/data#url_ontomgt_1> osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> .

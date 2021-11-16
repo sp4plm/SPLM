@@ -41,7 +41,7 @@ from app.onto_mgt.ontology import Ontology
 
 
 
-from app.app_api import compile_query, compile_query_result
+from app.app_api import compile_query, compile_query_result, tsc_query
 
 from urllib.parse import quote, unquote
 
@@ -56,7 +56,7 @@ from app.utilites.axiom_reader import getClassAxioms
 
 from app.utilites.data_serializer import DataSerializer
 
-
+from app.query_mgt.query import Query
 
 
 def js_code_tree(tree):
@@ -364,6 +364,150 @@ def nav_ontology():
 
 
     return render_template("/nav_ontology.html", relations = relations_html, axioms = axioms_html, instances = instances_html, js = js_code_tree(TREE) + _js, class_name = get_className(uri))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@mod.route('/data_navigation')
+# @login_required
+def data_navigation():
+    uri = unquote(request.args.get('uri') if request.args.get('uri') else "")
+
+    NAVIGATION_TEMPLATE = "navigation"
+    codes = Query().get_structure_codes_sparqt(NAVIGATION_TEMPLATE)
+    result = {code: tsc_query(code, {"URI": uri}) for code in codes}
+
+
+    for code in codes:
+        if re.findall(r'\.base$', code):
+            base_code = code
+            continue
+        elif re.findall(r'\.subject$', code):
+            subject_code = code
+            continue
+        elif re.findall(r'\.object$', code):
+            object_code = code
+            continue
+
+    navigation_base = result[base_code][0] if result[base_code] else {}
+
+    # КОД КОТОРЫЙ ФОРМИРУЕТ ССЫЛКУ НА ЗАГОЛОВОК
+    # ПОКА НЕ ИСПОЛЬЗУЕТСЯ
+
+    # navigation_base_uri = navigation_base['o'] if 'o' in navigation_base else ""
+    # navigation_base['href'] = url_for('onto.navigation', uri = navigation_base_uri)
+
+
+    # if 'o_cls' in navigation_base:
+    #     current_class = get_className(navigation_base['o_cls'])
+    #     current_class_base = current_class
+    #     while not os.path.exists(os.path.join(templates_path, current_class + ".html")):
+    #         QUERY = "SELECT ?parent WHERE { %s:%s rdfs:subClassOf ?parent .}" % (ONTOLOGY_NAME, current_class)
+    #         parent = _query(QUERY)
+    #         if parent:
+    #             current_class = get_className(parent[0]['parent'])
+    #         else:
+    #             break
+
+    #     my_class_object = get_class(current_class_base)
+    #     if my_class_object:
+    #         navigation_base['href'] = url_for('onto.uri_class', class_object = current_class_base, uri = navigation_base_uri)
+
+
+    # SUBJECT
+
+    firstPKey = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
+    secondPKey = 'http://www.w3.org/2000/01/rdf-schema#label'
+
+    firstPKey_data = {}
+    secondPKey_data = {}
+
+    subject_P = {}
+    subject_O = {}
+    subject_P_O = {}
+
+    for item in result[subject_code]:
+        if item['p'] == firstPKey:
+            firstPKey_data = item
+        elif item['p'] == secondPKey:
+            secondPKey_data = item
+        else:
+            if item['p'] not in list(subject_P.keys()):
+                subject_P[item['p']] = item['p_lbl'] if 'p_lbl' in list(item.keys()) and item['p_lbl'] else item['p']
+
+            if item['o'] not in list(subject_O.keys()):
+                subject_O[item['o']] = item['o_lbl'] if 'o_lbl' in list(item.keys()) and item['o_lbl'] else item['o']
+
+            subject_P_O[item['o']] = item['p']
+
+    total_subject_P_O = {}
+    for p_item in subject_P:
+        total_subject_P_O[p_item] = [key for key in subject_P_O if subject_P_O[key] == p_item]
+
+    # OBJECT
+
+
+    object_P = {}
+    object_S = {}
+    object_P_S = {}
+
+    for item in result[object_code]:
+        if item['p'] not in list(object_P.keys()):
+            object_P[item['p']] = item['p_lbl'] if 'p_lbl' in list(item.keys()) and item['p_lbl'] else item['p']
+
+        if item['s'] not in list(object_S.keys()):
+            object_S[item['s']] = item['s_lbl'] if 's_lbl' in list(item.keys()) and item['s_lbl'] else item['s']
+
+        object_P_S[item['s']] = item['p']
+
+
+    total_object_P_S = {}
+    for p_item in object_P:
+        total_object_P_S[p_item] = [key for key in object_P_S if object_P_S[key] == p_item]
+
+    if 'o_lbl' not in firstPKey_data and 'o' in firstPKey_data:
+        firstPKey_data['o_lbl'] = firstPKey_data['o']
+    if 'p_lbl' not in secondPKey_data and 'p' in secondPKey_data:
+        secondPKey_data['p_lbl'] = secondPKey_data['p']
+
+
+    return render_template("data_navigation.html",
+       base=navigation_base,
+       firstPKey=firstPKey_data,
+       secondPKey=secondPKey_data,
+       total_subject_P_O=total_subject_P_O,
+       subject_P=subject_P,
+       subject_O=subject_O,
+       total_object_P_S=total_object_P_S,
+       object_P=object_P,
+       object_S=object_S
+    )
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

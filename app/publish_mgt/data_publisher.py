@@ -94,6 +94,8 @@ class DataPublisher(DataManager):
                 except Exception as ex:
                     """"""
                     self.to_log('Exception on remove graph request. Error: {}' .format(ex))
+                    self.to_log(str(ex.args))
+                    self.to_log('graph name -> "{}"' . format(graph))
         # теперь собственно произведем загрузку файлов
         # надо определить какие файлы надо грузить
         self._clear_existed_graphs_from_files()
@@ -297,7 +299,7 @@ class DataPublisher(DataManager):
 
     def _clear_graph(self, graph_name):
         """ clear named graph """
-        return self._app_data_manager.clear_graph(graph_name)
+        return self._app_data_manager.clear_named_graph_data(graph_name)
 
     def _clear_storage(self):
         """ """

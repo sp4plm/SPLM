@@ -27,8 +27,33 @@
   <http://splm.portal.web/osplm#hasPathForSPARQLquery> "sparqt/"^^<http://www.w3.org/2001/XMLSchema#string> .
 
 <http://splm.portal.web/osplm#mod_data_navigation> osplm:hasURL <http://splm.portal.web/osplm/data#url_data_nav_1> .
-<http://splm.portal.web/osplm/data#url_data_nav_1> osplm:value "/datanav/Thing?prefix=owl"^^<http://www.w3.org/2001/XMLSchema#string> .
-<http://splm.portal.web/osplm/data#url_data_nav_1> rdfs:label "Навигация по данным"^^<http://www.w3.org/2001/XMLSchema#string> .
-<http://splm.portal.web/osplm/data#url_data_nav_1> osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> .
-<http://splm.portal.web/osplm/data#url_data_nav_1> osplm:hasHTMLtemplate "index.html"^^<http://www.w3.org/2001/XMLSchema#string> .
-<http://splm.portal.web/osplm/data#url_data_nav_1> osplm:shallBeShownInMenu <http://www.w3.org/2001/XMLSchema#true> .
+
+<http://splm.portal.web/osplm/data#url_data_nav_1> osplm:value "/datanav"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Стартовая страница"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#flase> ;
+  osplm:hasHTMLtemplate "index.html"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  osplm:shallBeShownInMenu <http://www.w3.org/2001/XMLSchema#true> .
+
+<http://splm.portal.web/osplm#mod_data_navigation> osplm:hasURL <http://splm.portal.web/osplm/data#url_data_nav_2> .
+
+<http://splm.portal.web/osplm/data#url_data_nav_2>  osplm:value "/datanav/Pizza?prefix=pizza"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Пицца"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#flase> ;
+  osplm:hasHTMLtemplate "Pizza.html"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  osplm:shallBeShownInMenu <http://www.w3.org/2001/XMLSchema#true> .
+
+<http://splm.portal.web/osplm#mod_data_navigation> osplm:hasURL <http://splm.portal.web/osplm/data#url_data_nav_3> .
+
+<http://splm.portal.web/osplm/data#url_data_nav_3>  osplm:value "/datanav/PizzaTopping?prefix=pizza"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Топпиг для пиццы"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#flase> ;
+  osplm:hasHTMLtemplate "index.html"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  osplm:shallBeShownInMenu <http://www.w3.org/2001/XMLSchema#true> .
+
+<http://splm.portal.web/osplm#mod_data_navigation> osplm:hasURL <http://splm.portal.web/osplm/data#url_data_nav_4> .
+
+<http://splm.portal.web/osplm/data#url_data_nav_4> osplm:value "/datanav/PizzaBase?prefix=pizza"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Основа для пиццы"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#flase> ;
+  osplm:hasHTMLtemplate "index.html"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  osplm:shallBeShownInMenu <http://www.w3.org/2001/XMLSchema#true> .
