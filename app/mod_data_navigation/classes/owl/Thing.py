@@ -11,28 +11,6 @@ from app.app_api import tsc_query
 from app import app_api
 onto_mod_api = app_api.get_mod_api('onto_mgt')
 
-def make_breadcrumbs(prefix, pref_unquote, cls):
-
-    bc = []
-    while cls != '':
-        if cls == 'Thing':
-            bc.insert(0, {'href': cls + '?' + 'prefix=owl', 'label': 'Thing'})
-            break
-
-        query_paretn_lbl = tsc_query('mod_data_navigation.Pizza.class_lbl',
-                                    {'URI': "<" + pref_unquote + cls + ">"})
-        df_prnt = pd.DataFrame(query_paretn_lbl)
-
-        if len(df_prnt):
-            cls_lbl = df_prnt.cls_lbl[0]
-        else:
-            cls_lbl = cls
-
-        bc.insert(0, {'href': cls + '?' + 'prefix=' + prefix, 'label' : cls_lbl})
-        cls = onto_mod_api.get_parent(prefix, cls)
-
-    return bc
-
 class Thing:
     def __init__(self, argm):
         prefixes = onto_mod_api.get_prefixes()
@@ -46,9 +24,6 @@ class Thing:
                 for p in prefixes:
                     if p[1] == self.pref_unquote:
                         self.argm['prefix'] = p[0]
-            else:
-                self.pref_unquote = ''
-                self.pref_4_data = ''
         else:
             self.parent = onto_mod_api.get_parent(argm['prefix'], argm['class'])
             for p in prefixes:
@@ -158,13 +133,11 @@ class Thing:
             if len(df2) > 0:
                 instances = df2.to_html(escape=False, index=False)
 
-            page_path = make_breadcrumbs(self.argm['prefix'], self.pref_unquote, self.argm['class'])
             templ = render_template("/Thing.html", title="",
                                     class_name=class_lbl,
                                     parent=parent,
                                     subclasses=subclasses,
                                     instances = instances,
-                                    argm=self.argm.items(),
-                                    page_path=page_path)
+                                    argm=self.argm.items())
 
         return templ

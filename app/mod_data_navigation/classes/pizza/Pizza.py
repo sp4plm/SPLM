@@ -13,27 +13,6 @@ from app import app_api
 from hashlib import sha1
 onto_mod_api = app_api.get_mod_api('onto_mgt')
 
-def make_breadcrumbs(prefix, pref_unquote, cls):
-
-    bc = []
-    while cls != 'Food':
-        if cls == '' or cls == 'Thing': # в онтологии могут быть несколько родительских классов и возможно не выполнение первого условия
-            break
-
-        query_paretn_lbl = tsc_query('mod_data_navigation.Pizza.class_lbl',
-                                    {'URI': "<" + pref_unquote + cls + ">"})
-        df_prnt = pd.DataFrame(query_paretn_lbl)
-
-        if len(df_prnt):
-            cls_lbl = df_prnt.cls_lbl[0]
-        else:
-            cls_lbl = cls
-
-        bc.insert(0, {'href': cls + '?' + 'prefix=' + prefix, 'label' : cls_lbl})
-        cls = onto_mod_api.get_parent(prefix, cls)
-
-    return bc
-
 class Pizza:
     def __init__(self, argm):
 
@@ -53,7 +32,7 @@ class Pizza:
         else:
             self.pref_4_data = ''
 
-    def __make_href__(self, cls='', prf='', uri='', lbl=''):
+    def __make_href__(self,cls='',prf='', uri='', lbl=''):
         if uri =='':
             uri_str = '<a href="{}?prefix={}">{}</a>'.format(cls,prf,lbl)
         else:
@@ -67,6 +46,8 @@ class Pizza:
         Возвращает шаблон HTML страницы, сформированный в соответствии с полученными в URL аргументами
         '''
 
+        pref = self.argm['prefix']
+        parent = self.parent
         subclasses = ''
         instances = ''
         d = {}
@@ -79,6 +60,16 @@ class Pizza:
             class_lbl = df_cls.cls_lbl[0]
         else:
             class_lbl = self.argm['class']
+
+        query_paretn_lbl = tsc_query('mod_data_navigation.Pizza.class_lbl',
+                                    {'URI': "<" + self.pref_unquote + self.parent + ">"})
+        df_prnt = pd.DataFrame(query_paretn_lbl)
+
+        if len(df_prnt):
+            parent_lbl = df_prnt.cls_lbl[0]
+        else:
+            parent_lbl = self.parent
+
 
         # Если есть аргумент URI, то значит показываем страничку "Экземпляра класса"
         if 'uri' in self.argm.keys():
@@ -157,16 +148,21 @@ class Pizza:
                 df2.drop('inst_lbl', axis=1, inplace=True)
                 df2.columns = ['Наименование', 'Картинка']
 
+            if self.parent == 'Thing':
+                pref = 'owl'
+
+            if self.parent:
+                parent = self.__make_href__(cls=self.parent, prf=pref, lbl=parent_lbl)
+
             if len(df) > 0:
                 subclasses = df.to_html(escape=False, index=False)
 
             if len(df2) > 0:
                 instances = df2.to_html(escape=False, index=False)
 
-            page_path = make_breadcrumbs(self.argm['prefix'], self.pref_unquote, self.argm['class'])
             templ = render_template("/Pizza.html", title="Пицца", class_name=class_lbl,
+                                                                            parent=parent,
                                                                             subclasses=subclasses,
-                                                                            instances=instances,
-                                                                            page_path=page_path)
+                                                                            instances = instances)
 
         return templ
