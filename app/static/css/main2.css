@@ -31,7 +31,7 @@ body { margin-bottom: 30px; padding-top:50px; font-family: "Helvetica Neue", Hel
 .cln{float:left;clear:both;}
 .clns-box .cln{clear:none;}
 
-.navbar-fixed-top{background-image:none;background-color: #d0f0c0; border-color: #d0c0f0;margin-bottom:0px;}
+.navbar-fixed-top{background-image:none;background-color: #ccf2ff; border-color: #d0c0f0;margin-bottom:0px;}
 .navbar-inverse .navbar-brand:hover,
 .navbar-inverse .navbar-nav > li > a{color: #365c61;}
 .navbar-inverse .navbar-nav > li > a:hover{color: #365c61;}
@@ -160,7 +160,7 @@ img {
 .terms_st {cursor:pointer;font-weight:bold;font-size:1.2em;}
 .cookSection_st {padding:0px !important; height:auto;}
 
-.TableRow_header {font-weight:bold; text-align:center; background-color:#d0f0c0;}
+.TableRow_header {font-weight:bold; text-align:center; background-color:#ccf2ff;}
 .TableRow_not_header {font-weight:bold;}
 
 .analytics_export_ul {padding-left:40px;list-style:none;}
@@ -194,7 +194,7 @@ img {
 .pagenavbar_icon {background-color: #fff;}
 .page-nav-container_st {padding:0px;clear:both;width:auto;}
 
-.textcompare_submit {background:#d0f0c0;border: 1px solid;border-color:#000000;}
+.textcompare_submit {background:#ccf2ff;border: 1px solid;border-color:#000000;}
 
 .impyvllist_section {padding:0px;height:auto;}
 .impyvllist_section_ul {width:100%;float:left;clear:none;list-style:none;padding-bottom:20px;padding-left:40px;}
@@ -230,7 +230,7 @@ img {
     font-weight: bold;
     text-align: left;
     border: none;
-    background: #d0f0c0;
+    background: #ccf2ff;
     padding: 10px 15px;
     font-size: 14px;
 }
@@ -238,7 +238,7 @@ img {
     font-weight: bold;
     text-align: left;
     border: none;
-    background: #d0f0c0;
+    background: #ccf2ff;
     padding: 10px 15px;
     font-size: 14px;
 }
@@ -254,7 +254,7 @@ img {
     padding: 10px 15px;
     font-size: 14px;
     vertical-align: top;
-    border-bottom: 1px solid #d0f0c0;
+    border-bottom: 1px solid #ccf2ff;
 }
 .dataframe tbody tr:nth-child(even){
 	# background: #E9F5E3;
