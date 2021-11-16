@@ -20,35 +20,103 @@
 		.xicon-pos {
 			margin-top: 10px;
 		}
+        .row {
+        	padding: 10px 10px 10px 10px;
+        }
+		 .brand-bg  {
+			background: #fff;
+			padding: 10px 0px 10px 0px;
+			text-align: center;
+			background-color: #ecf1f7;
+		  }
+		 .brand-bg .brand-box {
+            font-size: 30px;
+			line-height: 20px;
+			font-weight: 600;
+			margin-bottom: 10px;
+			padding: 5px 0px;
+			margin: 10px 0 40px 0;
+		 }
+		 .brand-bg:hover {
+		    box-shadow: #ddd 0px 0px 19px 8px;
+			background: #ecf1f7;
+		 }
+		 .brand-bg .count-box {
+		    font-size: 18px;
+        	border: solid 2px Grey;
+	        border-radius: 15px 15px 15px 15px;
+	        padding: 10px 10px 10px 10px;
+	        margin: 10px;
+        }
+         .brand-bg .text {
+		    font-size: 18px;
+        }
+         .brand-bg .digit {
+		    font-size: 20px;
+		    font-weight: bold;
+		    padding: 10px;
+        }
+         .brand-bg .img-box {
+	        padding: 10px 10px 10px 10px;
+	        margin: 10px 0 10px 0;
+        }
   	</style>
 
-
-    <link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid.css')}}" />
-    <link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid-bootstrap.css')}}" />
-
-
-    <link rel="stylesheet" href="{{url_for('static', filename='css/portal.css')}}" />
-    <link rel="stylesheet" href="{{url_for('static', filename='css/portal.datamanager.css')}}" />
-    <link rel="stylesheet" href="{{url_for('static', filename='css/portal.jqgrid.css')}}" />
-
-    <link rel="stylesheet" href="{{url_for('static', filename='css/jqtree.css')}}" />
+<link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid.css')}}" />
+<link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid-bootstrap.css')}}" />
+<link rel="stylesheet" href="{{url_for('static', filename='css/portal.css')}}" />
+<link rel="stylesheet" href="{{url_for('static', filename='css/portal.datamanager.css')}}" />
+<link rel="stylesheet" href="{{url_for('static', filename='css/portal.jqgrid.css')}}" />
+<link rel="stylesheet" href="{{url_for('static', filename='css/jqtree.css')}}" />
 
 {% endblock %}
 
 {% block page_sidenav %}
-	{% if js and "#tree3" in js %}
-		<div class="scroll-well">
-			<div id="tree3"></div>
-		</div>
-	{% else %}
-		{{super()}}
-	{% endif %}
+    <div style="text-align: center;">
+        <img src="/static/img/logo.png" width="300" height="300" alt="pizza">
+    </div>
 {% endblock %}
 
 
 {% block page_main_content %}
 	<h2 class="content-header">{{ heading }}</h2>
-	<h4> {{ message }}</h4>
-	<h3><a href="datanav/Thing?prefix=owl">Навигация по дереву онтологии с кореневого класса "Thing"</a></h3>
-	<h3><a href="datanav/Pizza?prefix=pizza">Пример традиционной навигации на примере "Пиццы"</a></h3>
+	<h4> {{ message1 }}</h4>
+
+    <div class="container-fluid">
+        <div class="row">
+            {% for key, val in stat.items() %}
+                <div class="col-xs-6 col-md-4">
+                    <div class="brand-bg">
+                        <div class="img-box">
+                            {{ val.img | safe }}
+                        </div>
+                        <div class="brand-box">
+                            {{ val.href | safe }}
+                        </div>
+                        <div class="count-box">
+                            <span class="text">Видов:</span>
+                            <span class="digit">{{ val.cls }}</span>
+                        </div>
+                        <div class="count-box">
+                            <span class="text">Доступно для заказа:</span>
+                            <span class="digit">{{ val.inst }}</span>
+                        </div>
+                      </div>
+                </div>
+            {% endfor %}
+        </div>
+    <hr/>
+        <h4> {{ message2 }}</h4>
+        <div class="row">
+            <div class="col-xs-12 col-md-12">
+                <div class="brand-bg">
+                    <span class="brand-box">
+                        <a href="datanav/Thing?prefix=owl">Thing</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr/>
+
 {% endblock %}

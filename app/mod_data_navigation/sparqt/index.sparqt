@@ -1,0 +1,17 @@
+{
+    "count_instances":{
+        "_CMT_":"Считает количество экземпляров класса с учетом подклассов",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"select (count(distinct ?inst) as ?inst_qnt) {
+                ?inst a ?type .
+                ?type rdfs:subClassOf* #{URI} .
+                }"
+    },
+    "count_subclasses":{
+        "_CMT_":"Считает количество подклассов",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"select (count(distinct ?cls) - 1 as ?cls_qnt)  {
+                ?cls rdfs:subClassOf* #{URI} .
+                }"
+    }
+}

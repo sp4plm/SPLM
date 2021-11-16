@@ -8,6 +8,7 @@ from flask.views import MethodView
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy.exc import NoResultFound
 from werkzeug.urls import url_parse
+from app.app_api import tsc_query
 from app import app_api
 from app.user_mgt.user_conf import UserConf
 from app.user_mgt.models.users import db, User
@@ -40,10 +41,27 @@ def getParent(cur_class, argms, list_of_templates):
 @mod.route(url_prefix)
 @_auth_decorator
 def startPage():
-    heading = 'Начальная страница'
-    message = 'Начните навигацию по порталу с любой из указанных ниже страниц'
+    heading = 'Стартовая страница'
+    message1 = 'Стандартная навигация'
+    message2 = 'Альтернативная навигация по дереву онтологии с кореневого класса "Thing"'
 
-    return render_template("/index.html", heading=heading, message=message)
+    page_stat = {'pizza':['<http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza>',
+                          '<img src="/static/files/images/Pizza.png" width="200" height="200" alt="Pizza">',
+                          '<a href="datanav/Pizza?prefix=pizza">Пицца</a>'],
+                 'topping':['<http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaTopping>',
+                            '<img src="/static/files/images/PizzaTopping.png" width="200" height="200" alt="PizzaTopping">',
+                            '<a href="datanav/PizzaTopping?prefix=pizza">Топпиг</a>'],
+                 'base':['<http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaBase>',
+                         '<img src="/static/files/images/PizzaBase.png" width="200" height="200" alt="PizzaBase">',
+                         '<a href="datanav/PizzaBase?prefix=pizza">Основа для пицца</a>']}
+
+    stat = {}
+    for key, val in page_stat.items():
+        q_inst = tsc_query('mod_data_navigation.index.count_instances',{'URI':val[0]})
+        q_cls = tsc_query('mod_data_navigation.index.count_subclasses',{'URI':val[0]})
+        stat.update({key:{'inst':q_inst[0]['inst_qnt'], 'cls':q_cls[0]['cls_qnt'], 'img':val[1], 'href':val[2]}})
+
+    return render_template("/index.html", heading=heading, stat=stat, message1=message1, message2=message2)
 
 @mod.route(url_prefix + '/<class_object>')
 @_auth_decorator
@@ -115,23 +133,6 @@ def uri_class(class_object):
             if class_object == 'Thing':
                 from .classes.onto.Blank import Blank
                 cls = Blank(class_with_tmpl, 'Нет класса "%s" в онтологии с префиксом "%s"' % (argms['class'], argms['prefix']))
-            else:
-                from .classes.owl.Thing import Thing
-                cls = Thing(argms)
-        else:
-            from .classes.onto.Blank import Blank
-            cls = Blank(class_with_tmpl, 'Нет класса "%s" в онтологии с префиксом "%s"' % (argms['class'], argms['prefix']))
-
-    elif argms['prefix'] == 'req_onto': # ---------------------- REQ_ONTO ------------------------
-        if class_with_tmpl == 'Document':
-            from .classes.req_onto.Document import Document
-            cls = Document(argms)
-        # Назначаем шаблон самого верхнего класса, который всегда должен быть
-        elif class_with_tmpl == 'Thing':
-            # Если есть прямое обращение к классу Thing с неправильным префиксом, то выдаем сообщение об ошибке
-            if class_object == 'Thing':
-                from .classes.onto.Blank import Blank
-                cls = Blank(class_with_tmpl, 'NO class "%s" for the prefix "ONTO"' % argms['class'])
             else:
                 from .classes.owl.Thing import Thing
                 cls = Thing(argms)

@@ -13,6 +13,27 @@ from app import app_api
 from hashlib import sha1
 onto_mod_api = app_api.get_mod_api('onto_mgt')
 
+def make_breadcrumbs(prefix, pref_unquote, cls):
+
+    bc = []
+    while cls != 'Food':
+        if cls == '' or cls == 'Thing': # в онтологии могут быть несколько родительских классов и возможно не выполнение первого условия
+            break
+
+        query_paretn_lbl = tsc_query('mod_data_navigation.Pizza.class_lbl',
+                                    {'URI': "<" + pref_unquote + cls + ">"})
+        df_prnt = pd.DataFrame(query_paretn_lbl)
+
+        if len(df_prnt):
+            cls_lbl = df_prnt.cls_lbl[0]
+        else:
+            cls_lbl = cls
+
+        bc.insert(0, {'href': cls + '?' + 'prefix=' + prefix, 'label' : cls_lbl})
+        cls = onto_mod_api.get_parent(prefix, cls)
+
+    return bc
+
 class PizzaBase:
     def __init__(self, argm):
 
@@ -38,7 +59,6 @@ class PizzaBase:
         else:
             uri_str = '<a href="{}?prefix={}&uri={}">{}</a>'.format(cls,prf,uri,lbl)
 
-
         return uri_str
 
     def getTemplate(self):
@@ -46,13 +66,12 @@ class PizzaBase:
         Возвращает шаблон HTML страницы, сформированный в соответствии с полученными в URL аргументами
         '''
 
-        pref = self.argm['prefix']
-        parent = self.parent
         subclasses = ''
         instances = ''
+        page_path = make_breadcrumbs(self.argm['prefix'], self.pref_unquote, self.argm['class'])
         d = {}
 
-        query_class_lbl = tsc_query('mod_data_navigation.Pizza.class_lbl',
+        query_class_lbl = tsc_query('mod_data_navigation.PizzaBase.class_lbl',
                      {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
         df_cls = pd.DataFrame(query_class_lbl)
 
@@ -60,16 +79,6 @@ class PizzaBase:
             class_lbl = df_cls.cls_lbl[0]
         else:
             class_lbl = self.argm['class']
-
-        query_paretn_lbl = tsc_query('mod_data_navigation.Pizza.class_lbl',
-                                    {'URI': "<" + self.pref_unquote + self.parent + ">"})
-        df_prnt = pd.DataFrame(query_paretn_lbl)
-
-        if len(df_prnt):
-            parent_lbl = df_prnt.cls_lbl[0]
-        else:
-            parent_lbl = self.parent
-
 
         # Если есть аргумент URI, то значит показываем страничку "Экземпляра класса"
         if 'uri' in self.argm.keys():
@@ -82,7 +91,6 @@ class PizzaBase:
             gravatar_url = "http://www.gravatar.com/avatar/{}?d=identicon&s=300".format(myHash)
             Avatar = '<img src=\"' + gravatar_url + '\" width=\"400\" height=\"400\" alt=\"pizza\">'
 
-
             if len(df) > 0:
                 for ind, row in df.iterrows():
                     if not row.inst_lbl in d:
@@ -90,19 +98,20 @@ class PizzaBase:
                     else:
                         d[row.inst_lbl].update({row.att_cls_lbl : row.att_val})
 
-
                 d[row.inst_lbl].update({'Avatar':Avatar})
 
                 templ = render_template("/PizzaBase_inst.html", title="Пицца",
                                 class_name=self.__make_href__(cls=self.argm['class'], prf=self.argm['prefix'], uri='',lbl=class_lbl),
                                 instance=d,
-                                argm=self.argm.items())
+                                argm=self.argm.items(),
+                                page_path=page_path)
 
             else:
                 templ = render_template("/PizzaBase_inst.html", title="Пицца",
                                 class_name=self.__make_href__(cls=self.argm['class'], prf=self.argm['prefix'], uri='', lbl=class_lbl),
                                 instance={"No data":{"Comment":"about this instance.","Avatar":""}},
-                                argm=self.argm.items())
+                                argm=self.argm.items(),
+                                page_path=page_path)
 
         # В остальных случаях показываем страничку со "Списком экземпляров класса и его подклассами"
         else:
@@ -115,6 +124,8 @@ class PizzaBase:
                          '?prefix=' + self.argm['prefix'] + '">' + df.cls_lbl + '</a>'
                 df.drop('cls_lbl', axis=1, inplace=True)
                 df.columns = ['Наименование','Доступно для заказа']
+
+                subclasses = df.to_html(escape=False, index=False)
 
             # ------------- list of instances --------------------------
             query_list_inst = tsc_query('mod_data_navigation.PizzaBase.list_of_instances',
@@ -137,21 +148,11 @@ class PizzaBase:
                 df2.drop('inst_lbl', axis=1, inplace=True)
                 df2.columns = ['Наименование', 'Картинка']
 
-            if self.parent == 'Thing':
-                pref = 'owl'
-
-            if self.parent:
-                parent = self.__make_href__(cls=self.parent, prf=pref, lbl=parent_lbl)
-
-            if len(df) > 0:
-                subclasses = df.to_html(escape=False, index=False)
-
-            if len(df2) > 0:
                 instances = df2.to_html(escape=False, index=False)
 
             templ = render_template("/PizzaBase.html", title="Пицца", class_name=class_lbl,
-                                                                            parent=parent,
                                                                             subclasses=subclasses,
-                                                                            instances = instances)
+                                                                            instances = instances,
+                                                                            page_path=page_path)
 
         return templ

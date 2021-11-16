@@ -20,6 +20,24 @@
 		.xicon-pos {
 			margin-top: 10px;
 		}
+		.sdbarHR {
+			align "center";
+			width: 80%;
+			border-top: 1px solid #31313145;
+		}
+		.sdbarTitle {
+			padding: 10px 0px 10px 0px;
+			text-align: center;
+			font-size: 18px;
+			font-weight: 500;
+		}
+		.sdbarT {
+			padding: 5px 0px 5px 0px;
+			font-weight: 400;
+		}
+		.sdbarR {
+			padding: 5px 0px 5px 5px;
+		}
 </style>
 
 <link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid.css')}}" />
@@ -32,13 +50,25 @@
 {% endblock %}
 
 {% block page_sidenav %}
-	{% if js and "#tree3" in js %}
-		<div class="scroll-well">
-			<div id="tree3"></div>
-		</div>
-	{% else %}
-		{{super()}}
-	{% endif %}
+    <div style="text-align: center;">
+        <img src="/static/files/images/Pizza.png" width="350" height="350" alt="pizza">
+    </div>
+	<hr class="sdbarHR" />
+	<div class="sdbarTitle">Самое популярное</div>
+	<div>
+		<span class="sdbarT">Самая сытная пицца:</span>
+		<span class="sdbarR">{{ sidebar1 | safe }}</span>
+	</div>
+	<div>
+		<span class="sdbarT">Пицца с морепродуктами:</span>
+		<span class="sdbarR">{{ sidebar2 | safe }}</span>
+	</div>
+	<div>
+		<span class="sdbarT">Самая дешевая пицца:</span>
+		<span class="sdbarR">{{ sidebar3 | safe }}</span>
+	</div>
+	<span class="sdbarT">Вегитарианская пицца:</span>
+	<span class="sdbarR">{{ sidebar4 | safe }}</span>
 {% endblock %}
 
 
