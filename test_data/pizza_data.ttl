@@ -1,0 +1,469 @@
+# baseURI: http://www.co-ode.org/ontologies/pizza/pizza.owl
+# prefix: pizza
+
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pizza: <http://www.co-ode.org/ontologies/pizza/pizza.owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix terms: <http://purl.org/dc/terms/> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+pizza:America
+  a pizza:Country ;
+  a owl:Thing ;
+  pizza:hasBase pizza:base_1 ;
+  pizza:hasPrice "1250" ;
+  pizza:hasSize "31" ;
+.
+pizza:AmericanHot_1
+  a pizza:AmericanHot ;
+  a pizza:Hot ;
+  pizza:hasBase pizza:base_2 ;
+  pizza:hasPrice "1250" ;
+  pizza:hasSize "31" ;
+  pizza:hasTopping pizza:HotGreenPepperTopping_1 ;
+  pizza:hasTopping pizza:JalapenoPepperTopping_1 ;
+  pizza:hasTopping pizza:PeperoniSausageTopping_1 ;
+  pizza:hasTopping pizza:tomato_top_inst ;
+  rdfs:label "American Hot" ;
+.
+pizza:AnchoviesTopping_1
+  a pizza:AnchoviesTopping ;
+  rdfs:label "Anchovies Topping" ;
+.
+pizza:ArtichokeTopping_1
+  a pizza:ArtichokeTopping ;
+  rdfs:label "Artichoke Topping" ;
+.
+pizza:CajunSpiceTopping_1
+  a pizza:CajunSpiceTopping ;
+  rdfs:label "Cajun Spice Topping" ;
+.
+pizza:Calzone_1
+  a pizza:Calzone ;
+  rdfs:label "Основа для закрытых пицц (Кальцоне)" ;
+.
+pizza:Capricciosa_1
+  a pizza:Capricciosa ;
+  pizza:hasBase pizza:base_1 ;
+  pizza:hasPrice "2110" ;
+  pizza:hasSize "31" ;
+  pizza:hasTopping pizza:ArtichokeTopping_1 ;
+  pizza:hasTopping pizza:ParmaHamTopping_1 ;
+  pizza:hasTopping pizza:TobascoPepperSauce_1 ;
+  pizza:hasTopping pizza:mozarella_top_inst ;
+  rdfs:label "Capricciosa" ;
+.
+pizza:CheeseyVegetableTopping_1
+  a pizza:CheeseyVegetableTopping ;
+  rdfs:label "Cheesey Vegetable Topping" ;
+.
+pizza:ChickenTopping_1
+  a pizza:ChickenTopping ;
+  rdfs:label "Chicken Topping" ;
+.
+pizza:ClosedPizza_1
+  a pizza:ClosedPizza ;
+  pizza:hasBase pizza:Calzone_1 ;
+  pizza:hasPrice "1900" ;
+  pizza:hasSize "38" ;
+  pizza:hasTopping pizza:ArtichokeTopping_1 ;
+  pizza:hasTopping pizza:TobascoPepperSauce_1 ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  rdfs:comment "Это острая пицца, по старинному рецепту." ;
+  rdfs:label "Закрытая пицца 1" ;
+.
+pizza:England
+  a pizza:Country ;
+  a owl:Thing ;
+  pizza:hasBase pizza:base_2 ;
+  pizza:hasPrice "1250" ;
+  pizza:hasSize "31" ;
+  rdfs:label "Британская пицца" ;
+.
+pizza:Fiorentina_1
+  a pizza:Fiorentina ;
+  pizza:hasBase pizza:base_2 ;
+  pizza:hasPrice "1900" ;
+  pizza:hasSize "38" ;
+  pizza:hasTopping pizza:OliveTopping_1 ;
+  pizza:hasTopping pizza:SpinachTopping_1 ;
+  pizza:hasTopping pizza:mozarella_top_inst ;
+  pizza:hasTopping pizza:tomato_top_inst ;
+  rdfs:label "Fiorentina" ;
+.
+pizza:FourCheesesTopping_1
+  a pizza:FourCheesesTopping ;
+  rdfs:label "Four Cheeses Topping" ;
+.
+pizza:FourSeasons_1
+  a pizza:FourSeasons ;
+  pizza:hasBase pizza:base_1 ;
+  pizza:hasPrice "1900" ;
+  pizza:hasSize "38" ;
+  pizza:hasTopping pizza:AnchoviesTopping_1 ;
+  pizza:hasTopping pizza:OliveTopping_1 ;
+  pizza:hasTopping pizza:SpinachTopping_1 ;
+  pizza:hasTopping pizza:mozarella_top_inst ;
+  pizza:hasTopping pizza:tomato_top_inst ;
+  rdfs:label "Four Seasons" ;
+.
+pizza:France
+  a pizza:Country ;
+  pizza:hasBase pizza:base_1 ;
+  pizza:hasPrice "1250" ;
+  pizza:hasSize "31" ;
+  rdfs:label "Пицца Франция" ;
+.
+pizza:FruttiDiMare_1
+  a pizza:FruttiDiMare ;
+  pizza:hasBase pizza:base_2 ;
+  pizza:hasPrice "1900" ;
+  pizza:hasSize "38" ;
+  pizza:hasTopping pizza:MixedSeafoodTopping_1 ;
+  pizza:hasTopping pizza:OliveTopping_1 ;
+  pizza:hasTopping pizza:ParmesanTopping_1 ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  rdfs:label "Frutti DiMare" ;
+.
+pizza:Germany
+  a pizza:Country ;
+  pizza:hasBase pizza:base_2 ;
+  pizza:hasPrice "1250" ;
+  pizza:hasSize "31" ;
+  rdfs:label "Пицца Германия" ;
+.
+pizza:Giardiniera_1
+  a pizza:Giardiniera ;
+  pizza:hasBase pizza:base_1 ;
+  pizza:hasPrice "1900" ;
+  pizza:hasSize "38" ;
+  rdfs:label "Giardiniera" ;
+.
+pizza:GoatsCheeseTopping_1
+  a pizza:GoatsCheeseTopping ;
+  pizza:hasPrice "1900" ;
+  pizza:hasSize "38" ;
+  rdfs:label "Goats Cheese Topping" ;
+.
+pizza:GreenPepperTopping_1
+  a pizza:GreenPepperTopping ;
+  rdfs:label "Green Pepper Topping" ;
+.
+pizza:HotGreenPepperTopping_1
+  a pizza:HotGreenPepperTopping ;
+  pizza:hasSpiciness pizza:AmericanHot_1 ;
+  rdfs:label "Hot Green Pepper Topping" ;
+.
+pizza:HotSpicedBeefTopping_1
+  a pizza:HotSpicedBeefTopping ;
+  rdfs:label "Hot Spiced Beef Topping" ;
+.
+pizza:Italy
+  a pizza:Country ;
+  pizza:hasBase pizza:base_2 ;
+  pizza:hasPrice "1250" ;
+  pizza:hasSize "31" ;
+  rdfs:label "Итальянская пицца" ;
+.
+pizza:JalapenoPepperTopping_1
+  a pizza:JalapenoPepperTopping ;
+  rdfs:label "Jalapeno Pepper Topping" ;
+.
+pizza:LaReine_1
+  a pizza:LaReine ;
+  pizza:hasBase pizza:base_2 ;
+  pizza:hasPrice "1900" ;
+  pizza:hasSize "38" ;
+  rdfs:label "La Reine" ;
+.
+pizza:LeekTopping_1
+  a pizza:LeekTopping ;
+  rdfs:label "Leek Topping" ;
+.
+pizza:Margherita_1
+  a pizza:Margherita ;
+  pizza:hasBase pizza:base_1 ;
+  pizza:hasPrice "1250" ;
+  pizza:hasSize "31" ;
+  rdfs:label "Margherita" ;
+.
+pizza:MixedSeafoodTopping_1
+  a pizza:MixedSeafoodTopping ;
+  rdfs:label "Mixed Seafood Topping" ;
+.
+pizza:MushroomTopping_1
+  a pizza:MushroomTopping ;
+  rdfs:label "Mushroom Topping" ;
+.
+pizza:NamedIndividual_0
+  a pizza:Pizza ;
+  pizza:hasBase pizza:base_1 ;
+  pizza:hasPrice "1200" ;
+  pizza:hasSize "38" ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasTopping pizza:mozarella_top_inst ;
+  rdfs:comment "Это самая популярная и вкусная пицца, которую наш шеф повар приготовил по оригинальному старинному рецепту." ;
+  rdfs:label "Пицца от шеф повара" ;
+.
+pizza:NamedIndividual_1
+  a pizza:American ;
+  pizza:hasBase pizza:base_2 ;
+  pizza:hasPrice "1580" ;
+  pizza:hasSize "31" ;
+  pizza:hasTopping pizza:HotSpicedBeefTopping_1 ;
+  pizza:hasTopping pizza:ParmaHamTopping_1 ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasTopping pizza:tomato_top_inst ;
+  rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
+  rdfs:label "Американо" ;
+.
+pizza:NamedIndividual_2
+  a pizza:Cajun ;
+  pizza:hasBase pizza:base_1 ;
+  pizza:hasPrice "1700" ;
+  pizza:hasSize "31" ;
+  pizza:hasTopping pizza:PeperonataTopping_1 ;
+  pizza:hasTopping pizza:PrawnsTopping_1 ;
+  pizza:hasTopping pizza:RedOnionTopping_1 ;
+  pizza:hasTopping pizza:TobascoPepperSauce_1 ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasTopping pizza:mozarella_top_inst ;
+  pizza:hasTopping pizza:tomato_top_inst ;
+  rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
+  rdfs:label "Каджун 1" ;
+.
+pizza:NamedIndividual_3
+  a pizza:Mushroom ;
+  pizza:hasBase pizza:base_2 ;
+  pizza:hasPrice "2300" ;
+  pizza:hasSize "31" ;
+  pizza:hasTopping pizza:MushroomTopping_1 ;
+  pizza:hasTopping pizza:SundriedTomatoTopping_1 ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
+  rdfs:label "Грибная пицца 1" ;
+.
+pizza:NamedIndividual_4
+  a pizza:Mushroom ;
+  pizza:hasBase pizza:base_2 ;
+  pizza:hasPrice "2500" ;
+  pizza:hasSize "31" ;
+  pizza:hasTopping pizza:MushroomTopping_1 ;
+  pizza:hasTopping pizza:SlicedTomatoTopping_1 ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
+  rdfs:label "Грибная пицца 2" ;
+.
+pizza:NamedIndividual_5
+  a pizza:Mushroom ;
+  pizza:hasBase pizza:base_2 ;
+  pizza:hasPrice "1250" ;
+  pizza:hasSize "31" ;
+  pizza:hasTopping pizza:MushroomTopping_1 ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasTopping pizza:mozarella_top_inst ;
+  rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
+  rdfs:label "Грибная пицца 3" ;
+.
+pizza:NamedIndividual_6
+  a pizza:Mushroom ;
+  pizza:hasBase pizza:base_2 ;
+  pizza:hasPrice "1300" ;
+  pizza:hasSize "31" ;
+  pizza:hasTopping pizza:MushroomTopping_1 ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
+  rdfs:label "Грибная пицца 4" ;
+.
+pizza:NamedIndividual_7
+  a pizza:Soho ;
+  pizza:hasBase pizza:base_1 ;
+  pizza:hasPrice "1000" ;
+  pizza:hasSize "31" ;
+  pizza:hasTopping pizza:OliveTopping_1 ;
+  pizza:hasTopping pizza:ParmesanTopping_1 ;
+  pizza:hasTopping pizza:RocketTopping_1 ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasTopping pizza:mozarella_top_inst ;
+  pizza:hasTopping pizza:tomato_top_inst ;
+  rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
+  rdfs:label "Пицца Сохо 1" ;
+.
+pizza:NamedIndividual_8
+  a pizza:Soho ;
+  pizza:hasBase pizza:base_1 ;
+  pizza:hasPrice "1600" ;
+  pizza:hasSize "31" ;
+  pizza:hasTopping pizza:OliveTopping_1 ;
+  pizza:hasTopping pizza:RocketTopping_1 ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasTopping pizza:tomato_top_inst ;
+  rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
+  rdfs:label "Пицца Сохо 2" ;
+.
+pizza:NamedIndividual_9
+  a pizza:Soho ;
+  pizza:hasBase pizza:base_1 ;
+  pizza:hasPrice "900" ;
+  pizza:hasSize "31" ;
+  pizza:hasTopping pizza:ParmesanTopping_1 ;
+  pizza:hasTopping pizza:RocketTopping_1 ;
+  pizza:hasTopping pizza:SlicedTomatoTopping_1 ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
+  rdfs:label "Пицца Сохо 3" ;
+.
+pizza:Napoletana_1
+  a pizza:Napoletana ;
+  pizza:hasBase pizza:base_1 ;
+  pizza:hasPrice "1250" ;
+  pizza:hasSize "31" ;
+  rdfs:label "Napoletana" ;
+.
+pizza:OliveTopping_1
+  a pizza:OliveTopping ;
+  rdfs:label "Olive Topping" ;
+.
+pizza:ParmaHamTopping_1
+  a pizza:ParmaHamTopping ;
+  rdfs:label "Parma Ham Topping" ;
+.
+pizza:Parmense_1
+  a pizza:Parmense ;
+  pizza:hasBase pizza:base_2 ;
+  pizza:hasPrice "1250" ;
+  pizza:hasSize "31" ;
+  rdfs:label "Parmense" ;
+.
+pizza:ParmesanTopping_1
+  a pizza:ParmesanTopping ;
+  rdfs:label "Parmesan Topping" ;
+.
+pizza:PeperonataTopping_1
+  a pizza:PeperonataTopping ;
+  rdfs:label "Peperonata Topping" ;
+.
+pizza:PeperoniSausageTopping_1
+  a pizza:PeperoniSausageTopping ;
+  rdfs:label "Peperoni Sausage Topping" ;
+.
+pizza:PetitPoisTopping_1
+  a pizza:PetitPoisTopping ;
+  rdfs:label "Petit Pois Topping" ;
+.
+pizza:PineKernels_1
+  a pizza:PineKernels ;
+  rdfs:label "Pine Kernels" ;
+.
+pizza:PolloAdAstra_1
+  a pizza:PolloAdAstra ;
+  pizza:hasBase pizza:base_1 ;
+  pizza:hasPrice "1250" ;
+  pizza:hasSize "31" ;
+  rdfs:label "Pollo Ad Astra" ;
+.
+pizza:PrawnsTopping_1
+  a pizza:PrawnsTopping ;
+  rdfs:label "Prawns Topping" ;
+.
+pizza:PrinceCarlo_1
+  a pizza:PrinceCarlo ;
+  pizza:hasBase pizza:base_2 ;
+  pizza:hasPrice "1250" ;
+  pizza:hasSize "31" ;
+  rdfs:label "Prince Carlo" ;
+.
+pizza:QuattroFormaggi_1
+  a pizza:QuattroFormaggi ;
+  pizza:hasBase pizza:base_1 ;
+  pizza:hasPrice "1250" ;
+  pizza:hasSize "31" ;
+  rdfs:label "Quattro Formaggi" ;
+.
+pizza:RedOnionTopping_1
+  a pizza:RedOnionTopping ;
+  rdfs:label "Red Onion Topping" ;
+.
+pizza:RocketTopping_1
+  a pizza:RocketTopping ;
+  rdfs:label "Rocket Topping" ;
+.
+pizza:RosemaryTopping_1
+  a pizza:RosemaryTopping ;
+  rdfs:label "Rosemary Topping" ;
+.
+pizza:Siciliana_1
+  a pizza:Siciliana ;
+  pizza:hasBase pizza:base_1 ;
+  pizza:hasPrice "1250" ;
+  pizza:hasSize "31" ;
+  rdfs:label "Siciliana" ;
+.
+pizza:SlicedTomatoTopping_1
+  a pizza:SlicedTomatoTopping ;
+  rdfs:label "Sliced Tomato Topping" ;
+.
+pizza:SloppyGiuseppe_1
+  a pizza:SloppyGiuseppe ;
+  pizza:hasBase pizza:base_2 ;
+  pizza:hasPrice "1250" ;
+  pizza:hasSize "31" ;
+  rdfs:label "Sloppy Giuseppe" ;
+.
+pizza:SpinachTopping_1
+  a pizza:SpinachTopping ;
+  rdfs:label "Spinach Topping" ;
+.
+pizza:SultanaTopping_1
+  a pizza:SultanaTopping ;
+  rdfs:label "Sultana Topping" ;
+.
+pizza:SundriedTomatoTopping_1
+  a pizza:SundriedTomatoTopping ;
+  rdfs:label "Sundried Tomato Topping" ;
+.
+pizza:SweetPepperTopping_1
+  a pizza:SweetPepperTopping ;
+  rdfs:label "Sweet Pepper Topping" ;
+.
+pizza:TobascoPepperSauce_1
+  a pizza:TobascoPepperSauce ;
+  rdfs:label "Tobasco Pepper Sauce" ;
+.
+pizza:Veneziana_1
+  a pizza:Veneziana ;
+  pizza:hasBase pizza:base_2 ;
+  pizza:hasPrice "1250" ;
+  pizza:hasSize "31" ;
+  rdfs:label "Veneziana" ;
+.
+pizza:base_1
+  a pizza:DeepPanBase ;
+  rdfs:label "Основа в виде глубокой сковороды" ;
+.
+pizza:base_2
+  a pizza:ThinAndCrispyBase ;
+  rdfs:label "Тонкое и хрустящее тесто" ;
+.
+pizza:gorgonzola_top_inst
+  a pizza:GorgonzolaTopping ;
+  rdfs:label "Топпинг с сыром Горгонзоллла" ;
+.
+pizza:mozarella_top_inst
+  a pizza:MozzarellaTopping ;
+  rdfs:label "Топпинг с сыром Моцарелла" ;
+.
+pizza:tomato_top_inst
+  a pizza:TomatoTopping ;
+  rdfs:label "Томатный топпинг" ;
+.
+pizza:IceCream_instance
+  a pizza:IceCream ;
+  rdfs:label "Мороженное пломбир" ;
+  pizza:hasPrice "150";
+.
+

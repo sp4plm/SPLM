@@ -37,7 +37,13 @@
                   ?att a ?att_cls .
                   ?att_cls rdfs:label ?att_cls_lbl .
                   ?att onto:hasAttributeValue/onto:value ?att_val . }}
-                }}"
+                } UNION {
+                select ?uri ?att_cls_lbl ?att_val {
+                BIND (<#{URI}> as ?uri )
+                Optional {
+                  ?uri onto:hasPrice ?att_val .
+                  BIND('Price' as ?att_cls_lbl) }}
+                }} order by desc (?att_val)"
     },
     "list_of_subclasses":{
         "_CMT_":"Возвращает список экземпляров класса",

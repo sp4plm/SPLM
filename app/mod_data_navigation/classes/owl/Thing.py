@@ -24,6 +24,9 @@ class Thing:
                 for p in prefixes:
                     if p[1] == self.pref_unquote:
                         self.argm['prefix'] = p[0]
+            else:
+                self.pref_unquote = ''
+                self.pref_4_data = ''
         else:
             self.parent = onto_mod_api.get_parent(argm['prefix'], argm['class'])
             for p in prefixes:
@@ -70,6 +73,7 @@ class Thing:
         if 'uri' in self.argm.keys():
             query_inst = tsc_query('mod_data_navigation.Thing.instance',
                                    {'PREF': self.pref_unquote, 'URI': self.argm['uri']})
+
             df = pd.DataFrame(query_inst)
 
             if len(df) > 0:
