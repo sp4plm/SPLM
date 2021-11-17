@@ -39,9 +39,7 @@ class StoreDriver:
         if '' == endpoint:
             # fuseki endpoint use different urls for query: select and others
             endpoint = self._get_query_url(return_result) # read default TripleStoreUri
-        print('endpoint', endpoint)
         fields[query_key] = query
-        print('fields', fields)
         headers = {'Content-Type': 'application/x-www-form-urlencoded', 'Accept':  'application/sparql-results+json'}
         if -1 < query.find('CONSTRUCT'):
             headers['Accept'] = 'application/json'
@@ -100,8 +98,6 @@ class StoreDriver:
         answer = None
         if '' != uname and '' != usecret:
             send_data['auth'] = (uname, usecret)
-        print(self._debug_name + '._post_req.url ->', url)
-        print(self._debug_name + '._post_req.send_data ->', send_data)
         try:
             answer = requests.post(url, **send_data)
         except Exception as ex:
