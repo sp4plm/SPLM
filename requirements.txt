@@ -43,3 +43,4 @@ WTForms==2.3.3
 WTForms-Ext==0.5
 zipp==3.5.0
 beautifulsoup4==4.9.3
+lxml==4.6.4
