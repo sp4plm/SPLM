@@ -33,6 +33,7 @@
 {% endblock %}
 {% block bread_crumbs %}{% endblock %}
 {% if current_subitem is not defined %} {% set current_subitem=admin_current_subitem(flask_request) %} {% endif %}
+{% if page_side_title is not defined %} {% set page_side_title="Содержание раздела" %} {% endif %}
 {% block page_sidenav %}
 {% if navi is not defined %}
     {% if current_section %}
