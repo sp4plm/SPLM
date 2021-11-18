@@ -24,4 +24,5 @@ def portal_root_view():
 
     tpl_name = app_api.get_app_root_tpl()
 
-    return render_template(tpl_name, **tmpl_vars)
+    # return render_template(tpl_name, **tmpl_vars) # раскоментировать эту строку для запуска портала с пустой страницы
+    return redirect('/datanav') # заменить на нужную страницу установленного модуля
