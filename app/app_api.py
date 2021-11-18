@@ -33,6 +33,11 @@ def get_app_config():
     return cfg
 
 
+def get_mod_manager():
+    mod_manager = Manager(app)
+    return mod_manager
+
+
 def get_mod_decscription(mod_name):
     """
     Функция возвращает описание, хранящееся в dublin.ttl, модуля с именем mod_name (имя директории)
@@ -40,7 +45,7 @@ def get_mod_decscription(mod_name):
     :return: None или rdflib.Graph() Если модуля нет то None, если модуль есть то rdflib.Graph()
     rdflib.Graph() - может оказаться пустым, если модуль есть а dublin.ttl отсутствует
     """
-    mod_manager = Manager(app)
+    mod_manager = get_mod_manager()
     mod_descr = mod_manager.get_mod_decscription(mod_name)
     return mod_descr
 
@@ -52,7 +57,7 @@ def get_mod_api(modname):
     :param modname: string: имя модуля (имя директории)
     :return: ModApi: None или экземпляр класса ModApi
     """
-    mod_manager = Manager(app)
+    mod_manager = get_mod_manager()
     obj_comp = None
     try:
         obj_comp = mod_manager.get_mod_api(modname)
@@ -67,7 +72,7 @@ def is_app_module_enabled(mod_name):
     :param mod_name: string: имя модуля (имя директории)
     :return:
     """
-    mod_manager = Manager(app)
+    mod_manager = get_mod_manager()
     return mod_manager.module_exists(mod_name)
 
 

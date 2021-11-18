@@ -115,32 +115,3 @@ def local_db_reconfigure():
         steps_str = '<br />'.join(steps)
         steps_str = '<hr />' + steps_str
     return 'Reconfiguration complite!' + steps_str
-
-
-# @mod.route('/PortalSettings/Configs/<config_name>', defaults={'config_name': ''}, methods=['GET'])
-# @requires_auth
-# def edit_settings_view(config_name):
-#     """
-#     Функция создает страницу редактирования ini файла
-#     :param config_name: имя ini файла из директории data/cfg в директории модуля
-#     :return: сформированный шаблон страницы
-#     """
-#     tmpl_vars = {}
-#     # tmpl_vars['project_name'] = 'Semantic PLM'
-#     tmpl_vars['title'] = 'Административный интерфейс'
-#     tmpl_vars['page_title'] = 'Настройки портала: ' + config_name
-#     tmpl_vars['page_side_title'] = 'Содержание раздела'
-#     work_dir = AdminConf.CONFIGS_PATH
-#     files_list = [fi.name for fi in os.scandir(work_dir)]
-#     for fi in files_list:
-#         lp = fi.rfind('.')
-#         name = fi[:lp]
-#         if name == config_name:
-#             break
-#     data_file = os.path.join(work_dir, fi)
-#     # превращаем словарь в HTML
-#     edit_data = AdminUtils.ini2dict(data_file)
-#     # первичные ключи это секции - Вопрос где хранить натменование секций????
-#     # вторичные ключи - имена полей
-#     tmpl_vars['edit_data'] = edit_data
-#     return render_template('config_editor.html', **tmpl_vars)

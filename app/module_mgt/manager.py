@@ -101,6 +101,21 @@ class Manager:
             # требуется создать файл для кеширования данных о модулях приложения
             self._dump_cache()
 
+    def get_described_roles(self):
+        """
+        Метод возвращает список ролей из описания модулей проекта
+        :return:
+        """
+        lst = []
+        _inf0 = self._current_app.config['modules_ttl']
+        if 0 < len(_inf0):
+            # osplm:hasAccessRight
+            OSPLM = self._resolve_graph_ns(_inf0, 'osplm')
+            mods_roles = _inf0.subject_objects(predicate=OSPLM.hasAccessRight)
+            lst = [it[1] for it in mods_roles]
+            pass
+        return lst
+
     def module_exists(self, mod_name):
         return True if mod_name in self._current_app.config['modules_list'] else False
 

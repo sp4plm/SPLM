@@ -474,6 +474,25 @@ def roles_list():
     return json.dumps(answer)
 
 
+@mod.route('/roles/getDescribed', methods=['POST'])
+@_auth_decorator
+def described_roles():
+    answer = {'msg': '', 'data': None, 'state': 404}
+    answer['data'] = []
+    try:
+        desc_roles = []
+        desc_roles = app_api.get_described_roles()
+        if 0 < len(desc_roles):
+            for role in desc_roles:
+                answer['data'].append(role)
+        answer['state'] = 200;
+    except:
+        answer['state'] = 500
+        answer['msg'] = 'Не удалось получить список ролей из описаний модулей!'
+        answer['Msg'] = 'Не удалось получить список ролей из описаний модулей!'
+    return json.dumps(answer)
+
+
 @mod.route('/roles/getInfo', methods=['POST'])
 @_auth_decorator
 def role_info():

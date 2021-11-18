@@ -1,0 +1,7 @@
+.editItems-list-box{}
+.editItems-list-box .editItems-list{}
+.editItems-list-box .editItems-list .edit-item{}
+.editItems-list-box .availableItems-list{list-style:none;clear:both;margin-top:6px;}
+.editItems-list-box .availableItems-list li{list-style:none;padding:0px 3px;font-style:italic;}
+.editItems-list-box .availableItems-list .availableItems-header{bodrder:1px solid #cacaca;font-weight:bold;}
+.editItems-list-box .availableItems-list .available-item{}

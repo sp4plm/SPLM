@@ -16,14 +16,19 @@
                     _this.header = '';
                     _this.viewTmpl = '';
                     _this._roles = [];
+                    _this._available_roles = [];
 
                     _this.baseUrl = '/users/roles';
                     _this.loader = null;
                     _this.listBox = null;
                     _this.itemsList = null;
+                    _this.availableList = null;
                     _this.listBoxCls = 'editItems-list-box';
                     _this.itemsListCls = 'editItems-list';
+                    _this.availableListCls = 'availableItems-list';
+                    _this.availableListHeaderCls = 'availableItems-header';
                     _this.listItemCls = 'edit-item';
+                    _this.availableItemCls = 'available-item';
                     _this.listItemIDpref = 'rld-';
                     _this.listItemToolbarCls = 'listItem-toolbar';
                     _this.listItemToolbar = '<div></div>';
@@ -145,6 +150,28 @@
                                         }
                                     }
                                     _this.buildRolesList();
+                                    _this.getDescribedRoles();
+                                }else{
+                                    alert(ans.msg);
+                                }
+                            }
+                        },'json');
+        //                _this._roles.push({ID:3,Name:'Role 2'});
+                    };
+                    _this.getDescribedRoles= function(){
+                        _this._roles = [];
+                        $.post(_this.baseUrl + '/getDescribed',{},function(ans){
+                            if(!win._jsTypes.isUndefined(ans)){
+                                if(ans.state==200){
+                                    var kx=0,cnt=0;
+                                    cnt = ans.data.length;
+                                    if(cnt>0){
+                                        for(kx=0;kx<cnt;kx++){
+                                            _this._available_roles.push(ans.data[kx]);
+                                        }
+                                        // alert('Roles count:' + cnt);
+                                    }
+                                    _this.buildAvailableList();
                                 }else{
                                     alert(ans.msg);
                                 }
@@ -153,6 +180,7 @@
         //                _this._roles.push({ID:3,Name:'Role 2'});
                     };
                     _this.clearRolesList = function(){ _this.itemsList.find('li.'+_this.listItemCls).remove(); };
+                    _this.clearAvailableList = function(){ _this.availableList.find('li.'+_this.availableItemCls).remove(); };
                     _this.getRoleItemFromList = function(id){ return _this.itemsList.find('#'+_this.listItemIDpref+id); };
                     _this.buildRolesList = function(){
                         var kx,cnt=0;
@@ -161,6 +189,32 @@
                         if(0<cnt){
                             for(kx=0;kx<cnt;kx++){
                                 _this.addRole(_this._roles[kx]);
+                            }
+                        }
+                    };
+                    _this.checkIsCreatedRole = function(role) {
+                        var kx,cnt=0, flg=false;
+                        cnt = _this._roles.length;
+                        if(0<cnt){
+                            for(kx=0;kx<cnt;kx++){
+                                if(role == _this._roles[kx]['Name']) {
+                                    flg = true;
+                                    break;
+                                }
+                            }
+                        }
+                        return flg;
+                    };
+                    _this.buildAvailableList = function(){
+                        var kx,cnt=0;
+                        _this.clearAvailableList();
+                        cnt = _this._available_roles.length;
+                        if(0<cnt){
+                            for(kx=0;kx<cnt;kx++){
+                                if (_this.checkIsCreatedRole(_this._available_roles[kx])) {
+                                    continue; // пропускаем если роль создана
+                                }
+                                _this.addAvailableRole(_this._available_roles[kx]);
                             }
                         }
                     };
@@ -196,6 +250,40 @@
                         li.attr('id', _this.listItemIDpref+data.ID);
                         _this.addListItemToolbar(li);
                         _this.itemsList.append(li);
+                        // удаляем роли из доступных
+                        _this.delFromAvailable(data.Name);
+                    };
+
+                    _this.delFromAvailable = function(name){
+                        var li;
+                        li = []; // хак для проверки пустоты
+                        _this.availableList.find('.' +_this.availableItemCls).each(function(){
+                            if(name == $(this).html()){
+                                li = $(this);
+                            }
+                        });
+                        if(0 < li.length) {
+                            li.remove();
+                        }
+                        if(0 == _this.availableList.find('.' +_this.availableItemCls).length){
+                            _this.availableList.find('.' +_this.availableListHeaderCls).remove();
+                        }
+                    };
+                    _this.addAvailableRole = function(data){
+                        var li, itemTmpl = '<li>#{label}</li>';
+                        li = $(itemTmpl.replace(/#{label}/g, data));
+                        li.addClass(_this.availableItemCls);
+                        if(0 == _this.availableList.find('.' +_this.availableItemCls).length){
+                            _this.addAvailableHeader();
+                        }
+                        _this.availableList.append(li);
+                    };
+                    _this.addAvailableHeader = function(){
+                        var li, data, itemTmpl = '<li>#{label}</li>';
+                        data = 'Список ролей для добавления:';
+                        li = $(itemTmpl.replace(/#{label}/g, data));
+                        li.addClass(_this.availableListHeaderCls);
+                        _this.availableList.append(li);
                     };
                     _this.addListItemToolbar = function(li){
                         var toolbar = $(_this.listItemToolbar);
@@ -365,6 +453,10 @@
                                                 _this.hideViewBox();
                                             }
                                             _this.itemsList.find('#'+_this.listItemIDpref+ID).remove();
+                                            // если удаляем роль которая есть в описаниях модулей
+                                            if('' != label && win._jsUtils.inArray(_this._available_roles, label)) {
+                                                _this.addAvailableRole(label);
+                                            }
                                         }else{
                                             alert(ans.msg);
                                         }
@@ -422,7 +514,7 @@
                             _$box.addClass(_this.cls);
                             _$box.addClass('ui-widget');
                             _$box.attr('code',iO.code);
-                            _$box.append(_this.blkHeaderTpl.replace(/#\{label\}/g, _this.header));
+                            //_$box.append(_this.blkHeaderTpl.replace(/#\{label\}/g, _this.header));
                             _$box.append(_this.viewTmpl);
                             _$box.hide();
                             $(_this.blkBox).append(_$box);
@@ -447,6 +539,9 @@
                             _this.itemsList = $('<ul></ul>');
                             _this.itemsList.addClass(_this.itemsListCls);
                             listBox.append(_this.itemsList);
+                            _this.availableList = $('<ul></ul>');
+                            _this.availableList.addClass(_this.availableListCls);
+                            listBox.append(_this.availableList);
                             _$box.append(listBox);
                             listBox.width(_$box.width()*0.3-2);
                             listBox.height(_$box.height()-_$box.find('.header-footer').outerHeight(true)-_$box.find('.panel-toolbar').outerHeight(true)-_$box.find('.content-header').outerHeight()-6);
