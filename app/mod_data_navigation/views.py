@@ -46,13 +46,13 @@ def startPage():
     message2 = 'Альтернативная навигация по дереву онтологии с кореневого класса "Thing"'
 
     page_stat = {'pizza':['<http://www.co-ode.org/ontologies/pizza/pizza.owl#Pizza>',
-                          '<img src="/static/files/images/Pizza.png" width="200" height="200" alt="Pizza">',
+                          '<img class="img-responsive" src="/static/files/images/Pizza.png" alt="Pizza">',
                           '<a href="datanav/Pizza?prefix=pizza">Пицца</a>'],
                  'topping':['<http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaTopping>',
-                            '<img src="/static/files/images/PizzaTopping.png" width="200" height="200" alt="PizzaTopping">',
+                            '<img class="img-responsive" src="/static/files/images/PizzaTopping.png" alt="PizzaTopping">',
                             '<a href="datanav/PizzaTopping?prefix=pizza">Топпиг</a>'],
                  'base':['<http://www.co-ode.org/ontologies/pizza/pizza.owl#PizzaBase>',
-                         '<img src="/static/files/images/PizzaBase.png" width="200" height="200" alt="PizzaBase">',
+                         '<img class="img-responsive" src="/static/files/images/PizzaBase.png" alt="PizzaBase">',
                          '<a href="datanav/PizzaBase?prefix=pizza">Основа для пицца</a>']}
 
     stat = {}

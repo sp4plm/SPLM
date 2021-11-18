@@ -89,7 +89,7 @@ class PizzaTopping:
             # INSERT PICTURE ----------------------------------------------------
             myHash = sha1(self.argm['uri'].encode('utf-8')).hexdigest()
             gravatar_url = "http://www.gravatar.com/avatar/{}?d=identicon&s=300".format(myHash)
-            Avatar = '<img src=\"' + gravatar_url + '\" width=\"400\" height=\"400\" alt=\"pizza topping\">'
+            Avatar = '<img class="img-responsive" style="margin: 0 auto;" src=\"' + gravatar_url + '\" width=\"400\" height=\"400\" alt=\"pizza topping\">'
 
             if len(df) > 0:
                 for ind, row in df.iterrows():
@@ -141,7 +141,7 @@ class PizzaTopping:
                 for ind, row in df2.iterrows():
                     myHash = sha1(row.inst.encode('utf-8')).hexdigest()
                     gravatar_url = "http://www.gravatar.com/avatar/{}?d=identicon&s=50".format(myHash)
-                    df2.iloc[ind]['Avatar'] = '<img src=\"' + gravatar_url + '\" width=\"40\" height=\"40\" alt=\"pizza topping\">'
+                    df2.iloc[ind]['Avatar'] = '<img class="img-responsive" src=\"' + gravatar_url + '\" width=\"40\" height=\"40\" alt=\"pizza topping\">'
 
                 df2.inst = '<a href="' + self.argm['class']  + '?prefix=' + self.argm['prefix'] + '&uri=' + \
                            df2.inst.str.replace(self.pref_4_data, quote(self.pref_4_data)) + '">' + df2.inst_lbl + '</a>'
