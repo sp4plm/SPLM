@@ -8,6 +8,7 @@ Contents:
 
    main
    installation
+   first_start
    api
 
 Indices and tables
