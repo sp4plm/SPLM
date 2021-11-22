@@ -11,17 +11,17 @@
 Выполним настройки портала на примере тестовых данных, расположенных в папке "test_data".
 
 .. image:: screenshot_6.png
-  :scale: 20 %
+  :width: 70 %
 
 1) Загрузите отнтологию через раздел "Онтологии":
 
 .. image:: screenshot_7.png
-  :width: 400
+  :width: 70 %
   
 Загружаем файл "pizza_onto.ttl"
 
 .. image:: screenshot_8.png
-  :width: 400
+  :width: 70 %
   
 В итоге должно получится так:
 
