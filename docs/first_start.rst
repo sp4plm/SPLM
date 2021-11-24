@@ -215,6 +215,6 @@ https://blazegraph.com
 
 Если все выполнено правильно, то должна появится следующая страничка.
 
-.. image:: screenshot_25.png
+.. image:: screenshot_28.png
   :width: 90 %
   :align: center
