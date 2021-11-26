@@ -57,3 +57,10 @@
   osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#flase> ;
   osplm:hasHTMLtemplate "index.html"^^<http://www.w3.org/2001/XMLSchema#string> ;
   osplm:shallBeShownInMenu <http://www.w3.org/2001/XMLSchema#true> .
+
+<http://splm.portal.web/osplm#mod_data_navigation> osplm:hasURL <http://splm.portal.web/osplm/data#url_data_nav_5> .
+
+<http://splm.portal.web/osplm/data#url_data_nav_5> osplm:value "/datanav/sparqt"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Редактор запросов модуля datanav"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> ;
+  .
