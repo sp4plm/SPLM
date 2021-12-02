@@ -2,6 +2,11 @@
 from rdflib import Graph, Namespace, RDF, RDFS, OWL, BNode
 
 def getClassAxioms(ontoclass, G, prefix):
+    """
+    :param ontoclass: в формате объекта RDF URI Reference <class 'rdflib.term.URIRef'>
+    :param G: в виде объекта rdfLib <class 'rdflib.graph.Graph'>
+    :param prefix:  в формате строки, например http://portal.domen#
+    """
 
     ONTO = Namespace(prefix)
 

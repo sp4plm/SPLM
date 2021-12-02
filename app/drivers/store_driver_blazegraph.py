@@ -32,7 +32,7 @@ class StoreDriverBlazegraph(StoreDriver):
         fields = {}
         query_key = 'query'
         return_result = True
-        if not self._is_select_query(query):
+        if not (self._is_select_query(query) or self._is_construct_query(query)):
             query_key = 'update'
             return_result = False
         if '' == endpoint:
@@ -43,13 +43,13 @@ class StoreDriverBlazegraph(StoreDriver):
             headers['Accept'] = 'application/json'
         send_data = {}
         send_data['data'] = fields
-        if not self._is_select_query(query):
+        if not (self._is_select_query(query) or self._is_construct_query(query)):
             # надо переделать заголовки в SPARQL-UPDATE
             headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
             pass
         send_data['headers'] = headers
         auth = {}
-        if not self._is_select_query(query) and self.use_auth_admin:
+        if not (self._is_select_query(query) or self._is_construct_query(query)) and self.use_auth_admin:
             cred = self.get_auth_credential()
             auth['uname'] = cred[0]
             auth['usecret'] = cred[1]

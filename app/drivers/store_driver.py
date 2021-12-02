@@ -33,7 +33,7 @@ class StoreDriver:
         send_data = {}
         query_key = 'query'
         return_result = True
-        if not self._is_select_query(query):
+        if not (self._is_select_query(query) or self._is_construct_query(query)):
             # query_key = 'update'
             return_result = False
         if '' == endpoint:
@@ -128,6 +128,23 @@ class StoreDriver:
         if -1 < parsed.lower().find('select'):
             flg = True
         return flg
+
+
+    @staticmethod
+    def _is_construct_query(text):
+        flg = False
+        # сперва надо отделить префиксы от запроса
+        # разобьем по {
+        parsed = text.split('{')
+        # теперь в первом элементе ищем > последний закрывающий префикс
+        parsed = parsed[0].split('>')
+        # в последнем элементе начало тела запроса
+        parsed = parsed[-1].strip()
+        if -1 < parsed.lower().find('construct'):
+            flg = True
+        return flg
+
+
 
     @staticmethod
     def get_file_mime(file_path):

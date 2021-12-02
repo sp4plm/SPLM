@@ -32,7 +32,7 @@ class StoreDriverAgraph(StoreDriver):
         fields = {}
         query_key = 'query'
         return_result = True
-        if not self._is_select_query(query):
+        if not (self._is_select_query(query) or self._is_construct_query(query)):
             return_result = False
         if '' == endpoint:
             # fuseki endpoint use different urls for query: select and others
@@ -45,7 +45,7 @@ class StoreDriverAgraph(StoreDriver):
         send_data['data'] = fields
         send_data['headers'] = headers
         auth = {}
-        if not self._is_select_query(query) and  self.use_auth_admin:
+        if not (self._is_select_query(query) or self._is_construct_query(query)) and  self.use_auth_admin:
             cred = self.get_auth_credential()
             auth['uname'] = cred[0]
             auth['usecret'] = cred[1]

@@ -7,6 +7,7 @@ import logging
 from app import app
 from app.utilites.utilites import Utilites
 
+from app.drivers.store_driver import StoreDriver
 
 
 module = "query_mgt"
@@ -135,7 +136,9 @@ class Query:
         try:
             answer = self.runQuery(_query)
 
-            FINAL_RESULT = self.compileQueryResult(answer)
+            FINAL_RESULT = answer
+            if StoreDriver()._is_select_query(_query):
+                FINAL_RESULT = self.compileQueryResult(answer)
             
         except Exception as e:
             return []

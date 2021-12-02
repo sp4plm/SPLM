@@ -216,3 +216,10 @@ def get_portal_labels(label_code):
     except Exception as ex:
         print('Не удалось получить название для кода {}!' . format(label_code))
     return name
+
+
+def get_described_roles():
+    lst = []
+    mod_manager = get_mod_manager()
+    lst = mod_manager.get_described_roles()
+    return lst
