@@ -38,3 +38,9 @@ class ModApi(OntoConf):
         """ Возвращает родителя класса child для онтологии onto"""
         return Ontology().getParent(onto, child)
     
+    @staticmethod
+    def get_graph(onto):
+        """ onto - префикс онтологии """
+        """ Возвращает объект rdflib.graph онтологии onto"""
+        return Ontology().getGraph(onto)
+    

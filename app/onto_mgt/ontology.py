@@ -194,4 +194,10 @@ class Ontology():
 
 
 
+    def getGraph(self, onto):
+        """ Возвращает объект rdflib.graph онтологии по префиксу """
+        onto_file = self.getFileOntoByPrefix(onto)
+        graph = Graph().parse(onto_file, format='ttl')
+
+        return graph
 
