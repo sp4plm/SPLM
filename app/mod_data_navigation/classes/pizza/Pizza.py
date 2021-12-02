@@ -251,7 +251,7 @@ def get_reqs_verification(prefix, ontoclass):
     # Выбираем из всех данных только те, которые имеют отношение к текущему классу
     data = tsc_query('mod_data_navigation.Pizza.get_subgraph',
                       {'URI': pref_unquote + ontoclass})
-
+    print('data = ',data)
     js = JSONResult(data)
     data_graph = Graph()
 
