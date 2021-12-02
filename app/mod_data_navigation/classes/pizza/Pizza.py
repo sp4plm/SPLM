@@ -11,7 +11,13 @@ from urllib.parse import quote
 from app.app_api import tsc_query
 from app import app_api
 from hashlib import sha1
+from rdflib import URIRef, Graph
+from rdflib.plugins.sparql.results.jsonresults import JSONResult
+from pyshacl import validate
+import re
+
 onto_mod_api = app_api.get_mod_api('onto_mgt')
+from app.utilites.axiom_reader import getClassAxioms
 
 def make_breadcrumbs(prefix, pref_unquote, cls):
 
@@ -47,7 +53,7 @@ class Pizza:
                 self.pref_unquote = p[1]
 
         query = tsc_query('mod_data_navigation.Pizza.one_instances',
-                          {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
+                          {'URI': self.pref_unquote + self.argm['class']})
         if query:
             self.pref_4_data = query[0]['inst'].split("#")[0] + "#"
         else:
@@ -61,6 +67,53 @@ class Pizza:
 
         return uri_str
 
+    def __get_axioms__(self):
+        text = ""
+        G = onto_mod_api.get_graph(self.argm['prefix'])
+        AXIOMS = getClassAxioms(URIRef(self.pref_unquote + self.argm['class']), G, self.pref_unquote)
+
+        if AXIOMS:
+            text = "Это такая сущность, для которой выполняются все следующие условия: <br>"
+            for a in AXIOMS:
+                a = a.replace("\n\n", "<br>")
+
+                str = a.split(' - ')
+                text = text + "{} {} {}".format(str[2].split("\n")[0], str[2].split("\n")[1], str[3]) + ' и '
+
+            text = text[:-3]
+
+            replaces = {"onto:hasBase": "связано отношением 'Имеет основу'",
+                        "owl:someValuesFrom": " хотя бы с одним из экземпляров класса ",
+                        "onto:PizzaBase": "Основа",
+                        "onto:hasTopping":"связано отношением 'Имеет топпинг'",
+                        }
+            text = re.sub("|".join(replaces.keys()), lambda match: replaces[match.string[match.start():match.end()]], text)
+
+        return text
+
+
+    def __get_requirements__(self):
+        G = onto_mod_api.get_graph(self.argm['prefix'])
+        query_str = """prefix sh: <http://www.w3.org/ns/shacl#>
+                       prefix pz: <%s> 
+                    select distinct ?code ?text {
+                    ?sh a sh:NodeShape .
+                    ?sh sh:targetClass <%s> .
+                    ?sh sh:property ?pr .
+                    ?pr sh:name ?code .
+                    ?pr sh:description ?text .} order by ?code
+                    """ % (self.pref_unquote, self.pref_unquote + self.argm['class'])
+
+        reqs = pd.DataFrame(G.query(query_str))
+
+        if not reqs.empty:
+            reqs.columns = ['Код', 'Текст требования']
+        else:
+            reqs = pd.DataFrame()
+
+        return reqs
+
+
     def getTemplate(self):
         '''
         Возвращает шаблон HTML страницы, сформированный в соответствии с полученными в URL аргументами
@@ -72,7 +125,7 @@ class Pizza:
         d = {}
 
         query_class_lbl = tsc_query('mod_data_navigation.Pizza.class_lbl',
-                     {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
+                     {'URI': self.pref_unquote + self.argm['class']})
         df_cls = pd.DataFrame(query_class_lbl)
 
         if len(df_cls):
@@ -91,7 +144,7 @@ class Pizza:
             gravatar_url = "http://www.gravatar.com/avatar/{}?d=identicon&s=300".format(myHash)
             Avatar = '<img class="img-responsive" style="margin: 0 auto;" src=\"' + gravatar_url + '\" width=\"400\" height=\"400\" alt=\"pizza\">'
 
-            if len(df) > 0:
+            if not df.empty:
                 for ind, row in df.iterrows():
                     if not row.inst_lbl in d:
                         d.update({row.inst_lbl:{} })
@@ -132,8 +185,8 @@ class Pizza:
                                        {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
             df = pd.DataFrame(query_subclass)
 
-            if len(df) > 0:
-                df.cls = '<a href="' + df.cls.str.replace(self.pref_unquote,'') + \
+            if not df.empty:
+                df.cls = '<a href="' + df.cls.str.replace(self.pref_unquote,'', regex=True) + \
                          '?prefix=' + self.argm['prefix'] + '">' + df.cls_lbl + '</a>'
                 df.drop('cls_lbl', axis=1, inplace=True)
                 df.columns = ['Наименование','Доступно для заказа']
@@ -145,10 +198,10 @@ class Pizza:
                                         {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
             df2 = pd.DataFrame(query_list_inst)
 
-            if len(df2) > 0:
+            if not df2.empty:
                 # Если у экземпляра нет лейбла, то вместо него вставляем часть URI
                 df2.inst_lbl.replace('', np.nan, inplace=True)
-                df2.inst_lbl.fillna(value=df2.inst.str.replace(self.pref_unquote, ''), inplace=True)
+                df2.inst_lbl.fillna(value=df2.inst.str.replace(self.pref_unquote, '', regex=True), inplace=True)
 
                 df2.insert(loc=2, column='Avatar', value="")
                 for ind, row in df2.iterrows():
@@ -157,21 +210,89 @@ class Pizza:
                     df2.iloc[ind]['Avatar'] = '<img class="img-responsive" src=\"' + gravatar_url + '\" width=\"40\" height=\"40\" alt=\"pizza\">'
 
                 df2.inst = '<a href="' + self.argm['class']  + '?prefix=' + self.argm['prefix'] + '&uri=' + \
-                           df2.inst.str.replace(self.pref_4_data, quote(self.pref_4_data)) + '">' + df2.inst_lbl + '</a>'
+                           df2.inst.str.replace(self.pref_4_data, quote(self.pref_4_data), regex=True) + '">' + df2.inst_lbl + '</a>'
                 df2.drop('inst_lbl', axis=1, inplace=True)
                 df2.columns = ['Наименование', 'Картинка']
 
                 instances = df2.to_html(escape=False, index=False)
 
+            # Проверяем наличие требований к классу
+            req = self.__get_requirements__()
+            if not req.empty:
+                requirements = req.to_html(index=False)
+            else:
+                requirements = ""
+
+            definition = self.__get_axioms__()
 
             page_path = make_breadcrumbs(self.argm['prefix'], self.pref_unquote, self.argm['class'])
+
             templ = render_template("/Pizza.html", title="Пицца", class_name=class_lbl,
                         sidebar1 = '<a href="{}?prefix={}&uri={}">{}</a>'.format('American',self.argm['prefix'],quote('http://www.co-ode.org/ontologies/pizza/pizza.owl#NamedIndividual_1'),'Американо'),
                         sidebar2 = '<a href="{}?prefix={}&uri={}">{}</a>'.format('FruttiDiMare',self.argm['prefix'],quote('http://www.co-ode.org/ontologies/pizza/pizza.owl#FruttiDiMare_1'),'Frutti DiMare'),
                         sidebar3 = '<a href="{}?prefix={}&uri={}">{}</a>'.format('Soho',self.argm['prefix'],quote('http://www.co-ode.org/ontologies/pizza/pizza.owl#NamedIndividual_9'),'Пицца Сохо 3'),
                         sidebar4 = '<a href="{}?prefix={}&uri={}">{}</a>'.format('Mushroom',self.argm['prefix'],quote('http://www.co-ode.org/ontologies/pizza/pizza.owl#NamedIndividual_3'),'Грибная пицца 1'),
+                        definition = definition,
+                        requirements = requirements,
                         subclasses=subclasses,
                         instances=instances,
                         page_path=page_path)
 
         return templ
+
+def get_reqs_verification(prefix, ontoclass):
+
+    pref_unquote = ''
+    prefixes = onto_mod_api.get_prefixes()
+    for p in prefixes:
+        if p[0] == prefix:
+            pref_unquote = p[1]
+
+    # Выбираем из всех данных только те, которые имеют отношение к текущему классу
+    data = tsc_query('mod_data_navigation.Pizza.get_subgraph',
+                      {'URI': pref_unquote + ontoclass})
+
+    js = JSONResult(data)
+    data_graph = Graph()
+
+    for i in js:
+        data_graph.add(i[:3])
+
+    G = onto_mod_api.get_graph(prefix)
+
+    r = validate(data_graph,
+                 shacl_graph=G,
+                 ont_graph=G,
+                 inference='rdfs',
+                 abort_on_first=False,
+                 allow_warnings=False,
+                 meta_shacl=False,
+                 advanced=False,
+                 js=False,
+                 debug=False)
+
+    conforms, results_graph, results_text = r
+
+    if not conforms:
+        qry_validat = """prefix sh: <http://www.w3.org/ns/shacl#>
+                            SELECT ?code ?text ?cmf ?message ?inst ?val
+                            where { ?val_rep a sh:ValidationReport .
+                                ?val_rep sh:conforms ?cmf .
+                                ?val_rep sh:result ?rslt .
+                                ?rslt sh:resultMessage ?message .
+                                ?rslt sh:focusNode ?inst .
+                                ?rslt sh:sourceConstraintComponent ?comp .
+                                ?rslt sh:sourceShape ?shape .
+                                ?shape sh:name ?code .
+                                ?shape sh:description ?text .
+                            Optional { ?rslt sh:value ?val . }
+                                   } order by ?code"""
+
+        val = pd.DataFrame(results_graph.query(qry_validat))
+        val.columns = ['Код', 'Текст требования', 'Выполнено', 'Обоснование', 'Объект', 'Значение']
+        val['Объект'] = val['Объект'].str.replace(pref_unquote, '', regex=True)
+        val['Выполнено'] = val['Выполнено'].str.replace('false', 'Нет')
+    else:
+        val = pd.DataFrame()
+
+    return val

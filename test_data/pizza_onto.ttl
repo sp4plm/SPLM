@@ -10,6 +10,7 @@
 @prefix terms: <http://purl.org/dc/terms/> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
 
 dc:description
   a owl:AnnotationProperty ;
@@ -995,6 +996,11 @@ pizza:Pizza
       owl:onProperty pizza:hasBase ;
       owl:someValuesFrom pizza:PizzaBase ;
     ] ;
+  rdfs:subClassOf [
+      a owl:Restriction ;
+      owl:onProperty pizza:hasTopping ;
+      owl:someValuesFrom pizza:PizzaTopping ;
+    ] ;
   skos:prefLabel "Pizza"@en ;
 .
 pizza:PizzaBase
@@ -1790,3 +1796,49 @@ skos:prefLabel
       pizza:PizzaTopping
     ) ;
 ].
+pizza:PizzaShape
+	a sh:NodeShape ;
+	sh:targetClass pizza:Pizza ;    # Applies to all pizza
+	sh:property [
+		sh:name "req 1" ;
+		sh:description "Пицца должна иметь свойство Размер. У пиццы свойство Размер должно иметь только одно значение. Допускается иметь следующие варианты размеров пиццы: 25 см, 31 см или 38см." ;
+		sh:path pizza:hasSize ;           # constrains the values of pizza:hasSize
+		sh:maxCount 1 ;
+		sh:in ("25" "31" "38") ;
+	] ;
+	sh:property [
+		sh:name "req 2" ;
+		sh:description "Пицца должна иметь Топпиги. У пиццы должен быть как минумум 1 Топпиг." ;
+		sh:path pizza:hasTopping ;
+		sh:class pizza:PizzaTopping ;
+		sh:minCount 1 ;
+		sh:nodeKind sh:IRI ;
+	] ;
+		sh:property [
+		sh:name "req 3" ;
+		sh:description "Пицца должна иметь Топпиги. У пиццы должен быть как максиму 5 Топпигов." ;
+		sh:path pizza:hasTopping ;
+		sh:class pizza:PizzaTopping ;
+		sh:maxCount 6 ;
+		sh:nodeKind sh:IRI ;
+	] ;
+		sh:property [
+		sh:name "req 4" ;
+		sh:description "Пицца должна иметь Основу. У пиццы может быть только 1 Основа." ;
+		sh:path pizza:hasBase ;
+		sh:minCount 1 ;
+		sh:maxCount 1 ;
+		sh:class pizza:PizzaBase ;
+		sh:nodeKind sh:IRI ;
+	] ;
+		sh:property [
+		sh:name "req 5" ;
+		sh:description "Пицца должна иметь свойство Цена. У пиццы свойство Цена должно иметь только одно значение. Цена не должна быть выше 5000" ;
+		sh:path pizza:hasPrice ;
+		sh:maxCount 1 ;
+		sh:maxInclusive 5000 ;
+		sh:nodeKind sh:Literal ;
+	] ;
+	sh:closed true ;
+	sh:ignoredProperties ( rdf:type rdfs:comment pizza:hasIngredient rdfs:label) ;
+	.

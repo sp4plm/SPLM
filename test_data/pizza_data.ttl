@@ -15,14 +15,15 @@ pizza:America
   a pizza:Country ;
   a owl:Thing ;
   pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1250" ;
+  pizza:hasPrice "1250"^^xsd:integer ;
   pizza:hasSize "31" ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
 .
 pizza:AmericanHot_1
   a pizza:AmericanHot ;
   a pizza:Hot ;
   pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1250" ;
+  pizza:hasPrice "1250"^^xsd:integer ;
   pizza:hasSize "31" ;
   pizza:hasTopping pizza:HotGreenPepperTopping_1 ;
   pizza:hasTopping pizza:JalapenoPepperTopping_1 ;
@@ -49,7 +50,7 @@ pizza:Calzone_1
 pizza:Capricciosa_1
   a pizza:Capricciosa ;
   pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "2110" ;
+  pizza:hasPrice "2110"^^xsd:integer ;
   pizza:hasSize "31" ;
   pizza:hasTopping pizza:ArtichokeTopping_1 ;
   pizza:hasTopping pizza:ParmaHamTopping_1 ;
@@ -68,7 +69,7 @@ pizza:ChickenTopping_1
 pizza:ClosedPizza_1
   a pizza:ClosedPizza ;
   pizza:hasBase pizza:Calzone_1 ;
-  pizza:hasPrice "1900" ;
+  pizza:hasPrice "1900"^^xsd:integer ;
   pizza:hasSize "38" ;
   pizza:hasTopping pizza:ArtichokeTopping_1 ;
   pizza:hasTopping pizza:TobascoPepperSauce_1 ;
@@ -80,14 +81,15 @@ pizza:England
   a pizza:Country ;
   a owl:Thing ;
   pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1250" ;
+  pizza:hasPrice "1250"^^xsd:integer ;
   pizza:hasSize "31" ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
   rdfs:label "Британская пицца" ;
 .
 pizza:Fiorentina_1
   a pizza:Fiorentina ;
   pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1900" ;
+  pizza:hasPrice "1900"^^xsd:integer ;
   pizza:hasSize "38" ;
   pizza:hasTopping pizza:OliveTopping_1 ;
   pizza:hasTopping pizza:SpinachTopping_1 ;
@@ -102,8 +104,8 @@ pizza:FourCheesesTopping_1
 pizza:FourSeasons_1
   a pizza:FourSeasons ;
   pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1900" ;
-  pizza:hasSize "38" ;
+  pizza:hasPrice "1900"^^xsd:integer ;
+  pizza:hasSize "39" ;
   pizza:hasTopping pizza:AnchoviesTopping_1 ;
   pizza:hasTopping pizza:OliveTopping_1 ;
   pizza:hasTopping pizza:SpinachTopping_1 ;
@@ -113,15 +115,17 @@ pizza:FourSeasons_1
 .
 pizza:France
   a pizza:Country ;
-  pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1250" ;
+  pizza:hasBase pizza:base_2 ;
+  pizza:hasPrice "7250"^^xsd:integer ;
   pizza:hasSize "31" ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
   rdfs:label "Пицца Франция" ;
 .
 pizza:FruttiDiMare_1
   a pizza:FruttiDiMare ;
+  pizza:hasBase pizza:base_1 ;
   pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1900" ;
+  pizza:hasPrice "1900"^^xsd:integer ;
   pizza:hasSize "38" ;
   pizza:hasTopping pizza:MixedSeafoodTopping_1 ;
   pizza:hasTopping pizza:OliveTopping_1 ;
@@ -132,20 +136,22 @@ pizza:FruttiDiMare_1
 pizza:Germany
   a pizza:Country ;
   pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1250" ;
+  pizza:hasPrice "1250"^^xsd:integer ;
   pizza:hasSize "31" ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
   rdfs:label "Пицца Германия" ;
 .
 pizza:Giardiniera_1
   a pizza:Giardiniera ;
   pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1900" ;
+  pizza:hasPrice "1900"^^xsd:integer ;
   pizza:hasSize "38" ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
   rdfs:label "Giardiniera" ;
 .
 pizza:GoatsCheeseTopping_1
   a pizza:GoatsCheeseTopping ;
-  pizza:hasPrice "1900" ;
+  pizza:hasPrice "1900"^^xsd:integer ;
   pizza:hasSize "38" ;
   rdfs:label "Goats Cheese Topping" ;
 .
@@ -165,8 +171,9 @@ pizza:HotSpicedBeefTopping_1
 pizza:Italy
   a pizza:Country ;
   pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1250" ;
+  pizza:hasPrice "1250"^^xsd:integer ;
   pizza:hasSize "31" ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
   rdfs:label "Итальянская пицца" ;
 .
 pizza:JalapenoPepperTopping_1
@@ -176,8 +183,9 @@ pizza:JalapenoPepperTopping_1
 pizza:LaReine_1
   a pizza:LaReine ;
   pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1900" ;
+  pizza:hasPrice "1900"^^xsd:integer ;
   pizza:hasSize "38" ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
   rdfs:label "La Reine" ;
 .
 pizza:LeekTopping_1
@@ -187,7 +195,7 @@ pizza:LeekTopping_1
 pizza:Margherita_1
   a pizza:Margherita ;
   pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1250" ;
+  pizza:hasPrice "1250"^^xsd:integer ;
   pizza:hasSize "31" ;
   rdfs:label "Margherita" ;
 .
@@ -202,7 +210,7 @@ pizza:MushroomTopping_1
 pizza:NamedIndividual_0
   a pizza:Pizza ;
   pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1200" ;
+  pizza:hasPrice "1200"^^xsd:integer ;
   pizza:hasSize "38" ;
   pizza:hasTopping pizza:gorgonzola_top_inst ;
   pizza:hasTopping pizza:mozarella_top_inst ;
@@ -212,7 +220,7 @@ pizza:NamedIndividual_0
 pizza:NamedIndividual_1
   a pizza:American ;
   pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1580" ;
+  pizza:hasPrice "1580"^^xsd:integer ;
   pizza:hasSize "31" ;
   pizza:hasTopping pizza:HotSpicedBeefTopping_1 ;
   pizza:hasTopping pizza:ParmaHamTopping_1 ;
@@ -224,7 +232,7 @@ pizza:NamedIndividual_1
 pizza:NamedIndividual_2
   a pizza:Cajun ;
   pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1700" ;
+  pizza:hasPrice "1700"^^xsd:integer ;
   pizza:hasSize "31" ;
   pizza:hasTopping pizza:PeperonataTopping_1 ;
   pizza:hasTopping pizza:PrawnsTopping_1 ;
@@ -239,7 +247,7 @@ pizza:NamedIndividual_2
 pizza:NamedIndividual_3
   a pizza:Mushroom ;
   pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "2300" ;
+  pizza:hasPrice "2300"^^xsd:integer ;
   pizza:hasSize "31" ;
   pizza:hasTopping pizza:MushroomTopping_1 ;
   pizza:hasTopping pizza:SundriedTomatoTopping_1 ;
@@ -250,7 +258,7 @@ pizza:NamedIndividual_3
 pizza:NamedIndividual_4
   a pizza:Mushroom ;
   pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "2500" ;
+  pizza:hasPrice "2500"^^xsd:integer ;
   pizza:hasSize "31" ;
   pizza:hasTopping pizza:MushroomTopping_1 ;
   pizza:hasTopping pizza:SlicedTomatoTopping_1 ;
@@ -261,7 +269,7 @@ pizza:NamedIndividual_4
 pizza:NamedIndividual_5
   a pizza:Mushroom ;
   pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1250" ;
+  pizza:hasPrice "1250"^^xsd:integer ;
   pizza:hasSize "31" ;
   pizza:hasTopping pizza:MushroomTopping_1 ;
   pizza:hasTopping pizza:gorgonzola_top_inst ;
@@ -272,7 +280,7 @@ pizza:NamedIndividual_5
 pizza:NamedIndividual_6
   a pizza:Mushroom ;
   pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1300" ;
+  pizza:hasPrice "1300"^^xsd:integer ;
   pizza:hasSize "31" ;
   pizza:hasTopping pizza:MushroomTopping_1 ;
   pizza:hasTopping pizza:gorgonzola_top_inst ;
@@ -282,7 +290,7 @@ pizza:NamedIndividual_6
 pizza:NamedIndividual_7
   a pizza:Soho ;
   pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1000" ;
+  pizza:hasPrice "1000"^^xsd:integer ;
   pizza:hasSize "31" ;
   pizza:hasTopping pizza:OliveTopping_1 ;
   pizza:hasTopping pizza:ParmesanTopping_1 ;
@@ -296,7 +304,7 @@ pizza:NamedIndividual_7
 pizza:NamedIndividual_8
   a pizza:Soho ;
   pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1600" ;
+  pizza:hasPrice "1600"^^xsd:integer ;
   pizza:hasSize "31" ;
   pizza:hasTopping pizza:OliveTopping_1 ;
   pizza:hasTopping pizza:RocketTopping_1 ;
@@ -308,7 +316,7 @@ pizza:NamedIndividual_8
 pizza:NamedIndividual_9
   a pizza:Soho ;
   pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "900" ;
+  pizza:hasPrice "900"^^xsd:integer ;
   pizza:hasSize "31" ;
   pizza:hasTopping pizza:ParmesanTopping_1 ;
   pizza:hasTopping pizza:RocketTopping_1 ;
@@ -320,8 +328,9 @@ pizza:NamedIndividual_9
 pizza:Napoletana_1
   a pizza:Napoletana ;
   pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1250" ;
+  pizza:hasPrice "1250"^^xsd:integer ;
   pizza:hasSize "31" ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
   rdfs:label "Napoletana" ;
 .
 pizza:OliveTopping_1
@@ -335,8 +344,9 @@ pizza:ParmaHamTopping_1
 pizza:Parmense_1
   a pizza:Parmense ;
   pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1250" ;
+  pizza:hasPrice "1250"^^xsd:integer ;
   pizza:hasSize "31" ;
+  pizza:hasTopping pizza:SlicedTomatoTopping_1 ;
   rdfs:label "Parmense" ;
 .
 pizza:ParmesanTopping_1
@@ -362,8 +372,9 @@ pizza:PineKernels_1
 pizza:PolloAdAstra_1
   a pizza:PolloAdAstra ;
   pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1250" ;
+  pizza:hasPrice "1250"^^xsd:integer ;
   pizza:hasSize "31" ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
   rdfs:label "Pollo Ad Astra" ;
 .
 pizza:PrawnsTopping_1
@@ -373,15 +384,17 @@ pizza:PrawnsTopping_1
 pizza:PrinceCarlo_1
   a pizza:PrinceCarlo ;
   pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1250" ;
+  pizza:hasPrice "1250"^^xsd:integer ;
   pizza:hasSize "31" ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
   rdfs:label "Prince Carlo" ;
 .
 pizza:QuattroFormaggi_1
   a pizza:QuattroFormaggi ;
   pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1250" ;
+  pizza:hasPrice "1250"^^xsd:integer ;
   pizza:hasSize "31" ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
   rdfs:label "Quattro Formaggi" ;
 .
 pizza:RedOnionTopping_1
@@ -399,8 +412,9 @@ pizza:RosemaryTopping_1
 pizza:Siciliana_1
   a pizza:Siciliana ;
   pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1250" ;
+  pizza:hasPrice "1250"^^xsd:integer ;
   pizza:hasSize "31" ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
   rdfs:label "Siciliana" ;
 .
 pizza:SlicedTomatoTopping_1
@@ -410,8 +424,9 @@ pizza:SlicedTomatoTopping_1
 pizza:SloppyGiuseppe_1
   a pizza:SloppyGiuseppe ;
   pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1250" ;
+  pizza:hasPrice "1250"^^xsd:integer ;
   pizza:hasSize "31" ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
   rdfs:label "Sloppy Giuseppe" ;
 .
 pizza:SpinachTopping_1
@@ -437,8 +452,9 @@ pizza:TobascoPepperSauce_1
 pizza:Veneziana_1
   a pizza:Veneziana ;
   pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1250" ;
+  pizza:hasPrice "1250"^^xsd:integer ;
   pizza:hasSize "31" ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
   rdfs:label "Veneziana" ;
 .
 pizza:base_1
@@ -464,6 +480,6 @@ pizza:tomato_top_inst
 pizza:IceCream_instance
   a pizza:IceCream ;
   rdfs:label "Мороженное пломбир" ;
-  pizza:hasPrice "150";
+  pizza:hasPrice "150"^^xsd:integer;
 .
 

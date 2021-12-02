@@ -3,7 +3,7 @@
         "_CMT_":"Возвращает один экземпляр класса для определения префикса данных",
         "#VARS":{"URI":{"mark":"#{URI}","default":""}},
         "#TXT":"select ?inst ?inst_lbl {
-                ?inst a #{URI} .
+                ?inst a <#{URI}> .
                 ?inst rdfs:label ?inst_lbl .
                 } limit 1"
     },
@@ -74,7 +74,23 @@
         "_CMT_":"Возвращает лейбл класса",
         "#VARS":{"URI":{"mark":"#{URI}","default":""}},
         "#TXT":"select ?cls_lbl {
-                 #{URI} rdfs:label ?cls_lbl.
+                 <#{URI}> rdfs:label ?cls_lbl.
                 } limit 1"
+    },
+    "get_subgraph_0":{
+        "_CMT_":"Возвращает часть графа для заданного узла (для классов)",
+        "#VARS":{"PREF":{"mark":"#{PREF}","default":""}, "URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"prefix x: <#{PREF}>
+                construct  { ?s ?p ?o }
+                where { <#{URI}> (x:|!x:)* ?s . ?s ?p ?o . }"
+    },
+        "get_subgraph":{
+        "_CMT_":"Возвращает часть графа для заданного узла (для экземпляров)",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"construct {?s ?p ?o }
+                where {
+                ?cls rdfs:subClassOf* <#{URI}> .
+                ?s a ?cls .
+                ?s ?p ?o } "
     }
 }

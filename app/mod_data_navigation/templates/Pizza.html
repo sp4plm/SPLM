@@ -54,9 +54,9 @@
         <img class="img-responsive" style="margin: 0 auto;" src="/static/files/images/Pizza.png" width="350" height="350" alt="pizza">
     </div>
 	<hr class="sdbarHR" />
-	<div class="sdbarTitle">Самое популярное</div>
+	<div class="sdbarTitle">Самое популярное:</div>
 	<div>
-		<span class="sdbarT">Самая сытная пицца:</span>
+		<span class="sdbarT">Сытная пицца:</span>
 		<span class="sdbarR">{{ sidebar1 | safe }}</span>
 	</div>
 	<div>
@@ -73,10 +73,32 @@
 
 
 {% block page_main_content %}
-	<h2 class="content-header">Теукщая категория: {{class_name | safe }}</h2>
-		{% if parent %}<h4>Родительская категория пиццы: {{ parent | safe }}</h4>{% endif %}
-	<br>
-		{% if instances %}<h3>Доступные варианты пиццы для заказа:</h3>{{ instances | safe }}{% endif %}
-	<br>
-		{% if subclasses %}<h3>Дополнительные под-категории пиццы:</h3>{{ subclasses | safe }}{% endif %}
+	<div class="container-fluid">
+		<h2 class="content-header">Теукщая категория: {{class_name | safe }}</h2>
+		<br>
+			{% if definition %}
+				<h3>Определение:</h3>
+					<h4>{{ definition | safe }}</h4>
+					<h5>* Данное определение сформировано автоматически мз аксоимы OWL</h5>
+			{% endif %}
+		<br>
+			{% if requirements %}
+				<h3>Требования к пицце:</h3>
+					{{ requirements | safe }}
+				<h5>* Требования представлены в виде текста и машиночитаемых правил, сформулированных с использованием классов и отношений из онтологии "Пицца" с целью обеспечения их автоматизированной проверки.</h5>
+			{% endif %}
+		<br>
+			<input id="startverifybutton" type="button" action="Pizza?prefix=pizza" value="Проверить выполнение требований"/>
+		<br>
+		<span id="ver-mark" style="display:none;"></span>
+		<br>
+			{% if instances %}<h3>Доступные варианты пиццы для заказа:</h3>{{ instances | safe }}{% endif %}
+		<br>
+			{% if subclasses %}<h3>Дополнительные под-категории пиццы:</h3>{{ subclasses | safe }}{% endif %}
+	</div>
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+    <script src="{{url_for('data_navigation.static', filename='js/datanavigation.js')}}" type="text/javascript"></script>
 {% endblock %}

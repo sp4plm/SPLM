@@ -14,14 +14,18 @@ from app.user_mgt.user_conf import UserConf
 from app.user_mgt.models.users import db, User
 from app.user_mgt.models.roles import Role
 onto_mod_api = app_api.get_mod_api('onto_mgt')
+qry_mod_api = app_api.get_mod_api('query_mgt')
 
 url_prefix='/datanav'
 MOD_NAME = 'data_navigation'
 mod = Blueprint(MOD_NAME, __name__, url_prefix='/',
+                static_folder=os.path.join(os.path.dirname(__file__),'static'),
+                static_url_path='datanav',
                 template_folder=os.path.join(os.path.dirname(__file__),'templates'))
 
 _auth_decorator = app_api.get_auth_decorator()
 
+qry_mod_api.create_sparqt_manager(url_prefix + '/sparqt', mod)
 
 def getParent(cur_class, argms, list_of_templates):
 
@@ -41,6 +45,7 @@ def getParent(cur_class, argms, list_of_templates):
 @mod.route(url_prefix)
 @_auth_decorator
 def startPage():
+
     heading = 'Стартовая страница'
     message1 = 'Стандартная навигация'
     message2 = 'Альтернативная навигация по дереву онтологии с кореневого класса "Thing"'
@@ -59,7 +64,8 @@ def startPage():
     for key, val in page_stat.items():
         q_inst = tsc_query('mod_data_navigation.index.count_instances',{'URI':val[0]})
         q_cls = tsc_query('mod_data_navigation.index.count_subclasses',{'URI':val[0]})
-        stat.update({key:{'inst':q_inst[0]['inst_qnt'], 'cls':q_cls[0]['cls_qnt'], 'img':val[1], 'href':val[2]}})
+        if q_inst and q_cls:
+            stat.update({key:{'inst':q_inst[0]['inst_qnt'], 'cls':q_cls[0]['cls_qnt'], 'img':val[1], 'href':val[2]}})
 
     return render_template("/index.html", heading=heading, stat=stat, message1=message1, message2=message2)
 
@@ -153,3 +159,18 @@ def uri_class(class_object):
         cls = Blank(class_with_tmpl, 'Незарегистрированный префикс "%s"' % argms['prefix'] )
 
     return cls.getTemplate()
+
+@mod.route(url_prefix + '/getver/<class_object>')
+@_auth_decorator
+def get_verif_result(class_object):
+
+    html="<h3>Результаты проверки выполнения требований:</h3>"
+
+    # Берем необходимые аргументы из http запроса
+    argms = request.args.to_dict()
+    argms['class'] = class_object
+
+    from .classes.pizza.Pizza import get_reqs_verification
+    df = get_reqs_verification(argms['prefix'],argms['class'])
+    html += df.to_html(index=False)
+    return html
