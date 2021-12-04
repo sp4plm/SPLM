@@ -248,51 +248,58 @@ def get_reqs_verification(prefix, ontoclass):
         if p[0] == prefix:
             pref_unquote = p[1]
 
+
     # Выбираем из всех данных только те, которые имеют отношение к текущему классу
     data = tsc_query('mod_data_navigation.Pizza.get_subgraph',
                       {'URI': pref_unquote + ontoclass})
 
-    js = JSONResult(data)
     data_graph = Graph()
 
-    for i in js:
-        data_graph.add(i[:3])
+    if data != []:
+        js = JSONResult(data)
 
-    G = onto_mod_api.get_graph(prefix)
+        for i in js:
+            data_graph.add(i[:3])
 
-    r = validate(data_graph,
-                 shacl_graph=G,
-                 ont_graph=G,
-                 inference='rdfs',
-                 abort_on_first=False,
-                 allow_warnings=False,
-                 meta_shacl=False,
-                 advanced=False,
-                 js=False,
-                 debug=False)
+        G = onto_mod_api.get_graph(prefix)
 
-    conforms, results_graph, results_text = r
+        r = validate(data_graph,
+                     shacl_graph=G,
+                     ont_graph=G,
+                     inference='rdfs',
+                     abort_on_first=False,
+                     allow_warnings=False,
+                     meta_shacl=False,
+                     advanced=False,
+                     js=False,
+                     debug=False)
 
-    if not conforms:
-        qry_validat = """prefix sh: <http://www.w3.org/ns/shacl#>
-                            SELECT ?code ?text ?cmf ?message ?inst ?val
-                            where { ?val_rep a sh:ValidationReport .
-                                ?val_rep sh:conforms ?cmf .
-                                ?val_rep sh:result ?rslt .
-                                ?rslt sh:resultMessage ?message .
-                                ?rslt sh:focusNode ?inst .
-                                ?rslt sh:sourceConstraintComponent ?comp .
-                                ?rslt sh:sourceShape ?shape .
-                                ?shape sh:name ?code .
-                                ?shape sh:description ?text .
-                            Optional { ?rslt sh:value ?val . }
-                                   } order by ?code"""
+        conforms, results_graph, results_text = r
 
-        val = pd.DataFrame(results_graph.query(qry_validat))
-        val.columns = ['Код', 'Текст требования', 'Выполнено', 'Обоснование', 'Объект', 'Значение']
-        val['Объект'] = val['Объект'].str.replace(pref_unquote, '', regex=True)
-        val['Выполнено'] = val['Выполнено'].str.replace('false', 'Нет')
+        if not conforms:
+            qry_validat = """prefix sh: <http://www.w3.org/ns/shacl#>
+                                SELECT ?code ?text ?cmf ?message ?inst ?val
+                                where { ?val_rep a sh:ValidationReport .
+                                    ?val_rep sh:conforms ?cmf .
+                                    ?val_rep sh:result ?rslt .
+                                    ?rslt sh:resultMessage ?message .
+                                    ?rslt sh:focusNode ?inst .
+                                    ?rslt sh:sourceConstraintComponent ?comp .
+                                    ?rslt sh:sourceShape ?shape .
+                                    ?shape sh:name ?code .
+                                    ?shape sh:description ?text .
+                                Optional { ?rslt sh:value ?val . }
+                                       } order by ?code"""
+
+            val = pd.DataFrame(results_graph.query(qry_validat))
+            val.columns = ['Код', 'Текст требования', 'Выполнено', 'Обоснование', 'Объект', 'Значение']
+            val['Объект'] = val['Объект'].str.replace(pref_unquote, '', regex=True)
+            val['Выполнено'] = val['Выполнено'].str.replace('false', 'Нет')
+        else:
+            val = pd.DataFrame([['Нарушений требований не выявлено, либо требования для данного класса отсутствуют']], columns=['Результат'])
+
     else:
-        val = pd.DataFrame()
+        val = pd.DataFrame([['Не получен ответ от базы данных, обратитесь к администратору портала.']],
+                           columns=['Ошибка'])
 
     return val

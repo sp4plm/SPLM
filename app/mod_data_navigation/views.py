@@ -164,7 +164,7 @@ def uri_class(class_object):
 @_auth_decorator
 def get_verif_result(class_object):
 
-    html="<h3>Результаты проверки выполнения требований:</h3>"
+    html="<h4>Результаты проверки выполнения требований:</h4>"
 
     # Берем необходимые аргументы из http запроса
     argms = request.args.to_dict()
