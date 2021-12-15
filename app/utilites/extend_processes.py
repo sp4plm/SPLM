@@ -29,7 +29,7 @@ class ExtendProcesses:
         script_call = subprocess.Popen(cmd_args, stdin=stdin_point,
                                             stdout=stdout_point, stderr=stderr_point,
                                             cwd=ExtendProcesses.get_exec_path(),
-                                            env={**os.environ, 'PYTHONPATH': ':'.join(sys.path)},
+                                            env={**os.environ, 'PYTHONPATH': os.pathsep.join(sys.path)},
                                             encoding='utf8')
         return script_call
 
