@@ -2,6 +2,7 @@
 
 import os
 import requests
+from datetime import datetime
 
 
 class StoreDriver:
@@ -22,6 +23,13 @@ class StoreDriver:
         self._graph_name_prefix_iri = 'http://splm.portal.web/osplm/graph#'
         self._after_modify_storage_triggers = []
         self._last_downloaded = ''
+        self.__log = os.path.join(os.path.dirname(self._class_file), 'driver.log')
+
+    def to_log(self, msg):
+        time_point = datetime.now().strftime("%Y%m%d %H-%M-%S")
+        msg = '[{}] {}'.format(time_point, msg)
+        with open(self.__log, 'a', encoding='utf-8') as fp:
+            fp.write(msg + "\n")
 
     def query(self, text):
         """ """
