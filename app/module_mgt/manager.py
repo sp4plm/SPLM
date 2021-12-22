@@ -205,7 +205,7 @@ class Manager:
             return mod_descr
         # теперь читаем
         with open(try_mod, 'r', encoding='utf8') as fp:
-            mod_descr.load(fp, format="n3")
+            mod_descr.parse(file=fp, format="n3") # load(fp, format="n3") - deprecated fron 6.0
         return mod_descr
 
     def _get_graph_namespaces(self, graph):
@@ -358,7 +358,7 @@ class Manager:
             mod_uri = self._get_mod_uri(item.name)
             with open(try_mod, 'r', encoding='utf8') as fp:
                 graph_descr = rdflib.Graph()
-                graph_descr.load(fp, format="n3")
+                graph_descr.parse(file=fp, format="n3") # load(fp, format="n3") - deprecated fron 6.0
                 qres = []
                 if 0 < len(graph_descr):
                     qres = graph_descr.query(
@@ -400,7 +400,7 @@ class Manager:
         cache_file = self._get_cache_file()
         with open(cache_file, 'r', encoding='utf8') as fp:
             self._current_app.config['modules_ttl'] = rdflib.Graph()
-            self._current_app.config['modules_ttl'].load(fp, format="n3")
+            self._current_app.config['modules_ttl'].parse(file=fp, format="n3") # load(fp, format="n3") - deprecated fron 6.0
             # по идее надо восстановить содержание и modules_list и modules_info ??!
             if 0 < len(self._current_app.config['modules_ttl']):
                 OSPLM = self._resolve_graph_ns(self._current_app.config['modules_ttl'], 'osplm')

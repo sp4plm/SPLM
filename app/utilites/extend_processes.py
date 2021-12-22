@@ -25,12 +25,18 @@ class ExtendProcesses:
                 cmd_args.append(ix)
         stdin_point = subprocess.PIPE
         stdout_point = subprocess.PIPE
-        stderr_point = open(errors, 'w', encoding='utf8') if '' != errors and CodeHelper.check_file(errors) else subprocess.PIPE
-        script_call = subprocess.Popen(cmd_args, stdin=stdin_point,
-                                            stdout=stdout_point, stderr=stderr_point,
-                                            cwd=ExtendProcesses.get_exec_path(),
-                                            env={**os.environ, 'PYTHONPATH': os.pathsep.join(sys.path)},
-                                            encoding='utf8')
+        stderr_point = subprocess.PIPE
+        if '' != errors and CodeHelper.check_file(errors):
+            stderr_point = open(errors, 'w', encoding='utf8')
+        __call_args = {}
+        __call_args['stdin'] = stdin_point
+        __call_args['stdout'] = stdout_point
+        __call_args['stderr'] = stderr_point
+        __call_args['cwd'] = ExtendProcesses.get_exec_path()
+        __call_args['env'] = {**os.environ, 'PYTHONPATH': os.pathsep.join(sys.path)}
+        if not sys.platform.startswith('win'):
+            __call_args['encoding'] = 'utf8' # Exception on windows 7 with code/decode in subprocess
+        script_call = subprocess.Popen(cmd_args, **__call_args)
         return script_call
 
     @staticmethod
