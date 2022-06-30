@@ -3,7 +3,7 @@
 Модуль предназначен для административного интерфейса портала по URL - /portal
 """
 
-from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
+from flask import Blueprint, request, flash, g, session, redirect, url_for, current_app
 from flask_login import current_user, login_user, logout_user
 from werkzeug.urls import url_parse
 
@@ -11,6 +11,8 @@ from app import db
 from .admin_utils import os # import embeded pythons
 from .admin_utils import app_api # import application globals
 from .admin_utils import AdminConf, AdminUtils # import current module libs
+from .portal_navigation import PortalNavigation
+from app.utilites.code_helper import CodeHelper
 
 from .forms import LoginForm # , RegisterForm
 from .configurator import Configurator
@@ -24,6 +26,8 @@ mod = Blueprint('portal', __name__, url_prefix=AdminConf.MOD_WEB_ROOT,
                 static_folder=AdminConf.get_web_static_path(),
                 template_folder=AdminConf.get_web_tpl_path())
 
+from .decorators import requires_auth
+
 
 @mod.route('/login', methods=['GET', 'POST'])
 def login():
@@ -31,10 +35,14 @@ def login():
     tmpl_vars = {}
     tmpl_vars['title'] = 'Авторизация'
     tmpl_vars['page_title'] = 'Авторизация'
+
+    _p_navi = PortalNavigation()
+    _start_url = _p_navi.get_portal_index_url()
+
     if current_user.is_authenticated:
         # правильную страницу надо определять в настройках
         # redirect to defautl page from settings
-        return redirect('/')
+        return redirect(_start_url)
     form = LoginForm()
     if form.validate_on_submit():
         # try to log in by local admin
@@ -112,14 +120,15 @@ def login():
         if not next_page or url_parse(next_page).netloc != '':
             # правильней из настроек брать URL для перенаправления на стартовую
             # redirect to defautl page from settings
-            next_page = '/'
+            next_page = _start_url
             if not app_api.check_in_registred_urls(next_page):
                 next_page = url_for('admin_mgt.index')
         if is_local_admin:
             next_page = url_for('admin_mgt.index')
         return redirect(next_page)
     tmpl_vars['form'] = form
-    return render_template("/login.html", **tmpl_vars)
+    _tpl_name = os.path.join(AdminConf.MOD_NAME, 'login.html')
+    return app_api.render_page(_tpl_name, **tmpl_vars)
 # # """
 
 
@@ -127,7 +136,14 @@ def login():
 def logout():
     logout_user()
     # redirect to portal main page page from settings
-    return redirect('/')
+    _url = '/'
+    try:
+        _p_navi = PortalNavigation()
+        _url = _p_navi.get_portal_index_url()
+    except Exception as ex:
+        print(AdminConf.MOD_NAME + '.views.logout.Exception: ' + str(ex))
+        _url = '/'
+    return redirect(_url)
 
 
 @mod.route('/welcome', methods=['GET'])
@@ -142,6 +158,37 @@ def welcome():
     except:
         pass
     tmpl_vars['welcome_text'] = 'Еще чуть-чуть и портал откроет свои двери для посетителей. :)'
-    return render_template("portal/welcome.html", **tmpl_vars)
+    _tpl_name = os.path.join(AdminConf.MOD_NAME, 'portal', 'welcome.html')
+    return app_api.render_page(_tpl_name, **tmpl_vars)
 
 
+@mod.route('/uacclog/export/excel/', methods=['GET'])
+@requires_auth
+def __export_users_log():
+    errorMsg = 'Не удалось скачать лог авторизации пользователей!'
+    _auth_logger = AdminUtils.get_auth_logger()
+    # _auth_logger = Utils.get_auth_logger()
+    file_name = 'access_log_export.xls'
+    _dir = app_api.get_mod_data_path(AdminConf.MOD_NAME)
+    file_path = os.path.join(_dir, file_name)
+    CodeHelper.add_file(file_path)
+    _data = _auth_logger.export()
+    CodeHelper.write_to_file(file_path, _data)
+    file_handle = CodeHelper.get_file(file_path)
+
+    if CodeHelper.check_file(file_path) and file_handle is not None:
+
+        @mod.after_app_request
+        def _remove_file(response):
+            try:
+                os.unlink(file_path)
+                file_handle.close()
+            except Exception as error:
+                current_app.logger.error("Error removing or closing downloaded file handle", error)
+            return response
+
+        mime = 'application/x-unknown'
+        from flask import send_file
+        return send_file(file_path, mimetype=mime,
+                         as_attachment=True, attachment_filename=file_name)
+    return app_api.render_page("errors/404.html", message=errorMsg)

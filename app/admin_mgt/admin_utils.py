@@ -4,7 +4,7 @@ import json
 import configparser
 
 from app.utilites.code_helper import CodeHelper
-from app import app_api, mod_manager
+from app import app_api
 from app.admin_mgt.admin_conf import AdminConf
 from app.admin_mgt.admin_navigation import AdminNavigation
 from app.admin_mgt.users_auth_logger import UsersAuthLogger
@@ -53,7 +53,7 @@ class AdminUtils(AdminConf):
     @staticmethod
     def _get_navi_path():
         pth = ''
-        pth = AdminConf.get_mod_path('navi')
+        pth = AdminConf.get_mod_path(os.path.join('default', 'navi'))
         if not os.path.exists(pth):
             os.mkdir(pth)
         return pth
@@ -62,7 +62,8 @@ class AdminUtils(AdminConf):
     def _get_navi_block_content(code):
         items = []
         file_name = code + '.json'
-        file_path = os.path.join(AdminUtils._get_navi_path(), file_name)
+        # получаем настоящий путь к файлу
+        file_path = app_api.get_meta_path('admin_mgt', os.path.join('navi', file_name)) # os.path.join(AdminUtils._get_navi_path(), file_name)
         if os.path.exists(file_path):
             content = CodeHelper.read_file(file_path)
             if content:
@@ -133,17 +134,21 @@ class AdminUtils(AdminConf):
 
         # $accessLog = new
         # PortalLog(portalApp::getInstance()->getSetting('main.Info.userAccLogName'));
-        if os.path.exists(AdminConf.CONFIGS_PATH):
-            app_cfg = app_api.get_config_util()(AdminConf.CONFIGS_PATH)
-        else:
-            _path = os.path.join(AdminConf.SELF_PATH, AdminConf.INIT_DIR_NAME, AdminConf.CONF_DIR_NAME)
-            app_cfg = app_api.get_config_util()(_path)
-        relative_logs = app_cfg.get('main.Info.logDir')
-        logs_dir = os.path.join(app_api.get_app_root_dir(), relative_logs)
-        if not os.path.exists(logs_dir):
-            os.mkdir(logs_dir)
-        file_name = app_cfg.get('main.Info.userAccLogName') + '.log'
-        file_path = os.path.join(logs_dir, file_name)
+        # _conf_path = ''
+        # _conf_path = AdminConf.CONFIGS_PATH
+        # if os.path.exists(_conf_path):
+        #     app_cfg = app_api.get_config_util()(_conf_path)
+        # else:
+        #     _path = os.path.join(AdminConf.SELF_PATH, AdminConf.INIT_DIR_NAME, AdminConf.CONF_DIR_NAME)
+        #     app_cfg = app_api.get_config_util()(_path)
+        app_cfg = AdminUtils.get_default_config()
+        # relative_logs = app_cfg.get('main.Info.logDir')
+        # logs_dir = os.path.join(app_api.get_app_root_dir(), relative_logs)
+        # if not os.path.exists(logs_dir):
+        #     os.mkdir(logs_dir)
+        # file_name = app_cfg.get('main.Info.userAccLogName') + '.log'
+        # file_path = os.path.join(logs_dir, file_name)
+        logs_dir = app_api.get_logs_path()
         _logger = UsersAuthLogger(logs_dir, app_cfg.get('main.Info.userAccLogName'))
         return _logger
 
@@ -157,7 +162,8 @@ class AdminUtils(AdminConf):
     @staticmethod
     def get_portal_config():
         ocfg = None
-        ocfg = app_api.get_config_util()(AdminConf.CONFIGS_PATH)
+        # ocfg = app_api.get_config_util()(AdminConf.CONFIGS_PATH)
+        ocfg = AdminUtils.get_default_config()
         return ocfg
 
     @staticmethod
@@ -181,6 +187,7 @@ class AdminUtils(AdminConf):
     def read_json_file(file_path):
         data = None
         if os.path.exists(file_path):
+            file_path = AdminUtils.__get_real_filepath(file_path)
             with open(file_path, 'r', encoding='utf8') as fp:
                 _cont = fp.read()
                 if _cont:
@@ -194,6 +201,7 @@ class AdminUtils(AdminConf):
     def ini2dict(file_path):
         data = None
         if os.path.exists(file_path) and os.path.isfile(file_path):
+            file_path = AdminUtils.__get_real_filepath(file_path)
             base_name = os.path.basename(file_path)
             _parser = configparser.ConfigParser()
             # https://stackoverflow.com/questions/19359556/configparser-reads-capital-keys-and-make-them-lower-case
@@ -212,6 +220,7 @@ class AdminUtils(AdminConf):
     def dict2ini(file_path, data: dict):
         flg = False
         if os.path.exists(file_path) and os.path.isfile(file_path):
+            file_path = AdminUtils.__get_conf_save_path(file_path)
             _ini_text = AdminUtils._dict2ini_text(data)
             _parser = configparser.ConfigParser(strict=False, allow_no_value=True)
             # https://stackoverflow.com/questions/19359556/configparser-reads-capital-keys-and-make-them-lower-case
@@ -222,6 +231,25 @@ class AdminUtils(AdminConf):
                 fp.write(_ini_text)
                 flg = True
         return flg
+
+    @staticmethod
+    def __get_conf_save_path(file_path):
+        _res_path = file_path
+        _root_pth = AdminUtils.__get_app_path()
+        _app_conf_pth = _root_pth + os.path.sep + 'cfg'
+        if os.path.exists(_app_conf_pth):
+            _pth_mod = os.path.dirname(AdminUtils._class_file)
+            _s = file_path.replace(os.path.dirname(_pth_mod), '').lstrip(os.path.sep).split(os.path.sep)
+            _t = _app_conf_pth
+            for _st in _s:
+                if _st == _s[-1]:
+                    break # file
+                #  считаем что все остальное директории
+                _t = os.path.join(_t, _st)
+                if not os.path.exists(_t):
+                    os.mkdir(_t)
+            _res_path = os.path.join(_app_conf_pth, *_s)
+        return _res_path
 
     @staticmethod
     def _dict2ini_text(dt):
@@ -285,3 +313,35 @@ class AdminUtils(AdminConf):
         admin_navi = AdminNavigation()
         flg = admin_navi.check_url_access(search_path, access_for)
         return flg
+
+    @staticmethod
+    def __get_real_filepath(req_file):
+        _root_pth = AdminUtils.__get_app_path()
+        # рассматриваем файлы внутри приложения
+        if req_file.startswith(_root_pth):
+            _app_conf_pth = _root_pth + os.path.sep + 'cfg'
+            # если запрошенный файл находится вне конфигурационной директории приложения
+            if not req_file.startswith(_app_conf_pth):
+                # определяем в какой поддиректории приложения ищется файл
+                relative = req_file.replace(_root_pth, '')
+                # считаем что данная директория модуль
+                _mod_name = relative.lstrip(os.path.sep).split(os.path.sep)[0]
+                # если конфигурационная директория существует
+                if os.path.exists(_app_conf_pth):
+                    _t = os.path.join(_app_conf_pth, _mod_name)
+                    # если существует директория модуля в конфигурационной директории
+                    if os.path.exists(_t):
+                        _t = os.path.join(_app_conf_pth, relative.lstrip(os.path.sep))
+                        # существует ли указанный конфигурационный файл
+                        if os.path.exists(_t):
+                            req_file = _t
+        return req_file
+
+    @staticmethod
+    def __get_app_path():
+        """
+        Метод вычисляет путь директории приложения - это отсчетная точка для модулей
+        :return: None
+        """
+        _pth_mod = os.path.dirname(AdminUtils._class_file)
+        return os.path.dirname(_pth_mod)

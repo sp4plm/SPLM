@@ -69,6 +69,10 @@ class DataUploadManager:
         query = 'DELETE { GRAPH <' + graph_name + '> { ?s ?p ?o } } WHERE { ?s ?p ?o . }'
         self._to_log(self._debug_name + '.clear_named_graph_data: try send clear graph request!')
         self._to_log(self._debug_name + '.clear_named_graph_data: request is ->' + query)
+        # HACK
+        # нельзя удалять nullGraph при blazegraph
+        if graph_name.endswith('#nullGraph'):
+            return True # говорим что удаление прошло успешно
         return self.exec_query(query)
 
     def cook_graph_name(self, item):

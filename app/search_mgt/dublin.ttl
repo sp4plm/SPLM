@@ -25,3 +25,8 @@
   <http://splm.portal.web/osplm#web_prefix> "/search"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://splm.portal.web/osplm#httpEnambled> xsd:true .
 
+<http://splm.portal.web/osplm#search_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_searchmgt_1> .
+<http://splm.portal.web/osplm/data#url_searchmgt_1> osplm:value "/search"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Поиск"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+

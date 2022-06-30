@@ -30,7 +30,7 @@
 
 
 <http://splm.portal.web/osplm#wiki> osplm:hasURL <http://splm.portal.web/osplm/data#url_wiki_1> .
-<http://splm.portal.web/osplm/data#url_wiki_1> osplm:value "/wiki"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_wiki_1> osplm:value "/wiki/"^^<http://www.w3.org/2001/XMLSchema#string> .
 <http://splm.portal.web/osplm/data#url_wiki_1> rdfs:label "Wiki"^^<http://www.w3.org/2001/XMLSchema#string> .
 <http://splm.portal.web/osplm/data#url_wiki_1> osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> .
 <http://splm.portal.web/osplm/data#url_wiki_1> osplm:hasHTMLtemplate "pages.html"^^<http://www.w3.org/2001/XMLSchema#string> .

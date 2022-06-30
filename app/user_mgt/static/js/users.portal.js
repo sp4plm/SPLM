@@ -29,8 +29,8 @@
                 return new cls();
             }();
 
-            _this.pswdMinLen = 8; // _this.langData.minPaswdLength;
-            _this.loginMinLen = 8; // _this.langData.minLoginLength;
+            _this.pswdMinLen = 4; // _this.langData.minPaswdLength;
+            _this.loginMinLen = 4; // _this.langData.minLoginLength;
             _this.tmplEditForm = '';
             _this.tmplViewInfo = '';
             _this.EvMan = null;
@@ -259,7 +259,7 @@
                                 close:function(){ _this.EvMan.fire('UserDialogClose',{content:$(this),_skey:_selfCode}); }
                             };
                         if(w>0){ cfg.width = w; }
-                        if(h>0){ cfg.height = h; }
+//                        if(h>0){ cfg.height = h; }
                         if(typeof void null!=typeof wa.top && wa.top>0
                             && typeof void null!=typeof wa.left && wa.left>0){
                             cfg.position = [wa.left,wa.top];
@@ -759,6 +759,8 @@
             $.get(_this.baseURL+'/getModuleData/',null,function(amd){
                 _this.moduleData = amd;
                 _this.langData = amd;
+                _this.pswdMinLen = (_this.langData.minPaswdLength || 4);
+                _this.loginMinLen = (_this.langData.minLoginLength || 4);
                 _this.dialog = _this.dialog({id:'pu-dialog'});
                 //_this.Grid = _this.Grid({id:'user-register'});
                  _this.buildGrid();

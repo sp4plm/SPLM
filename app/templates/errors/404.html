@@ -2,3 +2,10 @@
 {% block bread_crumbs %}{% endblock %}
 {% block page_sidenav %}<b>404</b>{% endblock %}
 {% set page_title="Страница не найдена!" %}
+{% block page_main_content %}
+    {% if message %}
+        <pre>{{message}}</pre>
+    {% endif %}
+    <hr />
+    <p><a href="/">На главную</a></p>
+{% endblock %}

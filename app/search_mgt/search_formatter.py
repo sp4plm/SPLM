@@ -182,8 +182,7 @@ class SearchFormatter:
 
     def _create_obj_link(self, class_name, uri):
         try:
-            # link = url_for('onto.uri_class', class_object=class_name, uri=uri)
-            link = uri
+            link = url_for('splm_nav.uri_class', class_object=class_name, uri=uri)
         except:
             link = ''
         return link

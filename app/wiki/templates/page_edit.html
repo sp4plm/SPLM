@@ -3,19 +3,7 @@
 {% block title %}
     {% if title %}SPLM: {{ title }}{% else %}Редактор Wiki страниц{% endif %}
 {% endblock %}
-
-{% block styles %}
-    {{super()}}
-	<style type="text/css">
-	  .scroll-ul-list {
-			max-height: 450px;
-			overflow-y: scroll !important;
-		}
-  	</style>
-
-{% endblock %}
-
-
+ 
 {% block page_main_content %}
 <div class="scroll-ul-list">
 	<form method="post" >
@@ -41,6 +29,14 @@
 
 		<br/>
 
+		Меню навигации: 
+		{% if is_navigation == '1' %}
+			<input type="checkbox" name="is_navigation" checked value="{{is_navigation}}">
+		{% else %}
+			<input type="checkbox" name="is_navigation" value="">
+		{% endif %}
+		<br/>
+
 
 		<input type="submit" value="Сохранить" name="save" formaction="{{url_for('wiki.page', page_id = page_id)}}">
 		<input type="submit" value="Удалить" name="delete" formaction="{{url_for('wiki.page', page_id = page_id)}}">
@@ -51,4 +47,34 @@
 		<input type="submit" value="К списку страниц" formaction="{{url_for('wiki.wiki')}}">
 	</form>
 </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+	{{super()}}
+	<script type="text/javascript">
+		$(function(){
+			$('[type="checkbox"]').on('change', function(){
+			   this.value = this.checked ? 1 : 0;
+			}).change();
+		});
+
+		function addImg(file){
+			setTextToCurrentPos("\{\{img:/mediadata/static/files/wiki/img/" + file + "\}\}")
+		}
+		function addFile(file){
+			setTextToCurrentPos("\{\{ФАЙЛ\|/mediadata/static/files/wiki/files/" + file + "\}\}")
+		}
+
+		function setTextToCurrentPos(text_to_insert) {
+			element = $('textarea[name="page"]')
+            var curPos = element.prop('selectionStart');
+            let current_value = element.val();
+            if (!Boolean(curPos)) {
+            	curPos = current_value.length
+            }
+            element.val(current_value.slice(0, curPos) + text_to_insert + current_value.slice(curPos));
+		}
+	</script>
 {% endblock %}

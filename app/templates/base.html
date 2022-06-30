@@ -1,42 +1,47 @@
+{% block doc -%}
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}My Site{% endblock %}</title>
-        <link rel="stylesheet" href="/static/css/reset-min.css" />
-        <link rel="stylesheet" href="/static/css/main.css" />
-        {% block css %}
-        {% endblock %}
-        <script src="/static/js/jquery-1.12.4.min.js" type="text/javascript"></script>
-        <script src="/static/js/jstypes.js" type="text/javascript"></script>
-        <script src="/static/js/cust_events.js" type="text/javascript"></script>
-    </head>
-    <body>
-        <div id="header">
-            <hr />
-            {% block header %}{% endblock %}
-        </div>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            <div id="messages-wrap">
-                <hr>
-                <div id="messages">
-                    <ul>
-                        {% for message in messages %}
-                        <li>{{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <hr>
-            </div>
-            {% endif %}
-        {% endwith %}
-        <div id="content">{% block content %}{% endblock %}</div>
-        <div id="footer">{% block footer %}{% endblock %}</div>
-        <div id="scripts-box">
-            <script src="/static/js/main.js" type="text/javascript"></script>
-            {% block script %}
-            {% endblock %}
-        </div>
-    </body>
+<html{% block html_attribs %}{% endblock html_attribs %}>
+{%- block html %}
+  <head>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    {%- block head %}
+    <title>{% block title %}{{title|default}}{% endblock title %}</title>
+
+    {%- block metas %}
+    <meta http-equiv="content-language" content="{{page_lang|default('ru')}}" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    {%- endblock metas %}
+
+    {%- block styles %}
+    {%- block base_styles %}
+    {%- endblock base_styles %}
+    {%- block vend_styles %}
+    {%- endblock vend_styles %}
+      <link rel="stylesheet" href="{{url_for('static', filename='css/main2.css')}}" />
+    {%- block page_styles %}
+    {%- endblock page_styles %}
+    {%- endblock styles %}
+    {%- endblock head %}
+  </head>
+  <body{% block body_attribs %}{% endblock body_attribs %}>
+    {% block body -%}
+    {% block navbar %}
+    {%- endblock navbar %}
+    {% block content -%}
+    {%- endblock content %}
+
+    {% block scripts %}
+    {%- block base_scripts %}
+    {%- endblock base_scripts %}
+    {%- block vend_scripts %}
+    {%- endblock vend_scripts %}
+    <script src="{{url_for('static', filename='js/jstypes.js')}}" type="text/javascript"></script>
+    <script src="{{url_for('static', filename='js/jsutils.js')}}" type="text/javascript"></script>
+    {%- block page_scripts %}
+    {%- endblock page_scripts %}
+    {%- endblock scripts %}
+    {%- endblock body %}
+  </body>
+{%- endblock html %}
 </html>
+{% endblock doc -%}

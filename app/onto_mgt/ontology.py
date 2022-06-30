@@ -184,7 +184,7 @@ class Ontology():
         graph = Graph().parse(onto_file, format='ttl')
 
 
-        QUERY = "SELECT ?parent WHERE { %s:%s rdfs:subClassOf ?parent .}" % (onto, class_name)
+        QUERY = "SELECT ?parent WHERE { %s:%s rdfs:subClassOf ?parent . filter (isIRI(?parent)) }" % (onto, class_name)
         parent_result = compile_query_result( json.loads( graph.query(QUERY).serialize(format="json").decode("utf-8") )  )
 
         if parent_result:

@@ -13,12 +13,13 @@ from app.utilites.some_config import SomeConfig
 from app.utilites.data_serializer import DataSerializer
 from app.search_mgt.search_formatter import SearchFormatter, html
 
-from app.app_api import tsc_query
+from app.app_api import tsc_query, get_mod_api
 
 from app.search_mgt.search_conf import SearchConf
 
 MOD_NAME = SearchConf.MOD_NAME
 
+onto_mod_api = get_mod_api('onto_mgt')
 
 class PortalSearch:
     _class_file = __file__
@@ -60,8 +61,10 @@ class PortalSearch:
         self._curr_page = 1
         self._query_code = '' # идентификатор шаблона sparql запроса
         self._search_lang = ''
+        self.base_onto = "onto"
         # self._search_vars = {} # переменные-параметры к sparql запросу
-        self._search_vars = {"prefix" : "PREFIX onto: <http://proryv2020.ru/req_onto#>"} 
+        self._search_vars = {} 
+        self._search_vars = {"PREF" : self._get_current_onto()}
         self._other_params = {} # дополнительные параметры для выполнения запроса или форматирования результата
         self._use_cache = False
         self._current_user = None
@@ -71,7 +74,6 @@ class PortalSearch:
         self._work_dir = SearchConf.get_mod_data_path()
         self.breaker = '<!-- #@# -->'
         self._request = None # flask request link - should be set before search
-
 
         # Чтение настроек из файла
         with open(os.path.join(self._work_dir, self.settings_file),  "r", encoding="utf-8") as f:
@@ -463,6 +465,23 @@ class PortalSearch:
         if current_user is not None:
             self._current_user = current_user
 
+    def get_search_vars_with_replace_regex_symbols(self):
+        _query_vars = self._get_search_vars()
+        if 'arg' in _query_vars:
+            _query_vars['arg'] = _query_vars['arg'].replace("?", "\\\?")
+
+        return _query_vars
+
+
+    def _get_current_onto(self):
+        _current_pref = ''
+        prefixes = onto_mod_api.get_prefixes()
+        for p in prefixes:
+            if p[0] == self.base_onto:
+                _current_pref = p[1]
+
+        return _current_pref
+
     def _get_search_vars(self):
         return self._search_vars
 
@@ -478,7 +497,9 @@ class PortalSearch:
             return [] # если пустая строка - возвращаем пустой результат
 
         _query_vars = []
-        _query_vars = self._get_search_vars()
+        # получаем search_vars и экранируем символы regex для строки поиска
+        _query_vars = self.get_search_vars_with_replace_regex_symbols()
+
         _query_code = self._get_query_code()
         if '' == _query_code or not _query_vars:
             return [] # не падаем - возвращаем пустой результат

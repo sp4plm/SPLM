@@ -11,7 +11,8 @@ class ModConf:
     MOD_WEB_ROOT = '/mediadata'
 
     _MAX_FILE_SIZE = 1024 * 1024 + 50
-    _ALLOWED_EXTENSIONS = ('jpg', 'jpeg', 'xml', 'png', 'gif', 'docx', 'doc', 'pdf', 'ttl', 'xls', 'xlsx')
+    _ALLOWED_EXTENSIONS = ('jpg', 'jpeg', 'xml', 'png', 'gif', 'mp4', 'docx', 'doc',
+                           'pdf', 'ttl', 'xls', 'xlsx', 'dotm', 'dot', 'm4v', 'rq')
 
     @staticmethod
     def get_web_tpl_path():
@@ -25,5 +26,11 @@ class ModConf:
 
     @staticmethod
     def get_mod_path(relative):
-        pth = os.path.join(ModConf.SELF_PATH, relative.lstrip(os.path.sep))
+        relative = relative.lstrip(os.path.sep)
+        pth = os.path.join(ModConf.SELF_PATH, relative)
+        _k = 'data'
+        if relative.startswith(_k):
+            from app import app_api
+            d_pth = app_api.get_mod_data_path(ModConf.MOD_NAME)
+            pth = os.path.join(d_pth , relative.replace(_k, '').lstrip(os.path.sep))
         return pth

@@ -4,6 +4,11 @@
     {% if title %}SPLM: {{ title }}{% else %}Редактор Wiki страниц{% endif %}
 {% endblock %}
 
+{% block page_sidenav %}
+	{% if is_navigation %}
+		{{toc|safe}}
+	{% endif %}
+{% endblock %}
 
 {% block page_main_content %}
 	{{page|safe}}

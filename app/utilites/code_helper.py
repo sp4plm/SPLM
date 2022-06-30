@@ -182,3 +182,26 @@ class CodeHelper:
                 return 0
 
         return Counters()
+
+    @staticmethod
+    def make_unpack(packed_file, target_dir):
+        flg = False
+        import zipfile
+        if not os.path.exists(packed_file):
+            return flg
+        if not zipfile.is_zipfile(packed_file):
+            return flg
+        with zipfile.ZipFile(packed_file, "r") as zfh:
+            crc_test = zfh.testzip()
+            if crc_test is not None:
+                return flg # плохой файл
+            info = zfh.infolist() # список файлов в архиве
+            zfh.extractall(target_dir)
+            _t = os.path.join(target_dir, info[0].filename)
+            flg = os.path.exists(_t)
+        return flg
+
+    @staticmethod
+    def make_pack(pack_source, pack_file):
+        flg = False
+        return flg

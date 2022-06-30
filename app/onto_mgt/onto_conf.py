@@ -10,8 +10,8 @@ class OntoConf:
     MOD_NAME = os.path.basename(SELF_PATH)
     MOD_WEB_ROOT = '/onto'
 
-    DATA_PATH = os.path.join(SELF_PATH, 'data')
-    DESCRIPTION_FILE = os.path.join(DATA_PATH, 'dublin.ttl')
+    # DATA_PATH = os.path.join(SELF_PATH, 'data')
+    DESCRIPTION_FILE = os.path.join(SELF_PATH, 'dublin.ttl')
 
     @staticmethod
     def get_web_tpl_path():
@@ -20,5 +20,11 @@ class OntoConf:
 
     @staticmethod
     def get_mod_path(relative):
-        pth = os.path.join(OntoConf.SELF_PATH, relative.lstrip(os.path.sep))
+        relative = relative.lstrip(os.path.sep)
+        pth = os.path.join(OntoConf.SELF_PATH, relative)
+        _k = 'data'
+        if relative.startswith(_k):
+            from app import app_api
+            d_pth = app_api.get_mod_data_path(OntoConf.MOD_NAME)
+            pth = os.path.join(d_pth, relative.replace(_k + os.path.sep, ''))
         return pth

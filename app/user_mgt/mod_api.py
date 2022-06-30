@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from app.user_mgt.models.roles import Role
 
-
 class ModApi:
     _class_file = __file__
     _debug_name = 'UsersModApi'

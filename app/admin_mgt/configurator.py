@@ -108,7 +108,7 @@ class Configurator:
         return os.path.exists(_marker) and os.path.isfile(_marker)
 
     def get_inst_marker(self):
-        _marker = os.path.join(os.path.dirname(self._app_dir), self.get_installation_marker_name())
+        _marker = os.path.join(self._app_dir, 'cfg', self.get_installation_marker_name())
         return _marker
 
     def set_app_dir(self, work_dir):

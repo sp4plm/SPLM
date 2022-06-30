@@ -2,17 +2,32 @@
 """
 Модуль предназначен для административного интерфейса портала по URL - /portal
 """
+import string
 import json
+import random
 
-from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
+from crontab import CronSlices, CronTab
+
+import sys
+
+from flask import Blueprint, request, flash, g, session, redirect, url_for, current_app
 
 from .admin_utils import os # import embeded pythons
-from .admin_utils import app_api, CodeHelper, mod_manager # import application globals
+from .admin_utils import app_api, CodeHelper # import application globals
 from .admin_utils import AdminConf, AdminUtils # import current module libs
 from .admin_navigation import AdminNavigation
 from .configurator_utils import ConfiguratorUtils
 
 from .decorators import requires_auth
+
+from app import app
+from .jobs import Jobs
+
+from ..utilites.extend_processes import ExtendProcesses
+from datetime import datetime
+
+
+
 
 WEB_MOD_NAME = 'portal_management'
 mod = Blueprint(WEB_MOD_NAME, __name__, url_prefix=AdminConf.MOD_WEB_ROOT+'/management',
@@ -58,7 +73,8 @@ def admin_navigation():
     tmpl_vars['def_blocks'] = list(def_blocks)
     # требуется каждому блоку добавить путь - в дереве каких отношений участвует
     # есть ли у него родители
-    return render_template('admin_navigation.html', **tmpl_vars)
+    _tpl_name = os.path.join(AdminConf.MOD_NAME, 'admin_navigation.html')
+    return app_api.render_page(_tpl_name, **tmpl_vars)
 
 
 @mod.route('/navigation/<block>', defaults={'item': ''}, methods=['GET'], strict_slashes=False)
@@ -107,7 +123,7 @@ def edit_navigation(block, item):
         items_lst = admin_navi.get_sections_navi(curr_blk['code'])
         tmpl_vars['block_items'] = items_lst
         if items_lst:
-            print(items_lst)
+            # print(items_lst)
             for it in items_lst:
                 if item == it['code']:
                     curr_point = it
@@ -122,9 +138,10 @@ def edit_navigation(block, item):
         if app_api.is_app_module_enabled('user_mgt'):
             users_api = app_api.get_mod_api('user_mgt')
             tmpl_vars['user_roles'] = users_api.get_roles()
-        tmpl_vars['link_selector'] = 'link_selector.html'
+        tmpl_vars['link_selector'] = os.path.join(AdminConf.MOD_NAME, 'link_selector.html')
         tmpl_vars['parent_navi_code'] = block
         tmpl_vars['current_navi_code'] = item
+        tmpl_vars['_base_tpl'] = os.path.join(AdminConf.MOD_NAME, '')
 
     if curr_point:
         curr_point['roles_'] = []
@@ -133,9 +150,9 @@ def edit_navigation(block, item):
 
     tmpl_vars['back_url'] = url_for(WEB_MOD_NAME + '.edit_navigation', block=block)
     tmpl_vars['curr_blk'] = curr_blk
-    tmpl_vars['curr_point'] = curr_point
-
-    return render_template(tpl_name, **tmpl_vars)
+    tmpl_vars['curr_point'] = {} if curr_point is None else curr_point
+    tpl_name = os.path.join(AdminConf.MOD_NAME, tpl_name.lstrip(os.path.sep))
+    return app_api.render_page(tpl_name, **tmpl_vars)
 
 
 def _sort_items(lst, ord='asc', attr='label'):
@@ -163,6 +180,7 @@ def navigation_item_links():
     modules = []
 
     # получаем список модулей
+    mod_manager = app_api.get_mod_manager()
     mods_lst = mod_manager.get_available_modules()
     if mods_lst:
         for modx in mods_lst:
@@ -171,6 +189,7 @@ def navigation_item_links():
             _mod['label'] = modx
             _mod['links'] = mod_manager.get_mod_open_urls(modx)
             modules.append(_mod)
+        answer['state'] = 200
 
     answer['data'] = modules
 
@@ -232,12 +251,11 @@ def navigation_sort_item():
             new_srtid = it['srtid'] + direct
             # теперь найдем с таким же показанием другой пункт меню
             same_sort = _get_by_srtid(items_lst, new_srtid)
-            old_srtid = same_sort['srtid'] - direct
             for it in items_lst:
                 if it['code'] == item:
                     it['srtid'] = new_srtid
-                if it['code'] == same_sort['code']:
-                    it['srtid'] = old_srtid
+                if same_sort is not None and it['code'] == same_sort['code']:
+                    it['srtid'] = same_sort['srtid'] - direct
                 _t.append(it)
             items_lst = _t
 
@@ -277,7 +295,7 @@ def navigation_remove_item():
 
     # проверим на существование блока с кодом block - если нет то ошибка -
     file_name = 'navi_blocks.json'
-    file_path = os.path.join(AdminConf.DATA_PATH, 'navi', file_name)
+    file_path = os.path.join(AdminConf.get_mod_path('data'), 'navi', file_name)
     content = CodeHelper.read_file(file_path)
     answer['state'] = 300
     answer['msg'] = 'Навигационный блок с кодом {} отсутствует!' . format(block)
@@ -362,13 +380,19 @@ def navigation_save_item():
             block_data['label'] = request.form[field]
         field = 'NaviItemCode'
         if request.form[field]:
-            block_data['code'] = request.form[field]
+            block_data['code'] = str(request.form[field]).strip()
         field = 'NaviItemLink'
         if request.form[field]:
-            block_data['href'] = request.form[field]
+            block_data['href'] = str(request.form[field]).strip()
         field = 'NaviItemRoles'
         if request.form[field]:
             block_data['roles'] = request.form[field]
+        field = 'NaviItemDisDropdown'
+        block_data['DisDropdown'] = 0
+        # print('request.form', request.form)
+        # так как данный элемент управления  checkbox то надо проверять наличие ключа
+        if field in request.form:
+            block_data['DisDropdown'] = 1
 
         if '' == block_data['code']:
             msg = 'Не указан код пункта навигации!'
@@ -390,7 +414,8 @@ def navigation_save_item():
             answer['state'] = 200
             answer['msg'] = ''
             answer['data'] = block_data
-            block_data['srtid'] = len(items_lst)
+            block_data['srtid'] = len(items_lst) + 1
+            block_data['id'] = len(items_lst) + 1
             items_lst.append(block_data)
         else:
             answer['state'] = 200
@@ -402,7 +427,9 @@ def navigation_save_item():
                     it['code'] = block_data['code']
                     it['href'] = block_data['href']
                     it['roles'] = block_data['roles']
+                    it['DisDropdown'] = block_data['DisDropdown']
                     block_data = it
+                    # print('it', it)
                 _t.append(it)
             if _t:
                 items_lst = _t
@@ -505,35 +532,44 @@ def navigation_save_block():
     answer['state'] = 300
     answer['msg'] = 'Навигационный блок с кодом {} уже существует!' . format(block_data['code'])
     blocks_lst = admin_navi.get_navi_blocks()
+    field = 'NaviCode'
+    old_code = ''
+    if request.form[field]:
+        old_code = request.form[field]
+    def_blocks = admin_navi.get_default_blocks()
     if blocks_lst:
         has_block = False
         update_blocks = False
         for blk in blocks_lst:
-            if blk['code'] == block_data['code']:
+            if blk['code'] == old_code:
                 has_block = True
                 break
         if not has_block:
             answer['state'] = 200
             answer['msg'] = ''
             answer['data'] = block_data
+            block_data['srtid'] = len(blocks_lst) + 1
+            block_data['id'] = len(blocks_lst) + 1
             blocks_lst.append(block_data)
             update_blocks = True
         else:
-            field = 'NaviCode'
-            if request.form[field] and request.form[field] == block_data['code']:
-                answer['state'] = 200
-                answer['msg'] = ''
-                _t = []
-                for blk in blocks_lst:
-                    if blk['code'] == block_data['code']:
-                        # print('Find code in list')
-                        blk['label'] = block_data['label']
+            answer['state'] = 200
+            answer['msg'] = ''
+            _t = []
+            for blk in blocks_lst:
+                if blk['code'] == old_code:
+                    # print('Find code in list')
+                    blk['label'] = block_data['label']
+                    if old_code not in def_blocks:
                         blk['code'] = block_data['code']
-                        blk['href'] = block_data['href']
-                        update_blocks = True
-                    _t.append(blk)
-                if _t:
-                    blocks_lst = _t
+                    blk['href'] = block_data['href']
+                    update_blocks = True
+                _t.append(blk)
+            if _t:
+                blocks_lst = _t
+            # теперь надо переименовать файл блока
+            if old_code not in def_blocks:
+                admin_navi.rename_file(old_code, block_data['code'])
         if update_blocks:
             admin_navi.save_file('navi_blocks', blocks_lst)
     msg = ''
@@ -602,6 +638,7 @@ def section_view(code, sub_item):
     else:
         # hook hook hook
         if 'Configurator' == current_section['code']:
+            # return url_for('configurator.config_editor')
             tmpl_vars['navi'] = []
             conf_list = ConfiguratorUtils.get_configurator_navi()
             for ci in conf_list:
@@ -613,14 +650,15 @@ def section_view(code, sub_item):
                 tmpl_vars['navi'].append(tpl)
     if current_subitem is not None:
         tmpl_vars['page_title'] += ':' + current_subitem['label']
-    return render_template(AdminConf.get_root_tpl(), **tmpl_vars)
+    return app_api.render_page(AdminConf.get_root_tpl(), **tmpl_vars)
 
 
 @mod.route('/interfaceData', methods=['GET', 'POST'])
 @mod.route('/interfaceData/', methods=['GET', 'POST'])
 @requires_auth
 def interface_data():
-    portal_cfg = app_api.get_config_util()(AdminConf.CONFIGS_PATH)
+    portal_cfg = app_api.get_app_config()  # get_config_util()(AdminConf.CONFIGS_PATH)
+    _conf = AdminUtils.get_portal_config()
     interface = {}
     interface['interface'] = {
         'close': 'Закрыть',
@@ -654,11 +692,12 @@ def interface_data():
         }
     }
 
-    # $phpini =  ini_get_all(;
+    # $phpini =  ini_get_all();
+
     interface['Pages'] = {
         'PortalUsers': {
-            'minLoginLength': 8, # portalApp::getInstance()->getSetting('main.Info.login.minLen'),
-            'minPaswdLength': 8, # portalApp::getInstance()->getSetting('main.Info.pswd.minLen'),
+            'minLoginLength': _conf.get('users.Login.minLen'), # portalApp::getInstance()->getSetting('main.Info.login.minLen'),
+            'minPaswdLength': _conf.get('users.Secret.minLen'), # portalApp::getInstance()->getSetting('main.Info.pswd.minLen'),
             'Errors': {
                 '100': 'Неизвестный идентификатор(#{id}) закладки для открытия!',
                 '101': 'Не заполнено обязательное поле',
@@ -839,3 +878,173 @@ def interface_data():
     }
     # /* Инструменты портала */
     return json.dumps(interface)
+
+
+
+
+def get_executable_files():
+    query = """SELECT ?cron_lbl ?cron_file WHERE {
+        ?mod osplm:hasPathToCronExecutableFile ?mod_uri .
+        ?mod_uri rdfs:label ?cron_lbl .
+        ?mod_uri osplm:value ?cron_file .
+        }"""
+
+    executable_files = app_api.get_mod_manager().query(query)
+    # {"text" : <label>, "value" : <file>}
+    executable_files = [{"text" : str(item['cron_lbl']) + " - " + str(item['cron_file']), "value" : str(item['cron_file'])} for item in executable_files]
+
+    return executable_files
+
+
+@mod.route('/cron')
+@requires_auth
+def cron():
+    return app_api.render_page('admin_mgt/cron.html', crons = Jobs("cron").get_job_data())
+
+
+@mod.route('/cron_item/<cron_item>', methods=["GET", "POST"])
+@mod.route('/cron_item/', methods=["GET", "POST"])
+@requires_auth
+def cron_item(cron_item = ''):
+    template = 'admin_mgt/cron_item.html'
+
+    job = Jobs("cron")
+    if not cron_item:
+        cron_item = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
+
+    if request.method == 'GET':
+        return app_api.render_page(template, cron_item = cron_item, values = job.get_job_object(cron_item), executable_files = get_executable_files(), alert_message = "")
+
+    elif request.method == 'POST':
+        if 'save' in request.form:
+            try:
+                if request.form['cron_item']:
+                        active = request.form['active'] if 'active' in request.form and request.form['active'] else '0'
+                        values = {"name" : request.form['name'], "period" : request.form['period'], "action" : request.form['action'], "active" : active}
+
+                        # невалидный период
+                        if not CronSlices.is_valid(values['period']):
+                            return app_api.render_page(template, cron_item = request.form['cron_item'], values = job.get_job_object(request.form['cron_item']), executable_files = get_executable_files(), alert_message = "Период невалидный!")
+
+                        # файл не существует
+                        if not os.path.exists(os.path.join(app.config['APP_ROOT'], "app", values['action'])) or not os.path.isfile(os.path.join(app.config['APP_ROOT'], "app", values['action'])):
+                            return app_api.render_page(template, cron_item = request.form['cron_item'], values = job.get_job_object(request.form['cron_item']), executable_files = get_executable_files(), alert_message = "Файл не существует!")
+
+
+                        job.edit_job_object(request.form['cron_item'], values)
+                        cron_reload(job)
+            except:
+                print("При изменении возникла ошибка!")
+
+        if 'delete' in request.form:
+            try:
+                cron = CronTab(user=True)
+                cron.remove_all(comment=request.form['cron_item'])
+                cron.write()
+
+                job.delete_job_object(request.form['cron_item'])
+            except:
+                print("При изменении возникла ошибка!")
+
+
+        return redirect(url_for('portal_management.cron'))
+
+
+def cron_reload(job):
+    # Это настройка пути до python для сервера
+    python_path = app.venv_exec if hasattr(app, 'venv_exec') else sys.executable
+
+    cron_data = job.get_job_data()
+    cron = CronTab(user=True)
+
+    for item in cron_data:
+        cron.remove_all(comment=item)
+        if cron_data[item]['active'] == '1':
+            PERIOD = cron_data[item]['period']
+            if CronSlices.is_valid(PERIOD):
+                action = cron_data[item]['action'].strip()
+                if action.startswith("/") or action.startswith("\\"):
+                    action = action[1:]
+                COMMAND = python_path + " " + os.path.join(app.config['APP_ROOT'], "app", action)
+                cron_job = cron.new(command = COMMAND, comment = item)
+                cron_job.setall(PERIOD)
+            else:
+                print("NOT VALID PERIOD!!!")
+
+    cron.write()
+
+
+
+
+
+
+def job_by_script(action):
+    log = os.path.join(app.config['APP_DATA_PATH'], "logs", "job_by_script.log")
+    with open(log, "w", encoding="utf-8") as f:
+        f.write("")
+
+    script = os.path.join(app.config['APP_ROOT'], "app", action)
+    data = ExtendProcesses.run(script, [], errors = log)
+
+
+
+@mod.route('/schedule')
+@requires_auth
+def schedule_main():
+    from app.app_api import tsc_query
+    return app_api.render_page('admin_mgt/schedule.html', schedules = Jobs("schedule").get_job_data())
+
+
+
+@mod.route('/schedule_item/<schedule_item>', methods=["GET", "POST"])
+@mod.route('/schedule_item/', methods=["GET", "POST"])
+@requires_auth
+def schedule_item(schedule_item = ''):
+    template = 'admin_mgt/schedule_item.html'
+
+    job = Jobs("schedule")
+    if not schedule_item:
+        schedule_item = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
+
+    if request.method == 'GET':
+        return app_api.render_page(template, schedule_item = schedule_item, values = job.get_job_object(schedule_item), executable_files = get_executable_files(), alert_message = "")
+
+    elif request.method == 'POST':
+        if 'save' in request.form:
+            try:
+                if request.form['schedule_item']:
+                    active = request.form['active'] if 'active' in request.form and request.form['active'] else '0'
+                    values = {"name" : request.form['name'], "period" : request.form['period'], "action" : request.form['action'], "active" : active}
+                    
+                    # невалидный период
+                    if not CronSlices.is_valid(values['period']):
+                        return app_api.render_page(template, schedule_item = request.form['schedule_item'], values = job.get_job_object(request.form['schedule_item']), executable_files = get_executable_files(), alert_message = "Период невалидный!")
+
+                    # файл не существует
+                    if not os.path.exists(os.path.join(app.config['APP_ROOT'], "app", values['action'])) or not os.path.isfile(os.path.join(app.config['APP_ROOT'], "app", values['action'])):
+                        return app_api.render_page(template, schedule_item = request.form['schedule_item'], values = job.get_job_object(request.form['schedule_item']), executable_files = get_executable_files(), alert_message = "Файл не существует!")
+
+                    # чтобы изменить задание - сначала удаляем его, потом создаем заново
+                    try:
+                        current_app.apscheduler.remove_job(values['name'])
+                    except:
+                        pass
+
+                    minute, hour, day, month, day_of_week = values['period'].split(' ')
+                    current_app.apscheduler.add_job(id = values['name'], func=job_by_script, trigger="cron", day_of_week=day_of_week, month=month, day=day, hour=hour, minute=minute, second="0", args=[values['action']])
+
+                    job.edit_job_object(request.form['schedule_item'], values)
+
+            except:
+                print("При изменении возникла ошибка!")
+
+
+        if 'delete' in request.form:
+            try:
+                current_app.apscheduler.remove_job(request.form['schedule_item'])
+                job.delete_job_object(request.form['schedule_item'])
+            except:
+                print("При изменении возникла ошибка!")
+
+
+        return redirect(url_for('portal_management.schedule_main'))

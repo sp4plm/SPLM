@@ -54,7 +54,7 @@ class HtmlTagSearcher:
         if self.is_tag_mark(mark_obj):
             # надо определить значение атрибута регуляркой [^\"]*
             # сейчас не участвует &quot;
-            compiled = '(&lt;|<){tag}[^>]+{attribute}=(&quot;|\")([^\"]*)(&quot;|\")'.format(**mark_obj)
+            compiled = '((&lt;|<){tag}.+{attribute}=(&quot;|\")(.+)(&quot;|\")(.*)/?(&gt;|>))'.format(**mark_obj)
         return compiled
 
     def _mark2tag(self, mark):
@@ -68,7 +68,7 @@ class HtmlTagSearcher:
         """"""
         _test = str(mark)
         start_pos = _test.find(')')
-        stop_pos = _test.find('[')
+        stop_pos = _test.find('.')
         tag = _test[start_pos+1:stop_pos]
         start_pos = _test.find('+')
         stop_pos = _test.find('=')

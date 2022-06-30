@@ -39,7 +39,7 @@ class StoreDriverBlazegraph(StoreDriver):
             endpoint = self._get_query_url(return_result) # read default TripleStoreUri
         fields[query_key] = query
         headers = {'Content-Type': 'application/x-www-form-urlencoded', 'Accept':  'application/sparql-results+json'}
-        if -1 < query.find('CONSTRUCT'):
+        if -1 < query.find('CONSTRUCT ') or -1 < query.find('construct '):
             headers['Accept'] = 'application/json'
         send_data = {}
         send_data['data'] = fields
@@ -92,8 +92,7 @@ class StoreDriverBlazegraph(StoreDriver):
         send_data['data'] = open(file_path, 'rb')
 
         send_data['headers']['Content-type'] = mime
-        with open('driver.log', 'w', encoding='utf-8') as fp:
-            fp.write(self._debug_name + '.upload_file: url -> ' + url)
+        # self.to_log(self._debug_name + '.upload_file: url -> ' + url)
         if auth:
             answer = self._post_req(url, send_data, auth['uname'], auth['usecret'])
         else:
@@ -137,7 +136,8 @@ class StoreDriverBlazegraph(StoreDriver):
             if os.path.exists(file_path):
                 flg = True
                 self._last_downloaded = file_path
-        except:
+        except Exception as ex:
+            print(self._debug_name + '.backup_to_file->Exception', ex.args)
             flg = False
         return flg
 

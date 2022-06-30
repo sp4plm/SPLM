@@ -3,20 +3,23 @@
 import json
 import os
 
-from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
+from flask import Blueprint, request, flash, g, session, redirect, url_for
 from flask.views import MethodView
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy.exc import NoResultFound
 from werkzeug.urls import url_parse
 from app import app_api
+from app.utilites.code_helper import CodeHelper
 from app.user_mgt.user_conf import UserConf
 from app.user_mgt.models.users import db, User
 from app.user_mgt.models.roles import Role
+from app.user_mgt.mod_utils import ModUtils
 # теперь надо получить API административного модуля
 admin_mod_api = None
 admin_mod_api = app_api.get_mod_api('admin_mgt')
 
 MOD_NAME = 'users'
+_tpl_pref = 'user_mgt'
 mod = Blueprint(MOD_NAME, __name__, url_prefix=UserConf.MOD_WEB_ROOT,
                 static_folder=UserConf.get_web_static_path(),
                 template_folder=UserConf.get_web_tpl_path())
@@ -40,7 +43,8 @@ def roles_page():
 
     # uq = Role.query
     # print(uq)
-    return render_template("manage_roles.html", title=u"Список ролей пользователя",
+    _tpl_name = os.path.join(_tpl_pref, "manage_roles.html")
+    return app_api.render_page(_tpl_name, title=u"Список ролей пользователя",
                            page_title=u'Список ролей пользователя')
 
 
@@ -52,13 +56,15 @@ def users_page():
 
     # uq = User.query
     # print(uq)
-    return render_template("manage_users.html", title=u"Список пользователей",
+    _tpl_name = os.path.join(_tpl_pref, "manage_users.html")
+    return app_api.render_page(_tpl_name, title=u"Список пользователей",
                            page_title=u'Список пользователей')
 
 
 @mod.route('/profile', methods=['GET'])
 @_auth_decorator
 def home():
+    _tpl_vars = {}
     app_cfg = app_api.get_app_config()
     debug_role = app_cfg.get('users.Roles.debugRole')
     cur_prj = app_cfg.get('main.Info.project')
@@ -67,8 +73,14 @@ def home():
     is_ext_admin = False
     use_debug_mode = False
     use_debug_role = False
+    _can_change_secret = False
 
     if g.user:
+        ext_functional = []
+        if app_api.is_app_module_enabled('admin_mgt'):
+            _admin_api = app_api.get_mod_api('admin_mgt')
+            if _admin_api is not None:
+                ext_functional = _admin_api.get_ext_func_navi(g.user)
         # data_admin_role = app_cfg.get('main.DataStorage.adminRole')
         # data_oper_role = app_cfg.get('main.DataStorage.operRole')
         # if g.user.has_role(data_oper_role):
@@ -81,15 +93,45 @@ def home():
         if g.user.has_role(ext_adm_role):
             """"""
             is_ext_admin = True
+            if ext_functional:
+                _t = ext_functional[-1].copy()
+            else:
+                _t = {}
+                _t['id'] = 0
+                _t['srtid'] = 0
+            _t['id'] = _t['id'] + 1
+            _t['srtid'] = _t['srtid'] + 1
+            _t['roles'] = ext_adm_role
+            _t['label'] = 'Экспорт списка пользователей'
+            _t['href'] = url_for(mod.name + '.__export_users_list')
+            _t['code'] = 'ExportUsersList'
+            ext_functional.append(_t)
+
+        _can_change_secret = True if 'local' == auth_type else False
+        _some_role = '_ur_' + os.path.dirname(__file__)
+        if g.user.has_role(_some_role):
+            _can_change_secret = False
+
+        _tpl_vars['navi'] = ext_functional
+        if 0 < len(_tpl_vars['navi']):
+            _tpl_vars['page_side_title'] = 'Управление'
+
 
     if session:
         debug_key = app_cfg.get('main.Info.debugModeSesKey')
         if debug_key in session:
             use_debug_mode = session[debug_key]
 
-    return render_template("profile.html", user=g.user, ext_admin=is_ext_admin,
-                           auth_type=auth_type, cur_project=cur_prj, has_debug_role=use_debug_role,
-                           debug_mode=use_debug_mode)
+    _tpl_name = os.path.join(_tpl_pref, 'profile.html')
+    _tpl_vars['user'] = g.user
+    _tpl_vars['ext_admin'] = is_ext_admin
+    _tpl_vars['auth_type'] = auth_type
+    _tpl_vars['cur_project'] = cur_prj
+    _tpl_vars['has_debug_role'] = use_debug_role
+    _tpl_vars['can_change_secret'] = _can_change_secret
+    _tpl_vars['debug_mode'] = use_debug_mode
+
+    return app_api.render_page(_tpl_name, **_tpl_vars)
 
 
 @mod.route('/list', methods=['POST'])
@@ -163,8 +205,8 @@ def user_dialog(type):
     template_name = 'dialog'
     if 'edit' == type: template_name = 'dialog'
     if 'view' == type: template_name = 'view_info'
-
-    return render_template(template_name + ".html")
+    _tpl_name = os.path.join(_tpl_pref, template_name + '.html')
+    return app_api.render_page(_tpl_name)
 
 
 @mod.route('/getModuleData/', methods=['GET', 'POST'])
@@ -232,6 +274,10 @@ def users_page_data():
         {'name': 'Email', 'index': 'Email', 'label': 'Email', 'sortable': True},
         {'name': 'Roles', 'index': 'Roles', 'label': 'Роли', 'sortable': False}
     ]
+
+    _conf = app_api.get_app_config()
+    answer['minLoginLength'] = _conf.get('users.Login.minLen')
+    answer['minPaswdLength'] = _conf.get('users.Secret.minLen')
 
     return json.dumps(answer)
 
@@ -484,8 +530,10 @@ def described_roles():
         desc_roles = app_api.get_described_roles()
         if 0 < len(desc_roles):
             for role in desc_roles:
+                if role in answer['data']:
+                    continue
                 answer['data'].append(role)
-        answer['state'] = 200;
+        answer['state'] = 200
     except:
         answer['state'] = 500
         answer['msg'] = 'Не удалось получить список ролей из описаний модулей!'
@@ -572,7 +620,44 @@ def save_role():
         answer['state'] = 200
     except Exception as e:
         answer['msg'] = 'Can not save role: ' + str(e)
-        answer['Msg'] = 'Can not save role: ' + str(e)
+        answer['Msg'] = answer['msg']
         answer['state'] = 500
     return json.dumps(answer)
 # } roles block
+
+
+@mod.route('/export', methods=['GET'])
+@_auth_decorator
+def __export_users_list():
+    _mod_utis = ModUtils()
+    # app_cfg = app_api.get_app_config()
+    # relative_public = app_cfg.get('main.Info.pubFilesDir')
+
+    export_files_dir = ''
+    if app_api.is_app_module_enabled('files_mgt'):
+        _files_api = app_api.get_mod_api('files_mgt')
+        _files_util = _files_api.get_util()()
+        export_files_dir = _files_util.get_dir_path('FilesExport')
+    else:
+        _root = app_api.get_mod_data_path('user_mgt')
+        export_files_dir = os.path.join(_root, 'FilesExport')
+    # export_files_dir = os.path.join(app_api.get_app_root_dir(), relative_public, 'FilesExport')
+    if not os.path.exists(export_files_dir):
+        os.mkdir(export_files_dir)
+    file_name = 'users-export-'+_mod_utis.get_now().strftime("%Y%m%d_%H-%M-%S")+'.xml'
+    file_path = os.path.join(export_files_dir, file_name)
+    errorMsg = 'Не удалось скачать список пользователей!'
+    try:
+        u_list = User.query.all()
+        _conte = _mod_utis.udata_2_xml(u_list)
+        CodeHelper.add_file(file_path)
+        CodeHelper.write_to_file(file_path, _conte)
+        mime = 'application/x-unknown'
+        from flask import send_file
+        return send_file(file_path, mimetype=mime,
+                         as_attachment=True, attachment_filename=file_name)
+    except Exception as ex:
+        error_msg = 'Some error. Can not get user list! ({})' . format(ex)
+        print('users_mgt.views.export_users_list.Error:', error_msg)
+    _tpl_name = os.path.join('errors', '404.html')
+    return app_api.render_page(_tpl_name, message=errorMsg)

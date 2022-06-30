@@ -7,11 +7,11 @@ from json import loads, dumps
 from app import CodeHelper
 from app.utilites.some_config import SomeConfig
 
-MOD_DATA_PATH = os.path.dirname(os.path.abspath(__file__))
 
 import re
 
 from app import app_api
+MOD_DATA_PATH = app_api.get_mod_data_path('onto_mgt')
 
 class FilesManagment():
 
@@ -21,7 +21,7 @@ class FilesManagment():
     def __init__(self):
         self._app_config = app_api.get_app_config()
         self._root_dir = ''
-        self._root_dir = os.path.join(MOD_DATA_PATH, 'data')
+        self._root_dir = MOD_DATA_PATH
         self._cfg = None
         self._current_dir = ''
         self._current_dir = self._root_dir

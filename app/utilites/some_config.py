@@ -39,6 +39,9 @@ class SomeConfig:
                     break
             if '' != catch_file:
                 try:
+                    # print('SomeConfig.get->catch_file:', catch_file)
+                    catch_file = self.__get_real_filepath(catch_file)
+                    # print('SomeConfig.get->catch_file real:', catch_file)
                     file_driver = self._get_file_driver(splited[1])
                     file_driver.set_file(catch_file)
                     last_steps = _parsed_key[_parsed_key.index(step)+1:]
@@ -66,6 +69,8 @@ class SomeConfig:
     def _detect_result(self):
         res = None
         res = self._catched_vals[self._last_requested_key]
+        del self._catched_vals[self._last_requested_key]
+        # print(res)
         return res
 
     @staticmethod
@@ -81,3 +86,34 @@ class SomeConfig:
     def set_root(self, file_name):
         if opath.exists(file_name) and opath.isdir(file_name):
             self._configs_root = file_name
+
+    def __get_real_filepath(self, req_file):
+        _root_pth = self.__get_app_path()
+        # рассматриваем файлы внутри приложения
+        if req_file.startswith(_root_pth):
+            _app_conf_pth = _root_pth + opath.sep + 'cfg'
+            # если запрошенный файл находится вне конфигурационной директории приложения
+            if not req_file.startswith(_app_conf_pth):
+                # определяем в какой поддиректории приложения ищется файл
+                relative = req_file.replace(_root_pth, '')
+                # считаем что данная директория модуль
+                _mod_name = relative.lstrip(opath.sep).split(opath.sep)[0]
+                # _mod_name = _mod_name.lstrip(opath.sep)
+                # если конфигурационная директория существует
+                if opath.exists(_app_conf_pth):
+                    _t = opath.join(_app_conf_pth, _mod_name)
+                    # если существует директория модуля в конфигурационной директории
+                    if opath.exists(_t):
+                        _t = opath.join(_app_conf_pth, relative.lstrip(opath.sep))
+                        # существует ли указанный конфигурационный файл
+                        if opath.exists(_t):
+                            req_file = _t
+        return req_file
+
+    def __get_app_path(self):
+        """
+        Метод вычисляет путь директории приложения - это отсчетная точка для модулей
+        :return: None
+        """
+        _pth_utils = opath.dirname(self._class_file)
+        return opath.dirname(_pth_utils)

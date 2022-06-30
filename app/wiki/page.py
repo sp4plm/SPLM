@@ -5,7 +5,20 @@ import multiline
 from app import app
 from flask import url_for
 
-WIKI_JSON = os.path.join(app.config['APP_ROOT'], "app", "wiki", "data", "pages.json")
+
+MODULE_FOLDER = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
+
+# создаем папку в app/data
+data_folder = os.path.join(app.config['APP_DATA_PATH'], MODULE_FOLDER)
+if not os.path.exists(data_folder):
+    os.mkdir(data_folder)
+
+# создаем файл pages.json
+WIKI_JSON = os.path.join(data_folder, "pages.json")
+if not os.path.exists(WIKI_JSON):
+    with open(WIKI_JSON, "w", encoding="utf-8") as f:
+        f.write("{}")
+
 
 def get_data():
     '''
@@ -61,27 +74,28 @@ def get_list_pages():
     return pages
 
 
-def get_page(page_id):
+def get_page_data(page_id):
     '''
-    Метод возвращает разметку text для страницы page_id
+    Метод возвращает данные для страницы page_id
     :param page_id:
     :return: text
     '''
     pages = get_data()
-    return pages[page_id]['text']
+    return pages[page_id]
 
 
-def edit_page(page_id, text):
+def edit_page(page_id, data):
     '''
-    Метод редактирует разметку text для страницы page_id
+    Метод редактирует данные data для страницы page_id
     :param page_id:
-    :param text:
+    :param data:
     '''
     pages = get_data()
     try:
         if page_id not in pages:
             pages[page_id] = {}
-        pages[page_id]['text'] = text
+        for item in data:
+            pages[page_id][item] = data[item]    
     except:
         pass
     edit_data(pages)

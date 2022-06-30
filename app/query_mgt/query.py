@@ -28,19 +28,12 @@ class Query:
     SPARQT_DIR = ""
     TEMPLATE_PARAMS = ['_CMT_', '#VARS', '#TXT']
 
-    portal_data_json_file = "portal_data.json"
-    portal_data_json_file = os.path.join(os.path.dirname(__file__), "data", portal_data_json_file)
-
-
     def __init__(self, module_name = module):
         self.url = ""
         self.http_headers = ""
         self.namespaces = ""
 
         self.storage_driver = Utilites.get_storage_driver()
-
-        # self.namespaces = self.getNamespaces()
-        # self.PREFIX = ''.join(["PREFIX " + key + ": <" + self.namespaces[key] + "> " for key in self.namespaces])
 
         self.logger = self.initLoggerComponent().getAppLogger()
 
@@ -53,18 +46,6 @@ class Query:
                     os.mkdir(self.SPARQT_DIR)
         except:
             pass
-
-
-
-
-
-    # def getPortalData(self):
-    #     with open(self.portal_data_json_file, "r", encoding="utf-8") as f:
-    #         return json.load(f)
-
-
-    # def getNamespaces(self):
-    #     return self.getPortalData()['Namespaces']
 
 
 
@@ -83,7 +64,7 @@ class Query:
                     log_name += '.' + name
                 logger = logging.getLogger(log_name)
                 logger.setLevel(logging.DEBUG)
-                file_handler = logging.FileHandler(os.path.join(os.path.dirname(__file__), self.LOG_FILE), 'w', 'utf-8')
+                file_handler = logging.FileHandler(os.path.join(os.path.dirname(__file__), self.LOG_FILE), 'a', 'utf-8')
                 file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
                 logger.addHandler(file_handler)
                 return logger
@@ -161,7 +142,9 @@ class Query:
           
 
             self.SPARQT_DATA_PATH = get_module_sparqt_dir(module)
-            input_json = open(os.path.join(self.SPARQT_DATA_PATH, file + self.format_json), "r", encoding="utf-8")
+            _src_file = os.path.join(self.SPARQT_DATA_PATH, file + self.format_json)
+            _src_file = self.__get_real_qfile(_src_file)
+            input_json = open(_src_file, "r", encoding="utf-8")
 
             content = multiline.load(input_json, multiline=True)
 
@@ -181,6 +164,35 @@ class Query:
         except Exception as e:
             return ""
 
+    def __get_real_qfile(self, file_path):
+        _pth = file_path
+        _root = self.__get_app_root_dir()
+        mod_name = file_path.replace(_root, '').lstrip(os.path.sep).split(os.path.sep)[0]
+        _conf_path = self.__get_app_conf_dir()
+        if not file_path.startswith(_conf_path):
+            _t = os.path.join(_conf_path, mod_name)
+            if os.path.exists(_t):
+                relative = file_path.replace(_root, '').lstrip(os.path.sep).replace(mod_name, '').lstrip(os.path.sep)
+                _rp = os.path.join(_t, relative)
+                if os.path.exists(_rp):
+                    _pth = _rp
+        return _pth
+
+    def __get_app_conf_dir(self):
+        """
+        Метод возвращает полный путь до директории приложения с измененными конфигурационными файлами модулей (cfg)
+        :return: путь до директории конфигурационных файлов
+        """
+        from app.app_api import get_app_cfg_path
+        return get_app_cfg_path()
+
+    def __get_app_root_dir(self):
+        """
+        Метод возвращает полный путь директории приложения
+        :return: путь директории приложения
+        """
+        from app.app_api import get_app_root_dir
+        return get_app_root_dir()
 
     def queryByCode(self, code, params={}):
         """
@@ -194,17 +206,15 @@ class Query:
         except Exception as e:
             return []
 
-
-
-
-
     def get_full_path_sparqt(self, file):
         """
         Метод возвращает абсолютный путь файла
         :param file: string
         :return: path
         """
-        return os.path.join(self.SPARQT_DIR, file + self.format_json)
+        _pth = os.path.join(self.SPARQT_DIR, file + self.format_json)
+        _pth = self.__get_real_qfile(_pth)
+        return _pth
 
     def get_list_sparqt(self):
         """
@@ -217,6 +227,19 @@ class Query:
                 files.append(os.path.splitext(file)[0])
         files.sort()
         return files
+
+    def can_remove(self, file):
+        """
+        Метод проверяет можно ли удалять файл - то есть изначальный файл был отредактирован пользователем
+        :param file:
+        :return:
+        """
+        _flg = False
+        _pth = self.get_full_path_sparqt(file)
+        _conf_path = self.__get_app_conf_dir()
+        if _pth.startswith(_conf_path):
+            _flg = True
+        return _flg
 
     def get_file_object_sparqt(self, file):
         """
@@ -238,7 +261,22 @@ class Query:
         :param file: string
         :param templates: string
         """
-        with open(self.get_full_path_sparqt(file), "w", encoding="utf-8") as f:
+        # согласно новой концепции сохранять редактируемый файл требуется в директорию общего конфига
+        _conf_path = self.__get_app_conf_dir()  # директория конфигураций приложения
+        _pth = self.get_full_path_sparqt(file)
+        if not _pth.startswith(_conf_path):
+            _root_path = self.__get_app_root_dir()
+            relative = _pth.replace(_root_path, '').lstrip(os.path.sep).split(os.path.sep)
+            #  принудительно заменяем путь сохранения
+            _t = _conf_path
+            for _s in relative:
+                if _s == relative[-1]:
+                    break
+                _t += os.path.sep + _s
+                if not os.path.exists(_t):
+                    os.mkdir(_t)
+            _pth = os.path.join(_t, relative[-1])
+        with open(_pth, "w", encoding="utf-8") as f:
             json_text = json.dumps(templates, indent='\t', ensure_ascii=False)
             json_text = json_text.replace('\\n', '\n').replace('\\r', '')
             f.write(json_text)

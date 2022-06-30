@@ -66,6 +66,11 @@ $(function(){
                     _$dlg.dialog('close');
                 }
             };
+            _1this.option = function(name, value){
+//                if(typeof void null != _$dlg.dialog('instance')){
+                    _$dlg.dialog('option', name, value);
+//                }
+            };
             _1this.init = function(){
                 _$parent = _$box;
                 _1this.build();
@@ -87,6 +92,7 @@ $(function(){
     function getLinkSelectorTmpl() {
         var html;
         html = _$box.find('#serve-conte #link-selector-dialog').html();
+        $(html).find('#link-selector-variants table tbody').css({'overflow': 'auto'});
         return html;
     }
 
@@ -167,6 +173,8 @@ $(function(){
                     }
                 }
             });
+            dialog.option('width', 600);
+            dialog.option('height', 500);
         }, 'json');
     }
 

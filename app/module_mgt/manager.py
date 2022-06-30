@@ -2,6 +2,8 @@
 import os
 import rdflib
 
+from datetime import datetime
+
 from app.utilites.code_helper import CodeHelper
 
 
@@ -38,6 +40,26 @@ class Manager:
 
         self._current_app.extensions['SPLMModuleManager'] = _SingletonState(self)
 
+    def _get_mod_name(self):
+        SELF_PATH = os.path.dirname(self._class_file)
+        MOD_NAME = os.path.basename(SELF_PATH)
+        return MOD_NAME
+
+    def get_modules_register(self):
+        _reg = []
+        _inf0 = self._current_app.config['modules_ttl']
+        if 0 < len(_inf0):
+            OSPLM = self._resolve_graph_ns(_inf0, 'osplm')
+            _mods = _inf0.subjects(predicate=rdflib.RDF.type, object=OSPLM.Module)
+            for _t in _mods:
+                mod_row = {}
+                mod_row['name'] = _t.split('#')[1]
+                mod_row['title'] = self._parse_rdflib_gen(_inf0.objects(subject=_t, predicate=rdflib.DC.title))
+                mod_row['description'] = self._parse_rdflib_gen(_inf0.objects(subject=_t, predicate=rdflib.DC.description))
+                mod_row['label'] = self._parse_rdflib_gen(_inf0.objects(subject=_t, predicate=rdflib.RDFS.label))
+                _reg.append(mod_row)
+        return _reg
+
     def load_modules_http_handlers(self):
         mods_list = self._current_app.config['modules_list']
         if mods_list:
@@ -49,10 +71,10 @@ class Manager:
                 if not load_flag:
                     print(self._debug_name + '.load_modules_http_handlers: Web handlers are not loaded for {}'.format(_mod))
 
-    def load_module_http_handler(self, mod_name):
-        flg = False
+    def get_mod_blueprint(self, mod_name):
+        _blue_print = None
         if not self.module_exists(mod_name):
-            return flg
+            return _blue_print
         _inf0 = self._current_app.config['modules_ttl']
         if 0 < len(_inf0):
             mod_uri = self._get_mod_uri(mod_name)
@@ -64,23 +86,57 @@ class Manager:
                 try:
                     load_http_mod = self.__dyn_load_mod_file(mod_name, self._web_handlers_file)
                 except Exception as ex:
-                    print(self._debug_name + '.load_module_http_handler: {}' . format(ex.args[0]))
+                    print(self._debug_name + '.get_mod_blueprint: {}' . format(str(ex)))
                     load_http_mod = None
             if load_http_mod is not None:
                 try:
-                    views_mod = getattr(load_http_mod, self._web_handlers_var)
+                    _blue_print = getattr(load_http_mod, self._web_handlers_var)
                 except KeyError as e:
                     # можно также присвоить значение по умолчанию вместо бросания исключения
                     # raise ValueError(self._debug_name + '.load_module_http_handler: No web module var: {}'.format(e.args[0]))
-                    print(self._debug_name + '.load_module_http_handler: No web module var: {}'.format(e.args[0]))
-                # call app.register_blueprint(views_mod)
-                try:
-                    self._current_app.register_blueprint(views_mod)
-                    flg = True
-                except Exception as ex:
-                    # можно также присвоить значение по умолчанию вместо бросания исключения
-                    # raise ValueError('Undefined component: {}'.format(e.args[0]))
-                    print(self._debug_name + '.load_module_http_handler: Error on module web register action:', ex)
+                    print(self._debug_name + '.get_mod_blueprint: No web module var: {}'.format(str(e)))
+        return _blue_print
+
+    def load_module_http_handler(self, mod_name):
+        flg = False
+        # if not self.module_exists(mod_name):
+        #     return flg
+        _http = None
+        try:
+            _http = self.get_mod_blueprint(mod_name)
+        except Exception as ex:
+            print(self._debug_name + '.load_module_http_handler.Exception: {}'.format(str(ex)))
+            _http = None
+        if _http is None:
+            return flg
+        # _inf0 = self._current_app.config['modules_ttl']
+        # if 0 < len(_inf0):
+        #     mod_uri = self._get_mod_uri(mod_name)
+        #     mod_uri = mod_uri.lstrip('<').rstrip('>')
+        #     OSPLM = self._resolve_graph_ns(_inf0, 'osplm')
+        #     _mod_http = _inf0.triples((rdflib.URIRef(mod_uri), OSPLM.httpEnabled, rdflib.URIRef(str(rdflib.namespace.XSD) + 'true')))
+        #     load_http_mod = None
+        #     if 0 < len([_r for _r in _mod_http]):
+        #         try:
+        #             load_http_mod = self.__dyn_load_mod_file(mod_name, self._web_handlers_file)
+        #         except Exception as ex:
+        #             print(self._debug_name + '.load_module_http_handler: {}' . format(str(ex)))
+        #             load_http_mod = None
+        if _http is not None:
+            # try:
+            #     views_mod = getattr(load_http_mod, self._web_handlers_var)
+            # except KeyError as e:
+            #     # можно также присвоить значение по умолчанию вместо бросания исключения
+            #     # raise ValueError(self._debug_name + '.load_module_http_handler: No web module var: {}'.format(e.args[0]))
+            #     print(self._debug_name + '.load_module_http_handler: No web module var: {}'.format(str(e)))
+            # call app.register_blueprint(views_mod)
+            try:
+                self._current_app.register_blueprint(_http)
+                flg = True
+            except Exception as ex:
+                # можно также присвоить значение по умолчанию вместо бросания исключения
+                # raise ValueError('Undefined component: {}'.format(e.args[0]))
+                print(self._debug_name + '.load_module_http_handler: Error on module web register action:', str(ex))
         return flg
 
     def compile_modules_info(self):
@@ -177,8 +233,11 @@ class Manager:
                 module_spec = impmod_utils.spec_from_file_location(load_name, load_path)
                 comp_mod = impmod_utils.module_from_spec(module_spec)
                 module_spec.loader.exec_module(comp_mod)
+
         except Exception as ex:
-            raise ModuleNotFoundError(self._debug_name + '.__dyn_load_mod_file.LoadFileEx: {}'.format(ex.args[0]))
+            from traceback import format_exc
+            print(self._debug_name + '.__dyn_load_mod_file.LoadFileEx: format_exc()-> {}'.format(format_exc()))
+            raise ModuleNotFoundError(self._debug_name + '.__dyn_load_mod_file.LoadFileEx: {}'.format(ex.args))
         return comp_mod
 
     def _get_empty_api(self):
@@ -295,6 +354,104 @@ class Manager:
                 res = self._compile_mod_urls(_urls)
         return res
 
+    def get_start_url(self):
+        _url = ''
+        _inf0 = self._current_app.config['modules_ttl']
+        self._work_g = _inf0
+        # print(self._debug_name + '.get_start_urls->START')
+        if 0 < len(_inf0):
+            OSPLM = self._resolve_graph_ns(_inf0, 'osplm')
+            _q = """SELECT ?mod ?url WHERE {
+                ?mod <%s> ?ourl .
+                ?ourl <%s> xsd:true .
+                ?ourl rdfs:label ?url .
+            }""" % (OSPLM.hasStartURL, OSPLM.isActive)
+            _urls_info = _inf0.query(_q)
+            _t = []
+            for _r in _urls_info:
+                _t = list(_r)
+                break  # only first
+            if _t:
+                _mod = ''
+                _met = ''
+                _mod = str(_t[0]).replace(str(OSPLM), '').strip()
+                _met = str(_t[1])
+                # модуль является папкой и может не являться загруженным модулем Blueprint!
+                _http = self.get_mod_blueprint(_mod)
+                if _http is not None:
+                    _mod = _http.name
+                _url = _mod + '.' + _met
+        # print(self._debug_name + '.get_start_urls->END')
+        return _url
+
+    def __get_registred_blueprints(self):
+        _lst = []
+        if self._current_app and hasattr(self._current_app, 'blueprints'):
+            for name in self._current_app.blueprints:
+                _lst.append(self._current_app.blueprints[name])
+        return _lst
+
+    def __get_app_mods_blueprints(self):
+        _lst_blue = self.__get_registred_blueprints()
+        _appmods_blues = {}
+        for _blue in _lst_blue:
+            blue_name = _blue.name
+            appmod_name = os.path.basename(_blue.root_path)
+            _appmods_blues[appmod_name] = blue_name
+        return _appmods_blues
+
+    def get_start_endpoints(self):
+        _ends = []
+        _inf0 = self._current_app.config['modules_ttl']
+        self._work_g = _inf0
+        # print(self._debug_name + '.get_start_urls->START')
+        if 0 < len(_inf0):
+            OSPLM = self._resolve_graph_ns(_inf0, 'osplm')
+            _q = """SELECT ?mod ?url WHERE {
+                ?mod <%s> ?ourl .
+                ?ourl rdfs:label ?url .
+            }""" % (OSPLM.hasStartURL)
+            _urls_info = _inf0.query(_q)
+            _t = []
+            for _r in _urls_info:
+                _t.append(list(_r))
+            if _t:
+                # self._current_app.blueprints #
+                _app_mods_blues = self.__get_app_mods_blueprints()
+                for _u in _t:
+                    _url = ''
+                    if 2 == len(str(_u[1]).split('.')):
+                        _url = str(_u[1])
+                    else:
+                        _mod = ''
+                        _met = ''
+                        _mod = str(_u[0]).replace(str(OSPLM), '').strip()
+                        # модуль является папкой и может не являться загруженным модулем Blueprint!
+                        _mod = self.get_real_mod_webname(_mod)
+                        _met = str(_u[1])
+                        _url = _mod + '.' + _met
+                    if _url:
+                        _ends.append(_url)
+        # print(self._debug_name + '.get_start_urls->END')
+        return _ends
+
+    def get_real_mod_webname(self, app_mod_name):
+        """
+        Метод возвращает имя модуля blueprint (зарегистрированного) для указанного модуля приложения app_mod_name
+        :param app_mod_mname: имя модуля приложения
+        :return: имя модуля(зарегистрированного) blueprint
+        """
+        _name = ''
+        _app_mods_blues = self.__get_app_mods_blueprints()
+        if _app_mods_blues:
+            _name = _app_mods_blues[app_mod_name]
+        else:
+            # значит пытаемся загрузить
+            _http = self.get_mod_blueprint(app_mod_name)
+            if _http is not None:
+                _name = _http.name
+        return _name
+
     def _compile_mod_urls(self, urls):
         res = []
         OSPLM = self._resolve_graph_ns(self._work_g, 'osplm')
@@ -383,6 +540,69 @@ class Manager:
     def get_available_modules(self):
         return self._current_app.config['modules_list']
 
+    def get_drivers_modules(self):
+        # print(self._debug_name + '.get_drivers_modules->START')
+        _lst = []
+        _inf0 = self._current_app.config['modules_ttl']
+        self._work_g = _inf0
+        if 0 < len(_inf0):
+            OSPLM = self._resolve_graph_ns(_inf0, 'osplm')
+            _k = 'mod'
+            _q = """SELECT ?%s WHERE {
+                ?mod <%s> ?type . FILTER (?type="driver")
+            }""" % (_k, str(OSPLM.type))
+            # print(self._debug_name + '.get_drivers_modules->_q', _q)
+            _urls_info = _inf0.query(_q)
+            for _r in _urls_info:
+                _t = _r.asdict().get(_k, '')
+                if not _t:
+                    continue
+                mod = str(_t).replace(str(OSPLM), '')
+                _lst.append(mod)
+        return _lst
+
+    def get_drivers_by_subj(self, _subj):
+        # print(self._debug_name + '.get_drivers_by_subj->START')
+        _lst = []
+        _drivers = self.get_drivers_modules()
+        #  ожидаем список строк
+        _inf0 = self._current_app.config['modules_ttl']
+        self._work_g = _inf0
+        if 0 < len(_inf0) and _drivers:
+            OSPLM = self._resolve_graph_ns(_inf0, 'osplm')
+            _filter_var = '?mod'
+            _filter = ' || ' . join([_filter_var + '=<' + str(OSPLM[_m]) + '>' for _m in _drivers])
+            _filter = 'FILTER (' + _filter + ')'
+            _k = _filter_var.lstrip('?')
+            _q = """SELECT ?%s WHERE {
+                ?%s rdf:type <%s> . %s
+                ?%s dc:subject ?subj . FILTER (?subj="%s")
+            }""" % (_k, _k, str(OSPLM.Module), _filter, _k, str(_subj))
+            # print(self._debug_name + '.get_drivers_by_subj->_q', _q)
+            _urls_info = _inf0.query(_q)
+            for _r in _urls_info:
+                _t = _r.asdict().get(_k, '')
+                if not _t:
+                    continue
+                mod = str(_t).replace(str(OSPLM), '')
+                _lst.append(mod)
+        return _lst
+
+    def query(self, _txt):
+        _res = None
+        _inf0 = self._current_app.config['modules_ttl']
+        if 0 < len(_inf0):
+            OSPLM = self._resolve_graph_ns(_inf0, 'osplm')
+            try:
+                _t = _inf0.query(_txt)
+                _res = []
+                for _r in _t:
+                    _tr = _r.asdict()
+                    _res.append(_tr)
+            except Exception as ex:
+                raise Exception(ex)
+        return _res
+
     def _dump_cache(self):
         """"""
         # формируем имя файла кеша
@@ -426,7 +646,9 @@ class Manager:
         return pth
 
     def _get_data_path(self):
-        pth = os.path.join(os.path.dirname(self._class_file), 'data')
+        from app import app_api
+        # pth = os.path.join(os.path.dirname(self._class_file), 'data')
+        pth = app_api.get_mod_data_path(self._get_mod_name())
         if not os.path.exists(pth):
             os.mkdir(pth)
         return pth
@@ -436,3 +658,17 @@ class Manager:
         app_instance_key = self._current_app.secret_key
         file_name = 'cache_' + CodeHelper.str_to_hash('cache_file_' + app_instance_key)
         return file_name
+
+    def _to_log(self, msg, _point=''):
+        if not os.path.exists(_point):
+            if hasattr(self, '__log'):
+                _point = getattr(self, '__log')
+            else:
+                _point = os.path.join(os.path.dirname(__file__), 'debug.log')
+        if not os.path.exists(_point):
+            with open(_point, 'w', encoding='utf-8') as fp:
+                fp.write('')
+        time_point = datetime.now().strftime("%Y%m%d %H-%M-%S")
+        msg = '[{}] {}'.format(time_point, msg)
+        with open(_point, 'a', encoding='utf-8') as fp:
+            fp.write(msg + "\n")

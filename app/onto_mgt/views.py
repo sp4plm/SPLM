@@ -3,17 +3,22 @@ import os
 import json
 from math import ceil
 
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, request, redirect, url_for, session
 from app import app, app_api
-from flask_login import login_required
 
 MOD_NAME = 'onto'
 
+mod = Blueprint(MOD_NAME, __name__, url_prefix='/onto', template_folder="templates", static_folder="static")
 
-mod = Blueprint(MOD_NAME, __name__, url_prefix='/onto', template_folder="templates")
+# onto_mgt
+MODULE_FOLDER = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
 
-MOD_PATH = os.path.dirname(os.path.abspath(__file__))
-NAVIGATION_GRAPH_PATH = os.path.join(MOD_PATH, "navigation_graphs")
+# app/data/onto_mgt
+MODULE_FOLDER = os.path.join(app.config['APP_DATA_PATH'], MODULE_FOLDER)
+if not os.path.exists(MODULE_FOLDER):
+    os.mkdir(MODULE_FOLDER)
+
+NAVIGATION_GRAPH_PATH = os.path.join(MODULE_FOLDER, "navigation_graphs")
 if not os.path.exists(NAVIGATION_GRAPH_PATH):
 	os.mkdir(NAVIGATION_GRAPH_PATH)
 
@@ -57,6 +62,8 @@ from app.utilites.axiom_reader import getClassAxioms
 from app.utilites.data_serializer import DataSerializer
 
 from app.query_mgt.query import Query
+
+_auth_decorator = app_api.get_auth_decorator()
 
 
 def js_code_tree(tree):
@@ -207,7 +214,7 @@ def Defrag(URL):
 
 
 @mod.route('/nav_ontology')
-@login_required
+@_auth_decorator
 def nav_ontology():
     """ Метод отвечает за навигацию по файлу онтологии и возвращает информацию об отношениях, аксиомах и экземплярах класса"""
     owl_Thing = "http://www.w3.org/2002/07/owl#Thing"
@@ -323,182 +330,8 @@ def nav_ontology():
     instances_html = "<div>" + "<ul>" + instances_html + "<ul>" + "</div>"
 
 
-    _js = """
-    <script type="text/javascript">
-		$(function() {
 
-			$('.header-section-toggler').click(function(){
-
-	            var $elem, $welem, $wgt0;
-
-	            $elem = $(this);
-
-	            if ($elem.hasClass('xicon-close')) {
-
-	                $elem.removeClass('xicon-close');
-	                $elem.addClass('xicon-open');
-
-	                // теперь надо создать виджет если не создан
-	                if ($elem.next('.content-header').next().length > 0) {
-	                    $elem.next('.content-header').next().show()
-	                }
-	                
-	            } else {
-	                $elem.removeClass('xicon-open');
-	                $elem.addClass('xicon-close');
-
-	                // теперь просто скроем виджет
-	                if ($elem.next('.content-header').next().length > 0) {
-	                    $elem.next('.content-header').next().hide()
-	                }
-	            }
-
-	       
-			}); 
-
-
-		});
-	</script>
-    """
-
-
-
-    return render_template("/nav_ontology.html", relations = relations_html, axioms = axioms_html, instances = instances_html, js = js_code_tree(TREE) + _js, class_name = get_className(uri))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@mod.route('/data_navigation')
-# @login_required
-def data_navigation():
-    uri = unquote(request.args.get('uri') if request.args.get('uri') else "")
-
-    NAVIGATION_TEMPLATE = "navigation"
-    codes = Query().get_structure_codes_sparqt(NAVIGATION_TEMPLATE)
-    result = {code: tsc_query(code, {"URI": uri}) for code in codes}
-
-
-    for code in codes:
-        if re.findall(r'\.base$', code):
-            base_code = code
-            continue
-        elif re.findall(r'\.subject$', code):
-            subject_code = code
-            continue
-        elif re.findall(r'\.object$', code):
-            object_code = code
-            continue
-
-    navigation_base = result[base_code][0] if result[base_code] else {}
-
-    # КОД КОТОРЫЙ ФОРМИРУЕТ ССЫЛКУ НА ЗАГОЛОВОК
-    # ПОКА НЕ ИСПОЛЬЗУЕТСЯ
-
-    # navigation_base_uri = navigation_base['o'] if 'o' in navigation_base else ""
-    # navigation_base['href'] = url_for('onto.navigation', uri = navigation_base_uri)
-
-
-    # if 'o_cls' in navigation_base:
-    #     current_class = get_className(navigation_base['o_cls'])
-    #     current_class_base = current_class
-    #     while not os.path.exists(os.path.join(templates_path, current_class + ".html")):
-    #         QUERY = "SELECT ?parent WHERE { %s:%s rdfs:subClassOf ?parent .}" % (ONTOLOGY_NAME, current_class)
-    #         parent = _query(QUERY)
-    #         if parent:
-    #             current_class = get_className(parent[0]['parent'])
-    #         else:
-    #             break
-
-    #     my_class_object = get_class(current_class_base)
-    #     if my_class_object:
-    #         navigation_base['href'] = url_for('onto.uri_class', class_object = current_class_base, uri = navigation_base_uri)
-
-
-    # SUBJECT
-
-    firstPKey = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
-    secondPKey = 'http://www.w3.org/2000/01/rdf-schema#label'
-
-    firstPKey_data = {}
-    secondPKey_data = {}
-
-    subject_P = {}
-    subject_O = {}
-    subject_P_O = {}
-
-    for item in result[subject_code]:
-        if item['p'] == firstPKey:
-            firstPKey_data = item
-        elif item['p'] == secondPKey:
-            secondPKey_data = item
-        else:
-            if item['p'] not in list(subject_P.keys()):
-                subject_P[item['p']] = item['p_lbl'] if 'p_lbl' in list(item.keys()) and item['p_lbl'] else item['p']
-
-            if item['o'] not in list(subject_O.keys()):
-                subject_O[item['o']] = item['o_lbl'] if 'o_lbl' in list(item.keys()) and item['o_lbl'] else item['o']
-
-            subject_P_O[item['o']] = item['p']
-
-    total_subject_P_O = {}
-    for p_item in subject_P:
-        total_subject_P_O[p_item] = [key for key in subject_P_O if subject_P_O[key] == p_item]
-
-    # OBJECT
-
-
-    object_P = {}
-    object_S = {}
-    object_P_S = {}
-
-    for item in result[object_code]:
-        if item['p'] not in list(object_P.keys()):
-            object_P[item['p']] = item['p_lbl'] if 'p_lbl' in list(item.keys()) and item['p_lbl'] else item['p']
-
-        if item['s'] not in list(object_S.keys()):
-            object_S[item['s']] = item['s_lbl'] if 's_lbl' in list(item.keys()) and item['s_lbl'] else item['s']
-
-        object_P_S[item['s']] = item['p']
-
-
-    total_object_P_S = {}
-    for p_item in object_P:
-        total_object_P_S[p_item] = [key for key in object_P_S if object_P_S[key] == p_item]
-
-    if 'o_lbl' not in firstPKey_data and 'o' in firstPKey_data:
-        firstPKey_data['o_lbl'] = firstPKey_data['o']
-    if 'p_lbl' not in secondPKey_data and 'p' in secondPKey_data:
-        secondPKey_data['p_lbl'] = secondPKey_data['p']
-
-
-    return render_template("data_navigation.html",
-       base=navigation_base,
-       firstPKey=firstPKey_data,
-       secondPKey=secondPKey_data,
-       total_subject_P_O=total_subject_P_O,
-       subject_P=subject_P,
-       subject_O=subject_O,
-       total_object_P_S=total_object_P_S,
-       object_P=object_P,
-       object_S=object_S
-    )
-
-
-
+    return app_api.render_page("/onto_mgt/nav_ontology.html", relations = relations_html, axioms = axioms_html, instances = instances_html, js = js_code_tree(TREE), class_name = get_className(uri))
 
 
 
@@ -519,7 +352,7 @@ def data_navigation():
 
 
 @mod.route('/ontologies')
-@login_required
+@_auth_decorator
 def ontologies():
 	""" Метод отдает структуру таблицы онтологий и рисует ее"""
 	_base_url = '/' + MOD_NAME
@@ -564,7 +397,7 @@ def ontologies():
 	cfg_ontos['colModel'] = cols_ontos
 	cfg_ontos['url'] = url_for("onto.get_files")
 
-	return render_template("/ontos.html", tbl = json.dumps(cfg_ontos))
+	return app_api.render_page("/onto_mgt/ontos.html", tbl = json.dumps(cfg_ontos))
 
 
 
@@ -575,7 +408,7 @@ def ontologies():
 
 
 @mod.route('/getFiles/ontos', methods=['GET', 'POST'])
-@login_required
+@_auth_decorator
 def get_files():
     """ Метод получает информацию о загруженных онтологиях"""
     dir_name = "ontos"
@@ -652,7 +485,7 @@ def get_files():
 
 
 @mod.route('/loadFiles/ontos', methods=['GET', 'POST'])
-@login_required
+@_auth_decorator
 def upload_files():
     """ загружаем файлы в определенную директорию """
     dir_name = "ontos"
@@ -784,7 +617,7 @@ def upload_files():
 
 
 @mod.route('/removeFile/ontos', methods=['GET', 'POST'])
-@login_required
+@_auth_decorator
 def remove_file():
     """ сохраняем изменения связанные с файлом """
     dir_name = "ontos"
@@ -846,7 +679,7 @@ def remove_file():
 
 
 @mod.route('/removeSelection/ontos', methods=['POST'])
-@login_required
+@_auth_decorator
 def remove_selection():
     """ сохраняем изменения связанные с файлом """
     dir_name = "ontos"
@@ -903,7 +736,7 @@ def remove_selection():
 
 
 @mod.route('/downloadFile/ontos', methods=['GET', 'POST'])
-@login_required
+@_auth_decorator
 def download_file():
     """ отдаем файл на скачивание """
     dir_name = "ontos"
@@ -929,7 +762,7 @@ def download_file():
                 mime = _mime
             return send_file(download_file, mimetype=mime,
                              as_attachment=True, attachment_filename=download_file_name)
-    return render_template("errors/404.html", message=errorMsg)
+    return app_api.render_page("errors/404.html", message=errorMsg)
 
 
 
@@ -939,7 +772,7 @@ def download_file():
 
 
 @mod.route('/accept_newfile/ontos', methods=['POST'])
-@login_required
+@_auth_decorator
 def accept_new_file():
     """ Метод принимает новый файл в случае совпадения имен"""
     dir_name = "ontos"
@@ -981,7 +814,7 @@ def accept_new_file():
 
 
 @mod.route('/reject_newfile/ontos', methods=['POST'])
-@login_required
+@_auth_decorator
 def reject_new_file():
     """ Метод игнорирует новый файл в случае совпадения имен"""
     dir_name = "ontos"

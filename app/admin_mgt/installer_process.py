@@ -1,22 +1,23 @@
 # -*- coding: utf-8 -*-
 # import sys
 import os
-import subprocess
 import shutil
+
+from app import app_api
 from app.admin_mgt.admin_conf import AdminConf
 from app.admin_mgt.configurator import Configurator
 
 
 _portal_configurator = Configurator()
 _installer_source = os.path.join(os.path.dirname(__file__), AdminConf.INIT_DIR_NAME)
-_installer_target = AdminConf.DATA_PATH # имя нужно получить из файла в defaults - рекурсия описания
+_installer_target = AdminConf.get_mod_path('data')
 _app_dir = os.path.dirname(os.path.dirname(__file__)) # application directory
 _portal_configurator.set_app_dir(_app_dir)
 
 
 def __2_log(msg, init=False):
     msg = str(msg) + "\n"
-    __log = os.path.join(os.path.dirname(__file__), AdminConf.DATA_DIR_NAME, 'installer.log')
+    __log = os.path.join(app_api.get_logs_path(), 'installer.log')
     flg = 'a'
     if init:
         flg = 'w'
@@ -47,8 +48,10 @@ __2_log('Installer.try copy to target from ' + _installer_source)
 
 if os.path.exists(_installer_source):
     msg = ''
-    _t = __cpr(_installer_source, _installer_target)
-    __2_log('Installer. copy result ' + str(_t))
+    #  требуется создать директорию данных и скопировать туда навигацию - первичную
+    _dir_name = 'navi'
+    _t = __cpr(os.path.join(_installer_source, _dir_name), os.path.join(_installer_target, _dir_name))
+    # __2_log('Installer. copy result ' + str(_t))
 
 # запускаем процесс конфигурации базы данных
 """ запускаем инициализацию """

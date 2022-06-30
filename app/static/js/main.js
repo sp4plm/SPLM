@@ -1,6 +1,6 @@
 (function(win,undefined){
-    var wW, wH, wP, wPT, wPL;
-
+    var wW, wH, wP, wPT, wPL, funcFixMaincontentBoxHeight;
+    funcFixMaincontentBoxHeight = function(){}; //
     wW = win.width
     if(typeof void null!==typeof jQuery){
         (function($){
@@ -51,9 +51,8 @@
                     $child.height(setH)
                 }
             }
-            $(function(){
-                // будем инициировать изменение размера окна
 
+            function _fixMaincontentBox() {
                 var $body, $pageContent, $parentViewBox, $viewBox;
                 $body = $('body');
                 $pageContent = $('body > div.container-fluid:first');
@@ -71,11 +70,34 @@
                         setRelativeHeight($parentViewBox, $viewBox,true);
                     }
                 }
+            }
+
+            funcFixMaincontentBoxHeight = _fixMaincontentBox;
+            $(function(){
+                // будем инициировать изменение размера окна
+
+//                var $body, $pageContent, $parentViewBox, $viewBox;
+//                $body = $('body');
+//                $pageContent = $('body > div.container-fluid:first');
+//                if(0 < $pageContent.length){
+//                    setRelativeHeight($body, $pageContent);
+//                    $viewBox = $pageContent.find('div.maincontent:first');
+//                    if(0 < $viewBox.length) {
+//                        // выбирем дополнительно для пересчета высоты в переменной - на всякий пожарный
+//                        $pageContent = $('body > div.container-fluid:first');
+//                        $parentViewBox = $viewBox.parent();
+//                        setRelativeHeight($pageContent, $parentViewBox);
+//                        // перевыбираем для пересчета
+//                        $parentViewBox = $viewBox.parent();
+//                        // теперь изменим размер нужного контейнера
+//                        setRelativeHeight($parentViewBox, $viewBox,true);
+//                    }
+//                }
 
             });
         })(jQuery);
     }else{
         alert('Main.js say: jQuery lib is not loaded');
     }
-    if ('object' === typeof win && 'object' === typeof win.document) {  }
+    if ('object' === typeof win && 'object' === typeof win.document) {  win['funcFixMaincontentBoxHeight'] = funcFixMaincontentBoxHeight; }
 })(window);

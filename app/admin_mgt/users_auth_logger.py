@@ -22,7 +22,7 @@ class UsersAuthLogger:
         if not file_name or not isinstance(file_name, str):
             file_name = self._debug_name
         self._file_name = file_name
-        self._write_point = self._get_write_point()
+        self._write_point = self._get_write_point_init()
 
     def format_export_data(self):
         _formatted = []
@@ -142,7 +142,7 @@ class UsersAuthLogger:
         time_point = datetime.now()
         return time_point
 
-    def _get_write_point(self):
+    def _get_write_point_init(self):
         logs_dir = self._get_dir()
         file_name = self._get_file_name()
         file_path = os.path.join(logs_dir, file_name)

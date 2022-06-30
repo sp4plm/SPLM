@@ -1,8 +1,0 @@
-[
-  {"id":1,"label": "Навигация","rules":"","href":"/portal/management/navigation","parid":0, "srtid":1,"page":[],"icon":"","thumb":"","descr":"", "url_func" : "", "code":"PortalNaviTool"},
-  {"id":2,"label": "Пользователи","rules":"","href":"/users/manage","parid":0, "srtid":2,"page":[],"icon":"","thumb":"","descr":"", "url_func" : "", "code":"PortalUsers"},
-  {"id":3,"label": "Роли пользователей","rules":"","href":"/users/manage/roles","parid":0, "srtid":3,"page":[],"icon":"","thumb":"","descr":"", "url_func" : "", "code":"UserRoles"},
-  {"id":4,"label": "Файлы","rules":"","href":"/portal/management/files","parid":0, "srtid":4,"page":[],"icon":"","thumb":"","descr":"", "url_func" : "", "code":"PortalFilesTool"},
-  {"id":5,"label": "SPARQLManager","rules":"","href":"/portal/manager/","parid":0, "srtid":5,"page":[],"icon":"","thumb":"","descr":"", "url_func" : "", "code":"SPARQLManager"},
-  {"id":6,"label": "Wiki pages","rules":"","href":"/wiki","parid":0, "srtid":6,"page":[],"icon":"","thumb":"","descr":"", "url_func" : "", "code":"Wiki pages"}
-]

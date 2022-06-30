@@ -25,10 +25,16 @@ class Utilites:
 
     @staticmethod
     def get_storage_driver():
-        app_cfg = SomeConfig(AdminConf.CONFIGS_PATH)
+        app_cfg = SomeConfig(AdminConf.get_configs_path())
         _endpoint = app_cfg.get("data_storages.EndPoints.main")
         _driver_name = app_cfg.get("data_storages.Drivers.main")
         _driver = StoreManager.get_driver(_driver_name)
         _driver.set_endpoint(_endpoint)
         return _driver
+
+    @staticmethod
+    def get_file_editor():
+        from app.kv_editor.mod_api import ModApi
+        editor_api = ModApi()
+        return editor_api
 

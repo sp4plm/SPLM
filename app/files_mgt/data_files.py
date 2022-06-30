@@ -10,16 +10,17 @@ class DataFiles():
 
     def __init__(self):
         self._app_cfg = app_api.get_app_config()
+        self._utils = ModUtils()
         self._last_uploaded_file = ''
         self._errors = {}
-        settings_files_path = self._app_cfg.get('main.Info.pubFilesDir')
-        if settings_files_path is None:
-            settings_files_path = 'static' # заглушка
-        self._files_root = os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                                        settings_files_path)
+        # settings_files_path = app_api.get_mod_data_path(self._utils.MOD_NAME)  # .get('main.Info.pubFilesDir')
+        # if settings_files_path is None:
+        #     settings_files_path = 'static' # заглушка
+        # self._files_root = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+        #                                 settings_files_path)
+        self._files_root = app_api.get_mod_data_path(self._utils.MOD_NAME)
         if ''!= self._files_root and not os.path.exists(self._files_root):
             os.mkdir(self._files_root)
-        self._utils = ModUtils()
         self._ALLOWED_EXTENSIONS = self._utils.get_allowed_files()
 
     def remove_selected_items(self, items_list, dirname=''):
@@ -108,7 +109,7 @@ class DataFiles():
         file = os.path.join(dirname, name)
         flg = False
         if os.path.exists(file.encode('utf-8')) and os.path.isfile(file.encode('utf-8')):
-            os.remove(file)
+            os.remove(file.encode('utf-8'))
             flg = True
         return flg
 

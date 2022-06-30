@@ -6,12 +6,14 @@ import os
 import json
 from math import ceil
 
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, url_for, redirect
 from .mod_utils import app_api, ModConf, ModUtils
 from .data_files import DataFiles
+from app.utilites.portal_navi import PortalNavi
 
-mod = Blueprint(ModConf.MOD_NAME, __name__, url_prefix=ModConf.MOD_WEB_ROOT,
+mod = Blueprint(ModConf.MOD_NAME, __name__, url_prefix='',
                 static_folder=ModConf.get_web_static_path(),
+                static_url_path=ModConf.MOD_WEB_ROOT + '/static',
                 template_folder=ModConf.get_web_tpl_path())
 
 _admin_mod_api = None
@@ -20,19 +22,51 @@ _auth_decorator = app_api.get_auth_decorator()
 _mod_utils = None
 _mod_utils = ModUtils()
 
+# выносим префикс для обработки перенаправлений старых файлов из данных
+__web_prefix = ModConf.MOD_WEB_ROOT
+
 mod.add_app_template_global(_mod_utils.get_jslib_jstree_vers, name='jstree_vers')
 mod.add_app_template_global(_mod_utils.get_jslib_jqGrid_vers, name='jqgrid_vers')
 
+"""
+send_from_directory
+ требуется переделать хранение загружаемых пользователем файлов в app.config['UPLOAD_PATH'] 
+ вместо static/files
+"""
 
-@mod.route('/', methods=['GET', 'POST'])
+# инициализация модуля
+__mod_path = app_api.get_mod_data_path(ModConf.MOD_NAME)
+if not os.path.exists(__mod_path):
+    os.mkdir(__mod_path)
+# теперь добавим симлинку внутри себя
+_files_lnk = os.path.join(_mod_utils.get_web_static_path(), 'files')
+if not os.path.exists(_files_lnk):
+    os.symlink(__mod_path, _files_lnk, True)
+
+
+# теперь нужно обработать перенаправление
+# TODO: создать механизм определения перенаправления ???
+@mod.route('/opendata/f/<path:file_path>', strict_slashes=False)
+@mod.route('/static/files/<path:file_path>', strict_slashes=False)
+@_auth_decorator
+def view_ufile(file_path=''):
+    _relative = os.path.join('files', file_path.lstrip(os.path.sep))
+    # print(ModConf.MOD_NAME + '.__view_loaded->_relative:', _relative)
+    __go_to = url_for(ModConf.MOD_NAME + '.static', filename=_relative)
+    # print(ModConf.MOD_NAME + '.__view_loaded->__go_to:', __go_to)
+    return redirect(__go_to)
+
+
+@mod.route(__web_prefix, methods=['GET', 'POST'], strict_slashes=False)
 @_auth_decorator
 def files_management():
     portal_cfg = app_api.get_app_config()
-    return render_template("/media_files.html", title="Управление файлами",
+    _tpl_name = os.path.join(ModConf.MOD_NAME, 'media_files.html')
+    return app_api.render_page(_tpl_name, title="Управление файлами",
                            page_title="Управление файлами")
 
 
-@mod.route('/getStructTree', methods=['GET', 'POST'])
+@mod.route(__web_prefix + '/getStructTree', methods=['GET', 'POST'])
 @_auth_decorator
 def files_struct_tree():
     answer = {'msg': '', 'data': None, 'state': 404}
@@ -41,9 +75,9 @@ def files_struct_tree():
     return json.dumps(answer)
 
 
-@mod.route('/getDirSource', methods=['GET', 'POST'])
-@mod.route('/getDirSource/', methods=['GET', 'POST'])
-@mod.route('/getDirSource/<dir_name>', methods=['GET', 'POST'])
+@mod.route(__web_prefix + '/getDirSource', methods=['GET', 'POST'])
+@mod.route(__web_prefix + '/getDirSource/', methods=['GET', 'POST'])
+@mod.route(__web_prefix + '/getDirSource/<dir_name>', methods=['GET', 'POST'])
 @_auth_decorator
 def get_dir_source(dir_name=''):
     answer = {'rows': [], 'page': 1, 'records': 20, 'total': 1}
@@ -106,7 +140,7 @@ def get_dir_source(dir_name=''):
     return json.dumps(answer)
 
 
-@mod.route('/saveDirectory', methods=['GET', 'POST'])
+@mod.route(__web_prefix + '/saveDirectory', methods=['GET', 'POST'])
 @_auth_decorator
 def save_directory():
     answer = {'Msg': '', 'data': None, 'State': 500}
@@ -121,7 +155,7 @@ def save_directory():
     return json.dumps(answer)
 
 
-@mod.route('/renameDirectory', methods=['GET', 'POST'])
+@mod.route(__web_prefix + '/renameDirectory', methods=['GET', 'POST'])
 @_auth_decorator
 def rename_directory():
     answer = {'msg': '', 'data': None, 'state': 500}
@@ -137,7 +171,7 @@ def rename_directory():
     return json.dumps(answer)
 
 
-@mod.route('/removeDirectory', methods=['GET', 'POST'])
+@mod.route(__web_prefix + '/removeDirectory', methods=['GET', 'POST'])
 @_auth_decorator
 def remove_directory():
     answer = {'msg': '', 'data': None, 'state': 500}
@@ -152,8 +186,8 @@ def remove_directory():
     return json.dumps(answer)
 
 
-@mod.route('/uploadFiles', methods=['GET', 'POST'])
-@mod.route('/uploadFiles/<dir_name>', methods=['GET', 'POST'])
+@mod.route(__web_prefix + '/uploadFiles', methods=['GET', 'POST'])
+@mod.route(__web_prefix + '/uploadFiles/<dir_name>', methods=['GET', 'POST'])
 @_auth_decorator
 def upload_files(dir_name=None):
     answer = {'Msg': '', 'Data': None, 'State': 404}
@@ -187,8 +221,8 @@ def upload_files(dir_name=None):
     return json.dumps(answer)
 
 
-@mod.route('/editFile', methods=['GET', 'POST'])
-@mod.route('/editFile/<dir_name>', methods=['GET', 'POST'])
+@mod.route(__web_prefix + '/editFile', methods=['GET', 'POST'])
+@mod.route(__web_prefix + '/editFile/<dir_name>', methods=['GET', 'POST'])
 @_auth_decorator
 def edit_file(dir_name=None):
     answer = {'Msg': '', 'Data': None, 'State': 404}
@@ -225,8 +259,8 @@ def edit_file(dir_name=None):
     return json.dumps(answer)
 
 
-@mod.route('/removeFile', methods=['GET', 'POST'])
-@mod.route('/removeFile/<dir_name>', methods=['GET', 'POST'])
+@mod.route(__web_prefix + '/removeFile', methods=['GET', 'POST'])
+@mod.route(__web_prefix + '/removeFile/<dir_name>', methods=['GET', 'POST'])
 @_auth_decorator
 def remove_file(dir_name=None):
     answer = {'msg': '', 'data': None, 'state': 404}
@@ -241,8 +275,8 @@ def remove_file(dir_name=None):
     return json.dumps(answer)
 
 
-@mod.route('/removeSelection', methods=['GET', 'POST'])
-@mod.route('/removeSelection/<dir_name>', methods=['GET', 'POST'])
+@mod.route(__web_prefix + '/removeSelection', methods=['GET', 'POST'])
+@mod.route(__web_prefix + '/removeSelection/<dir_name>', methods=['GET', 'POST'])
 @_auth_decorator
 def remove_selection(dir_name=None):
     answer = {'Msg': '', 'Data': None, 'State': 404}
@@ -260,3 +294,103 @@ def remove_selection(dir_name=None):
     else:
         answer['Msg'] = 'Не удалось удалить данные!'
     return json.dumps(answer)
+
+
+@mod.route(__web_prefix + '/view', methods=['GET'], defaults={'relative':''})
+@mod.route(__web_prefix + '/view/<path:relative>', methods=['GET'], strict_slashes=False)
+def dir_view(relative=''):
+    """
+    Функция отображает содержимое одной директории relative, включая первый уровень поддиректорий, а именно: сперва
+    отображаются файлы директории relative, а потом список поддиректорий с их файлами.
+    :param relative: имя директории для отображения содержимого
+    :return: HTML Template
+    """
+
+
+    portal_cfg = app_api.get_app_config()
+    _tpl_name = os.path.join(ModConf.MOD_NAME, 'dir_view.html')
+    _tpl_vars = {}
+    _page_label = 'Содержимое директории'
+    _tpl_vars['dir_source'] = None
+    _tpl_vars['dir_source'] = {'files':[], 'dirs':{}}
+
+    relative = relative.strip(os.path.sep)
+    _page_label += ' ' + relative
+    #  считаем что директория  относительно корня директории данных
+    _files_ctrl = DataFiles()
+    _rel_start = relative
+
+    if not os.path.exists(_files_ctrl.get_dir_path(relative)):
+        return app_api.render_page(os.path.join('errors', '404.html'), message='Неизвестная директория!')
+
+    _src = _files_ctrl.get_dir_source(_rel_start)
+    _start = _files_ctrl.get_dir_path(_rel_start)
+    if _src:
+        _files_list = []
+        _dirs_list = {}
+        for _i in _src:
+            _item = _i.name.decode('utf-8')
+            _t = os.path.join(_start, _item)
+            _t_rel = os.path.join(_rel_start, _item)
+            if os.path.isfile(_t.encode('utf-8')):
+                _files_list.append(_t)
+                pass
+            if os.path.isdir(_t.encode('utf-8')):
+                _cd = _t
+                _cd_src = _files_ctrl.get_dir_source(_t_rel)
+                _dirs_list[_t] = [os.path.join(_t_rel, _i2.name.decode('utf-8')) for _i2 in _cd_src]
+                pass
+        if _files_list:
+            for _fi in _files_list:
+                _a = __cook_file_link(_fi)
+                _tpl_vars['dir_source']['files'].append(_a)
+
+        if _dirs_list:
+            _t_dirs = _dirs_list.keys()
+            for _dn in _t_dirs:
+                _t_name = os.path.basename(_dn)
+                _t_lst = [__cook_file_link(_df) for _df in _dirs_list[_dn]]
+                _tpl_vars['dir_source']['dirs'][_t_name] = _t_lst
+                pass
+
+    # предполагаем что возможно данную ссылку вставили в навигацию
+    # значит заголовок страницы должен соответствовать
+    _cur_navi = None
+    try:
+        _cur_navi = PortalNavi.get_current_navi_item()
+        if _cur_navi is not None:
+            if 'label' in _cur_navi:
+                _page_label = _cur_navi['label']
+    except Exception as ex:
+        print(ModConf.MOD_NAME + '.views.dir_view -> get_current_navi.Exception: ' + str(ex))
+
+    _tpl_vars['title'] = _page_label
+    _tpl_vars['page_title'] = _page_label
+    return app_api.render_page(_tpl_name, **_tpl_vars)
+
+
+def __cook_file_link(file_path, str_res=False):
+    _files_ctrl = DataFiles()
+    # print('__cook_file_link->file_path', file_path)
+    _d_url = url_for(ModConf.MOD_NAME + '.download_file', relative=_files_ctrl.get_relative_path(file_path))
+    if str_res:
+        _a = '<a href="' + _d_url + '" target="_blank">' + os.path.basename(file_path) + '</a>'
+    else:
+        _a = {'href': _d_url, 'label': os.path.basename(file_path)}
+    return _a
+
+
+@mod.route(__web_prefix + '/download/<path:relative>', methods=['GET'])
+def download_file(relative):
+    _files_ctrl = DataFiles()
+    _root = _files_ctrl.get_dir_path(None)
+    download_file = os.path.join(_root, relative)
+    errorMsg='Файл не найден: ' + relative
+    if os.path.exists(download_file.encode('utf-8')):
+        if os.path.isdir(download_file.encode('utf-8')):
+            # заготовка для скачивания директории одним архивом
+            pass
+        from flask import send_file
+        _fp = open(download_file.encode('utf-8'), 'rb')
+        return send_file(_fp, as_attachment=True, download_name=os.path.basename(relative))
+    return app_api.render_page(os.path.join('errors', '404.html'), message=errorMsg)

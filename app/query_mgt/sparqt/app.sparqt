@@ -47,9 +47,9 @@
     },
     "search":{
         "_CMT_": "Запрос для поиска по данным портала",
-        "#VARS":{"lang":{"mark":"#{lang}","default":"RU"},"arg":{"mark":"#{arg}","default":""},"parg":{"mark":"#{parg}","default":"null"},"SearchCLS":{"mark":"#{SearchCLS}","default":""},"prefix":{"mark":"#{prefix}","default":""}},
-        "#TXT":"#{prefix}
-        SELECT ?res ?cl_lbl ?res_lbl ?res_cls ?att_cl_lb ?val WHERE {
+        "#VARS":{"lang":{"mark":"#{lang}","default":"RU"},"arg":{"mark":"#{arg}","default":""},"parg":{"mark":"#{parg}","default":"null"},"SearchCLS":{"mark":"#{SearchCLS}","default":""},"PREF":{"mark":"#{PREF}","default":""}},
+        "#TXT":"prefix onto: <#{PREF}>
+                SELECT distinct ?res ?cl_lbl ?res_lbl ?res_cls ?att_cl_lb ?val WHERE {
                     {
                         ?res rdfs:label ?res_lbl . FILTER regex(?res_lbl, \"#{arg}\", \"i\")
                     } UNION {
@@ -74,10 +74,11 @@
     "for_tgf":{
         "_CMT_": "Выбирает все что связано отношением hasParentReq и имеет последнюю версию. Предназначен для выгрузки в формате tgf. Страница /formats.php",
         "#VARS":{},
-        "#TXT":"select ?s ?s_lbl ?o ?o_lbl
+        "#TXT":"prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+                select ?s ?s_lbl ?o ?o_lbl
                 {?s onto:hasParentReq ?o .
-                 ?s onto:latestVersion xs:true .
-                 ?o onto:latestVersion xs:true .
+                 ?s onto:latestVersion xsd:true .
+                 ?o onto:latestVersion xsd:true .
                  ?si onto:hasVersion ?s .
                  ?si rdfs:label ?s_lbl .
                  ?oi onto:hasVersion ?o .

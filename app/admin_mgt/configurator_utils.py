@@ -47,7 +47,7 @@ class ConfiguratorUtils(AdminConf):
 
     @staticmethod
     def get_conf_file(conf_name):
-        work_dir = AdminConf.CONFIGS_PATH
+        work_dir = ConfiguratorUtils._get_mod_configs_path()  # AdminConf.CONFIGS_PATH
         files_list = ConfiguratorUtils.get_configs_files()
         pth = ''
         for fi in files_list:
@@ -67,7 +67,7 @@ class ConfiguratorUtils(AdminConf):
 
     @staticmethod
     def get_configs_files():
-        work_dir = AdminConf.CONFIGS_PATH
+        work_dir = ConfiguratorUtils._get_mod_configs_path()  # AdminConf.CONFIGS_PATH
         _available = ConfiguratorUtils._get_available_files_ext()
         files_list = []
         for fi in os.scandir(work_dir):
@@ -102,8 +102,7 @@ class ConfiguratorUtils(AdminConf):
     @staticmethod
     def get_default_configs():
         lst = []
-        _path = AdminConf.get_mod_path(AdminConf.INIT_DIR_NAME)
-        _path = os.path.join(_path, AdminConf.CONF_DIR_NAME)
+        _path = ConfiguratorUtils._get_mod_configs_path()
         files_list = [fi.name for fi in os.scandir(_path)]
         for fi in files_list:
             lp = fi.rfind('.')
@@ -113,22 +112,29 @@ class ConfiguratorUtils(AdminConf):
     @staticmethod
     def _read_configs():
         _cfg = None
-        _path = ConfiguratorUtils._get_configs_path()
+        _path = ConfiguratorUtils._get_mod_configs_path()
         _cfg = SomeConfig(_path)
         return _cfg
 
     @staticmethod
     def _get_configs_path():
-        _has_files = False
-        _path = AdminConf.CONFIGS_PATH
-        if os.path.exists(_path):
-            files_list = [fi.name for fi in os.scandir(_path)]
-            if 0 < len(files_list):
-                _has_files = True
-        if not _has_files:
-            _path = AdminConf.get_mod_path(AdminConf.INIT_DIR_NAME)
-            _path = os.path.join(_path, AdminConf.CONF_DIR_NAME)
-            files_list = [fi.name for fi in os.scandir(_path)]
-            if 0 == len(files_list):
-                raise Exception('Отсутствуют первичные файлы конфигурации!')
-        return _path
+        return ConfiguratorUtils._get_mod_configs_path()
+        # _has_files = False
+        # _path = AdminConf.CONFIGS_PATH
+        # if os.path.exists(_path):
+        #     files_list = [fi.name for fi in os.scandir(_path)]
+        #     if 0 < len(files_list):
+        #         _has_files = True
+        # if not _has_files:
+        #     _path = AdminConf.get_mod_path(AdminConf.INIT_DIR_NAME)
+        #     _path = os.path.join(_path, AdminConf.CONF_DIR_NAME)
+        #     files_list = [fi.name for fi in os.scandir(_path)]
+        #     if 0 == len(files_list):
+        #         raise Exception('Отсутствуют первичные файлы конфигурации!')
+        # return _path
+
+    @staticmethod
+    def _get_mod_configs_path():
+        _pth = ConfiguratorUtils.get_mod_path(ConfiguratorUtils.INIT_DIR_NAME)
+        _pth = os.path.join(_pth, ConfiguratorUtils.CONF_DIR_NAME)
+        return _pth

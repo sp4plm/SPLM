@@ -5,6 +5,7 @@ import json
 from app.admin_mgt.admin_conf import AdminConf
 from app.admin_mgt.navigation_files import NavigationFiles
 from app.utilites.code_helper import CodeHelper
+from app.utilites.some_config import SomeConfig
 from app import mod_manager
 
 
@@ -14,7 +15,7 @@ class AdminNavigation(NavigationFiles):
 
     def __init__(self):
         super().__init__()
-        self._files_path = os.path.join(AdminConf.DATA_PATH, AdminConf.NAVI_DIR_NAME)
+        self._files_path = os.path.join(AdminConf.get_mod_path('data'), AdminConf.NAVI_DIR_NAME)
         self.sections = []
         self.current_section = None
         self.section_navi = []
@@ -165,7 +166,7 @@ class AdminNavigation(NavigationFiles):
     @staticmethod
     def _get_section_items_filename(code):
         file_name = code + '.json'
-        file_path = os.path.join(AdminNavigation.DATA_PATH, AdminNavigation.NAVI_DIR_NAME, file_name)
+        file_path = os.path.join(AdminConf.get_mod_path('data'), AdminConf.NAVI_DIR_NAME, file_name)
         return file_path
 
     def get_section_by_code(self, code):
@@ -296,6 +297,19 @@ class AdminNavigation(NavigationFiles):
             # print(self._debug_name + '.get_sections_navi._a', _a)
             lst = self._sort_items(*_a)
         return lst
+
+    def get_default_blocks(self):
+        """
+        Метод возвращает список блоков поумолчанию
+        :return:
+        """
+        ocfg = None
+        _path = AdminConf.get_mod_path(AdminConf.INIT_DIR_NAME)
+        _path = os.path.join(_path, AdminConf.CONF_DIR_NAME)
+        def_config = SomeConfig(_path)
+        def_blocks = []
+        def_blocks = list((def_config.get('navi.Codes')).values())
+        return def_blocks
 
     def get_navi_blocks(self):
         lst = []

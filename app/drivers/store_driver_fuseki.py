@@ -7,9 +7,9 @@ class StoreDriverFuseki(StoreDriver):
     _class_file = __file__
     _debug_name = 'StoreDriverFuseki'
     _name = 'fuseki'
-    _upload_file_name = 'files[]'  # customize for storage - this one to Fuseki
+    _upload_file_name = 'files[]' # customize for storage - this one to Fuseki
     _graph_name_field = 'graph'
-
+    
     def __init__(self):
         super().__init__()
 
@@ -27,10 +27,10 @@ class StoreDriverFuseki(StoreDriver):
             return_result = False
         if '' == endpoint:
             # fuseki endpoint use different urls for query: select and others
-            endpoint = self._get_query_url(return_result)  # read default TripleStoreUri
+            endpoint = self._get_query_url(return_result) # read default TripleStoreUri
         fields[query_key] = query
-        headers = {'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/sparql-results+json'}
-        if -1 < query.find('CONSTRUCT'):
+        headers = {'Content-Type': 'application/x-www-form-urlencoded', 'Accept':  'application/sparql-results+json'}
+        if -1 < query.find('CONSTRUCT ') or -1 < query.find('construct '):
             headers['Accept'] = 'application/json'
         if fields:
             send_data['data'] = fields
@@ -68,8 +68,7 @@ class StoreDriverFuseki(StoreDriver):
 
         # send_data['headers']['Content-type'] = 'text/turtle;charset=utf-8'
         # send_data['headers']['Content-type'] = 'multipart/form-data' # не требуется - вызывает ошибку
-        send_data['headers']['Content-Disposition'] = 'form-data; name="{}"; filename="{}"'.format(
-            self._upload_file_name, file_name)
+        send_data['headers']['Content-Disposition'] = 'form-data; name="{}"; filename="{}"'.format(self._upload_file_name, file_name)
 
         if auth:
             answer = self._post_req(url, send_data, auth['uname'], auth['usecret'])

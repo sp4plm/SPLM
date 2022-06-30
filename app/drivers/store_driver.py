@@ -49,7 +49,7 @@ class StoreDriver:
             endpoint = self._get_query_url(return_result) # read default TripleStoreUri
         fields[query_key] = query
         headers = {'Content-Type': 'application/x-www-form-urlencoded', 'Accept':  'application/sparql-results+json'}
-        if -1 < query.find('CONSTRUCT'):
+        if -1 < query.find('CONSTRUCT ') or -1 < query.find('construct '):
             headers['Accept'] = 'application/json'
         if fields:
             send_data['data'] = fields

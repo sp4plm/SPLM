@@ -589,6 +589,7 @@
                 //return new cls({'langData':Desktop.app.langData['UserRoles']});
                 return cls;
             }(PageBlock || _jsUtils.emptyFunc);
+            if ('object' === typeof win && typeof function(){} === typeof win.funcFixMaincontentBoxHeight) {  win.funcFixMaincontentBoxHeight(); }
             $('body').find('div.maincontent:first').attr('id', 'NaviPageBox');
             // теперь надо дождаться когда загрузятся данные по интерфейсу
             Desktop.EvMan.subscribe('CanRegBlocks', function(evName, args){

@@ -9,6 +9,7 @@ from werkzeug.security import generate_password_hash
 
 APP_ROOT = os.path.abspath(os.path.dirname(__file__))
 APP_DATA_PATH = os.path.join(APP_ROOT, 'app', 'data')
+APP_CONFIG_PATH = os.path.join(APP_ROOT, 'app', 'cfg')
 
 DEBUG = True
 
@@ -21,8 +22,8 @@ PORTAL_MAN_SECRET = os.environ.get('SPLMPY_PORTAL_SECRET') or \
 SECRET_KEY = 'This string will be replaced with a proper key in production.'
 
 SQLALCHEMY_DATABASE_URI = os.environ.get('SPLMPY_DATABASE_URL') or \
-                          'sqlite:///' + os.path.join(APP_DATA_PATH, 'app.db')
-SQLALCHEMY_MIGRATE_REPO = os.path.join(APP_DATA_PATH, 'migrations')
+                          'sqlite:///' + os.path.join(APP_CONFIG_PATH, 'app.db')
+SQLALCHEMY_MIGRATE_REPO = os.path.join(APP_CONFIG_PATH, 'migrations')
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 DATABASE_CONNECT_OPTIONS = {}
 
@@ -40,4 +41,11 @@ RECAPTCHA_PRIVATE_KEY = '6LeYIbsSAAAAAJezaIq3Ft_hSTo0YtyeFG-JgRtu'
 RECAPTCHA_OPTIONS = {'theme': 'white'}
 
 CONFIGURATOR_WAY='admin_mgt.portal_installer'
-CONFIGURATOR_MARK_NAME = os.path.join(os.path.dirname(__file__), 'splm_installation')
+CONFIGURATOR_MARK_NAME = os.path.join(APP_CONFIG_PATH, 'splm_installation')
+
+APP_NAME_THEMES_IDENTIFIER = "splm"
+THEME_PATHS = os.path.join(APP_CONFIG_PATH, 'themes')  # or themes_mgt use mod name for themes ??????
+DEFAULT_THEME = "light"
+
+#SCHEDULER
+SCHEDULER_TIMEZONE = "Europe/Moscow"

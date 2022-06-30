@@ -50,3 +50,13 @@
 <http://splm.portal.web/osplm/data#url_adminmgt_6> osplm:value "/portal/management/logout"^^<http://www.w3.org/2001/XMLSchema#string> ;
   osplm:shallBeShownInMenu <http://www.w3.org/2001/XMLSchema#true> ;
   rdfs:label "Выход"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<http://splm.portal.web/osplm#admin_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_adminmgt_7> .
+<http://splm.portal.web/osplm/data#url_adminmgt_7> osplm:value "/portal/management/cron"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Cron"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> .
+
+<http://splm.portal.web/osplm#admin_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_adminmgt_8> .
+<http://splm.portal.web/osplm/data#url_adminmgt_8> osplm:value "/portal/management/schedule"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Schedule"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> .

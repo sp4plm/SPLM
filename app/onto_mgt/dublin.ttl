@@ -28,7 +28,42 @@
 <http://splm.portal.web/osplm#onto_mgt> osplm:hasURL "/onto"^^<http://www.w3.org/2001/XMLSchema#string> .
 
 <http://splm.portal.web/osplm#onto_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_ontomgt_1> .
-<http://splm.portal.web/osplm/data#url_ontomgt_1> osplm:value "/onto/ontologies"^^<http://www.w3.org/2001/XMLSchema#string> .
-<http://splm.portal.web/osplm/data#url_ontomgt_1> rdfs:label "Онтологии"^^<http://www.w3.org/2001/XMLSchema#string> .
-<http://splm.portal.web/osplm/data#url_ontomgt_1> osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> .
-<http://splm.portal.web/osplm/data#url_ontomgt_1> osplm:hasHTMLtemplate "ontos.html"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_ontomgt_1> osplm:value "/onto/ontologies"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Онтологии"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> ;
+  osplm:hasHTMLtemplate "ontos.html"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+
+<http://splm.portal.web/osplm#onto_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_ontomgt_2> .
+<http://splm.portal.web/osplm/data#url_ontomgt_2> osplm:value "/onto/nav_ontology"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Навигация по онтологии"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  osplm:shallBeShownInMenu <http://www.w3.org/2001/XMLSchema#true> .
+
+<http://splm.portal.web/osplm#onto_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_ontomgt_3> .
+<http://splm.portal.web/osplm/data#url_ontomgt_3> osplm:value "/onto/getFiles/ontos"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Получить файлы онтологии"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<http://splm.portal.web/osplm#onto_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_ontomgt_4> .
+<http://splm.portal.web/osplm/data#url_ontomgt_4> osplm:value "/onto/loadFiles/ontos"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Загрузить файлы онтологии"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<http://splm.portal.web/osplm#onto_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_ontomgt_5> .
+<http://splm.portal.web/osplm/data#url_ontomgt_5> osplm:value "/onto/removeFile/ontos"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Удалить файлы онтологии"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<http://splm.portal.web/osplm#onto_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_ontomgt_6> .
+<http://splm.portal.web/osplm/data#url_ontomgt_6> osplm:value "/onto/removeSelection/ontos"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Удалить выделенные файлы онтологии"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<http://splm.portal.web/osplm#onto_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_ontomgt_7> .
+<http://splm.portal.web/osplm/data#url_ontomgt_7> osplm:value "/onto/downloadFile/ontos"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Скачать файлы онтологии"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<http://splm.portal.web/osplm#onto_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_ontomgt_8> .
+<http://splm.portal.web/osplm/data#url_ontomgt_8> osplm:value "/onto/accept_newfile/ontos"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Принять новый файл в случае совпадения имен онтологий"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<http://splm.portal.web/osplm#onto_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_ontomgt_9> .
+<http://splm.portal.web/osplm/data#url_ontomgt_9> osplm:value "/onto/reject_newfile/ontos"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Отклонить новый файл в случае совпадения имен онтологий"^^<http://www.w3.org/2001/XMLSchema#string> .
+

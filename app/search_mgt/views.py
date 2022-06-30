@@ -6,7 +6,7 @@
 import os
 import json
 
-from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
+from flask import Blueprint, request, flash, g, session, redirect, url_for
 from werkzeug.utils import secure_filename
 from app import app
 from werkzeug.urls import url_parse
@@ -17,6 +17,8 @@ from app.utilites.some_config import SomeConfig
 from app.search_mgt.portal_search import PortalSearch
 
 from app.search_mgt.search_conf import SearchConf
+
+from app import app_api
 
 MOD_NAME = SearchConf.MOD_NAME
 mod = Blueprint(MOD_NAME, __name__, url_prefix='/' + MOD_NAME, template_folder=SearchConf.get_mod_tpl_path(), static_folder=SearchConf.get_mod_static_path())
@@ -44,5 +46,5 @@ def search():
     tmpl_vars['base_url'] = url_for('search_mgt.search', **tmpl_vars['paging_vars'])
     tmpl_vars['request_args'] = request.args
 
-    return render_template("/search.html", **tmpl_vars)
+    return app_api.render_page("/search.html", **tmpl_vars)
 

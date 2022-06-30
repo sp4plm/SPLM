@@ -9,11 +9,12 @@ import subprocess
 import sys
 from math import ceil
 
-from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
+from flask import Blueprint, request, flash, g, session, redirect, url_for
 from flask_login import current_user, login_user, logout_user
 from flask_login import login_required
 from werkzeug.urls import url_parse
-from app import app, db, app_api, CodeHelper, mod_manager
+from app import app_api
+# mod_manager = app_api.get_mod_manager()
 from app.module_mgt.manager import Manager
 from .admin_utils import AdminUtils, AdminConf
 from .mod_api import ModApi
@@ -87,7 +88,54 @@ def index():
     # print('full_path', request.full_path)
     # print('path', request.path)
     # print('module', request.module) # ???????
-    return render_template(AdminConf.get_root_tpl(), **tmpl_vars)
+    return app_api.render_page(AdminConf.get_root_tpl(), **tmpl_vars)
+
+
+@mod.route('/modes', methods=['GET'])
+@requires_auth
+def __modes_management():
+    _tpl_vars = {}
+    _tpl_name = os.path.join(AdminConf.MOD_NAME, 'modes.html')
+    _tpl_vars['base_url'] = url_for(mod.name + '.__modes_management')
+    _tpl_vars['modes_list'] = []
+    _admin_mgt_api = app_api.get_mod_api('admin_mgt')
+    _portal_modes_util = _admin_mgt_api.get_portal_mode_util()
+    _portal_mode = None
+    if _portal_modes_util is not None:
+        _modes = _portal_modes_util.get_modes()
+        if _modes:
+            # _mode is a PortalMode
+            for _mode in _modes:
+                """
+                <td>Название</td>
+                <td>Модуль инициатор</td>
+                <td>Время старта</td>
+                <td>Использует перенаправление</td>
+                """
+                _t = {}
+                _t['name'] = _mode.get_name()
+                _t['app_module'] = _mode.get_initiator()
+                _t['started'] = _mode.get_start_time('%Y-%m-%d %H:%M:%S')  # default is timestamp
+                _t['use_redirect'] = _mode.use_redirecting()  # True or False
+                _tpl_vars['modes_list'].append(_t)
+
+    return app_api.render_page(_tpl_name, **_tpl_vars)
+
+
+@mod.route('/modes/drop/<name>', methods=['GET'])
+@requires_auth
+def __drop_portal_mode(name):
+    _next_page = mod.name + '.__modes_management'
+    _admin_mgt_api = app_api.get_mod_api('admin_mgt')
+    _portal_modes_util = _admin_mgt_api.get_portal_mode_util()
+    _portal_mode = None
+    if _portal_modes_util is not None:
+        _portal_mode = _portal_modes_util.get_current(name)
+        if _portal_mode is not None:
+            # _portal_mode.disable()
+            _portal_modes_util.drop(_portal_mode)
+    _go_to = url_for(_next_page)
+    return redirect(_go_to)
 
 
 @mod.route('/<modname>' , methods=['GET'])
@@ -115,3 +163,64 @@ def local_db_reconfigure():
         steps_str = '<br />'.join(steps)
         steps_str = '<hr />' + steps_str
     return 'Reconfiguration complite!' + steps_str
+
+
+@mod.route('/export/tz', methods=['GET'])
+def export_tz():
+    # определяем дефолтный префикс
+    if 'prefix' in request.args:
+        pref = request.args['prefix']
+    else:
+        pref = "onto"
+
+    # находим онтологию по префиксу
+    prefixes = app_api.get_mod_api('onto_mgt').get_prefixes()
+    for p in prefixes:
+        if p[0] == pref:
+            ontology = p[1]
+
+    html = ''
+    html = '<pre>' + str(app_api.tsc_query('query_mgt.exports.list_tz', {"PREF" : ontology})) + '</pre>'
+    return html
+
+
+@mod.route('/test/mode/enable', methods=['GET'])
+def _enable_portal_mode():
+    _html = ''
+    # требуется установить режим портала ограничивающий
+    _admin_mgt_api = app_api.get_mod_api('admin_mgt')
+    _portal_modes_util = _admin_mgt_api.get_portal_mode_util()
+    _portal_mode = None
+    if _portal_modes_util is not None:
+        _portal_mode = _portal_modes_util.set_portal_mode('test_mod')
+        _portal_mode.set_target('admin_mgt._view_portal_mode')
+        _portal_mode.set_opened(['admin_mgt._disable_portal_mode'])
+        _portal_mode.enable_redirect()
+        _portal_mode.enable()
+    return _html
+
+
+@mod.route('/test/mode/view', methods=['GET'])
+def _view_portal_mode():
+    _html = ''
+    # требуется установить режим портала ограничивающий
+    _admin_mgt_api = app_api.get_mod_api('admin_mgt')
+    _portal_modes_util = _admin_mgt_api.get_portal_mode_util()
+    _portal_mode = None
+    if _portal_modes_util is not None:
+        _portal_mode = _portal_modes_util.get_current()
+        _html = 'Portal mode "' + _portal_mode.get_name() + '" started: ' + str(_portal_mode.get_start_time('%Y-%m-%d %H:%M:%S'))
+    return _html
+
+
+@mod.route('/test/mode/disable', methods=['GET'])
+def _disable_portal_mode():
+    _html = ''
+    # требуется установить режим портала ограничивающий
+    _admin_mgt_api = app_api.get_mod_api('admin_mgt')
+    _portal_modes_util = _admin_mgt_api.get_portal_mode_util()
+    _portal_mode = None
+    if _portal_modes_util is not None:
+        _portal_mode = _portal_modes_util.get_current('test_mod')
+        _portal_mode.disable()
+    return _html

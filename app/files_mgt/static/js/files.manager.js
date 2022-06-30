@@ -493,7 +493,7 @@
                     _this.gridRowToolbarEvCatcher = function(evName, p){
                         if(p._skey!==_selfCode) { return ; }
                 //       p=> {action:'', rowID:'' }
-                        var type,row;
+                        var type,row, _download;
                         row = _this.dirGrid.getRowData(p.rowID);
                         row['rowID'] = p.rowID;
                         type = row['Type']; // f - is a file, d - is a directory
@@ -501,7 +501,12 @@
                             case 'open':
                                 // если файл то даем скачать
                                 if(type==='f'){
-
+                                    _download = _getFileDownloadTag(row['Path']);
+                                    _download.attr('target', '_blank');
+                                    _download.css({'display': 'none'});
+                                    $('body').append(_download);
+                                    _download.get(0).click();
+                                    _download.remove();
                                 }else{
                                     // если директория то проваливаемся в нее - т.е. перерисовываем таблицу с учетом директории
                                     _this.updateWorkDir(row['Name'],'down');
@@ -536,6 +541,15 @@
                                 break;
                         }
                     };
+
+                    function _getFileDownloadTag(rel) {
+                        var $a, _url;
+                        _url = _this.baseURL+'/download';
+                        _url += '/' + rel;
+                        $a = $('<a></a>');
+                        $a.attr('href', _url);
+                        return $a;
+                    }
 
                     _this.saveDirectory = function($form){
                         var url = _this.baseURL+'/saveDirectory', wD = _this.workDir,
@@ -767,8 +781,8 @@
                 _jsUtils.inherit(cls,parent);
                 return cls;
             }(PageBlock || _jsUtils.emptyFunc);
+            if ('object' === typeof win && typeof function(){} === typeof win.funcFixMaincontentBoxHeight) {  win.funcFixMaincontentBoxHeight(); }
             $('body').find('div.maincontent:first').attr('id', 'NaviPageBox');
-
 
             // подключаем наш модуль по событию что приложение готово подключать модуль, так как аяксом запрашиваются данные о локализации
             if(typeof void null!==typeof Desktop && null!==Desktop){

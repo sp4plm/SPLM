@@ -4,7 +4,7 @@
 """
 import subprocess
 
-from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
+from flask import Blueprint, request, flash, g, session, redirect, url_for
 
 from ..utilites.extend_processes import ExtendProcesses
 
@@ -111,4 +111,5 @@ def installer():
     _portal_configurator.set_app_dir(app_api.get_app_root_dir())
     tmpl_vars['already_c0nfigured'] = _portal_configurator.check_inst_marker()
 
-    return render_template("portal/installer.html", **tmpl_vars)
+    _tpl_name = os.path.join(AdminConf.MOD_NAME, 'portal', 'installer.html')
+    return app_api.render_page(_tpl_name, **tmpl_vars)
