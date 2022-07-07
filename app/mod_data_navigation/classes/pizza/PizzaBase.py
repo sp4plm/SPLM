@@ -6,7 +6,6 @@ Created on 4 sept. 2021 г.
 
 import pandas as pd
 import numpy as np
-from flask import render_template
 from urllib.parse import quote
 from app.app_api import tsc_query
 from app import app_api
@@ -100,14 +99,14 @@ class PizzaBase:
 
                 d[row.inst_lbl].update({'Avatar':Avatar})
 
-                templ = render_template("/PizzaBase_inst.html", title="Пицца",
+                templ = app_api.render_page("data_navigation/PizzaBase_inst.html", title="Пицца",
                                 class_name=self.__make_href__(cls=self.argm['class'], prf=self.argm['prefix'], uri='',lbl=class_lbl),
                                 instance=d,
                                 argm=self.argm.items(),
                                 page_path=page_path)
 
             else:
-                templ = render_template("/PizzaBase_inst.html", title="Пицца",
+                templ = app_api.render_page("data_navigation/PizzaBase_inst.html", title="Пицца",
                                 class_name=self.__make_href__(cls=self.argm['class'], prf=self.argm['prefix'], uri='', lbl=class_lbl),
                                 instance={"No data":{"Comment":"about this instance.","Avatar":""}},
                                 argm=self.argm.items(),
@@ -150,7 +149,7 @@ class PizzaBase:
 
                 instances = df2.to_html(escape=False, index=False)
 
-            templ = render_template("/PizzaBase.html", title="Пицца", class_name=class_lbl,
+            templ = app_api.render_page("data_navigation/PizzaBase.html", title="Пицца", class_name=class_lbl,
                                                                             subclasses=subclasses,
                                                                             instances = instances,
                                                                             page_path=page_path)

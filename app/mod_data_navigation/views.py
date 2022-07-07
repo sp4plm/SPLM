@@ -3,7 +3,7 @@
 import json
 import os
 from urllib.parse import quote, unquote
-from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
+from flask import Blueprint, request, flash, g, session, redirect, url_for
 from flask.views import MethodView
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy.exc import NoResultFound
@@ -67,7 +67,7 @@ def startPage():
         if q_inst and q_cls:
             stat.update({key:{'inst':q_inst[0]['inst_qnt'], 'cls':q_cls[0]['cls_qnt'], 'img':val[1], 'href':val[2]}})
 
-    return render_template("/index.html", heading=heading, stat=stat, message1=message1, message2=message2)
+    return app_api.render_page(mod.name + "/index.html", heading=heading, stat=stat, message1=message1, message2=message2)
 
 @mod.route(url_prefix + '/<class_object>')
 @_auth_decorator

@@ -1,4 +1,4 @@
-{% extends "base_bootstrap.html" %}
+{% extends app_root_tpl() %}
 
 {% block title %}
     {% if title %}SPLM: {{ title }}{% else %}Навигация по данным{% endif %}
@@ -33,16 +33,16 @@
 
 {% block page_sidenav %}
     <div>
-        <img class="img-responsive" style="margin: 0 auto;" src="/static/files/images/PizzaBase.png" width="350" height="350" alt="pizzaBase">
+        <img class="img-responsive" style="margin: 0 auto;" src="/static/files/images/PizzaTopping.png" width="350" height="350" alt="pizzaToppin">
     </div>
 {% endblock %}
 
 
 {% block page_main_content %}
 	<h2 class="content-header">Теукщая категория: {{class_name | safe }}</h2>
-		{% if parent %}<h4>Родительская категория основы для пиццы: {{ parent | safe }}</h4>{% endif %}
+		{% if parent %}<h4>Родительская категория топпига: {{ parent | safe }}</h4>{% endif %}
 	<br>
-		{% if instances %}<h3>Доступные варианты основы для пиццы:</h3>{{ instances | safe }}{% endif %}
+		{% if instances %}<h3>Доступные варианты топпига:</h3>{{ instances | safe }}{% endif %}
 	<br>
-		{% if subclasses %}<h3>Дополнительные под-категории:</h3>{{ subclasses | safe }}{% endif %}
+		{% if subclasses %}<h3>Дополнительные под-категории топпига:</h3>{{ subclasses | safe }}{% endif %}
 {% endblock %}

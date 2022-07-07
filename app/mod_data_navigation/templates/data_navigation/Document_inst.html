@@ -1,4 +1,4 @@
-{% extends "base_bootstrap.html" %}
+{% extends app_root_tpl() %}
 
 {% block title %}
     {% if title %}SPLM: {{ title }}{% else %}Навигация по данным{% endif %}
@@ -22,23 +22,23 @@
 		}
   	</style>
 
-
     <link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid.css')}}" />
     <link rel="stylesheet" href="{{url_for('static', filename='vend/jquery.jqGrid-4.13.2/css/ui.jqgrid-bootstrap.css')}}" />
-
-
     <link rel="stylesheet" href="{{url_for('static', filename='css/portal.css')}}" />
     <link rel="stylesheet" href="{{url_for('static', filename='css/portal.datamanager.css')}}" />
     <link rel="stylesheet" href="{{url_for('static', filename='css/portal.jqgrid.css')}}" />
-
     <link rel="stylesheet" href="{{url_for('static', filename='css/jqtree.css')}}" />
 
 {% endblock %}
 
 {% block page_sidenav %}
-    <div>
-        <img class="img-responsive" style="margin: 0 auto;" src="/static/img/logo.png" width="300" height="300" alt="pizza">
-    </div>
+	{% if js and "#tree3" in js %}
+		<div class="scroll-well">
+			<div id="tree3"></div>
+		</div>
+	{% else %}
+		{{super()}}
+	{% endif %}
 {% endblock %}
 
 
@@ -47,5 +47,4 @@
 	<br>
 		<h3>Свойства экземпляра:</h3>
 		{{ instance | safe }}
-	<br>
 {% endblock %}

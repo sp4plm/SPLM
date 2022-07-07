@@ -1,4 +1,4 @@
-{% extends "base_bootstrap.html" %}
+{% extends app_root_tpl() %}
 
 {% block title %}
     {% if title %}SPLM: {{ title }}{% else %}Навигация по данным{% endif %}
@@ -43,7 +43,7 @@
  .brand-bg  {
 	box-shadow: #ddd 0px 0px 19px 8px;
 	margin-bottom: 29px;
-	background-color: #FFFFE0;
+	background-color: #FFC0CB24;
   }
  .brand-bg .img_box {
 	justify-content: center;
@@ -62,7 +62,7 @@
 
 {% block page_sidenav %}
     <div>
-        <img class="img-responsive" style="margin: 0 auto;" src="/static/files/images/PizzaBase.png" width="350" height="350" alt="pizzaBase">
+        <img class="img-responsive" style="margin: 0 auto;" src="/static/files/images/PizzaTopping.png" width="350" height="350" alt="pizzaToppin">
     </div>
 {% endblock %}
 

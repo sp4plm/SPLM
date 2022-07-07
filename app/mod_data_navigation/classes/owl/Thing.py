@@ -5,7 +5,6 @@ Created on 4 sept. 2021 г.
 '''
 import numpy as np
 import pandas as pd
-from flask import render_template
 from urllib.parse import quote
 from app.app_api import tsc_query
 from app import app_api
@@ -99,13 +98,13 @@ class Thing:
 
             if len(df) > 0:
                 df.columns = ['Наименование','Атрибут', 'Значение']
-                templ = render_template("/Thing_inst.html", title="TEST",
+                templ = app_api.render_page("data_navigation/Thing_inst.html", title="TEST",
                                 class_name='<a href="{}?prefix={}">{}</a>'.format(self.argm['class'], self.argm['prefix'], class_lbl),
                                 instance=df.to_html(escape=False, index=False),
                                 argm=self.argm.items())
 
             else:
-                templ = render_template("/Thing_inst.html", title="TEST",
+                templ = app_api.render_page("data_navigation/Thing_inst.html", title="TEST",
                                 class_name='<a href="{}?prefix={}">{}</a>'.format(self.argm['class'], self.argm['prefix'], class_lbl),
                                 instance="No data about this instance.",
                                 argm=self.argm.items())
@@ -159,7 +158,7 @@ class Thing:
                 instances = df2.to_html(escape=False, index=False)
 
             page_path = make_breadcrumbs(self.argm['prefix'], self.pref_unquote, self.argm['class'])
-            templ = render_template("/Thing.html", title="",
+            templ = app_api.render_page("data_navigation/Thing.html", title="",
                                     class_name=class_lbl,
                                     parent=parent,
                                     subclasses=subclasses,

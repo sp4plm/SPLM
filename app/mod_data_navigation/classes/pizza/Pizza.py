@@ -6,7 +6,6 @@ Created on 4 sept. 2021 г.
 
 import pandas as pd
 import numpy as np
-from flask import render_template
 from urllib.parse import quote
 from app.app_api import tsc_query
 from app import app_api
@@ -165,14 +164,14 @@ class Pizza:
 
                 d[row.inst_lbl].update({'Avatar':Avatar})
 
-                templ = render_template("/Pizza_inst.html", title="Пицца",
+                templ = app_api.render_page("data_navigation/Pizza_inst.html", title="Пицца",
                                 class_name=self.__make_href__(cls=self.argm['class'], prf=self.argm['prefix'], uri='',lbl=class_lbl),
                                 instance=d,
                                 argm=self.argm.items(),
                                 page_path=page_path)
 
             else:
-                templ = render_template("/Pizza_inst.html", title="Пицца",
+                templ = app_api.render_page("data_navigation/Pizza_inst.html", title="Пицца",
                                 class_name=self.__make_href__(cls=self.argm['class'], prf=self.argm['prefix'], uri='', lbl=class_lbl),
                                 instance={"No data":{"Comment":"about this instance.","Avatar":""}},
                                 argm=self.argm.items(),
@@ -227,7 +226,7 @@ class Pizza:
 
             page_path = make_breadcrumbs(self.argm['prefix'], self.pref_unquote, self.argm['class'])
 
-            templ = render_template("/Pizza.html", title="Пицца", class_name=class_lbl,
+            templ = app_api.render_page("data_navigation/Pizza.html", title="Пицца", class_name=class_lbl,
                         sidebar1 = '<a href="{}?prefix={}&uri={}">{}</a>'.format('American',self.argm['prefix'],quote('http://www.co-ode.org/ontologies/pizza/pizza.owl#NamedIndividual_1'),'Американо'),
                         sidebar2 = '<a href="{}?prefix={}&uri={}">{}</a>'.format('FruttiDiMare',self.argm['prefix'],quote('http://www.co-ode.org/ontologies/pizza/pizza.owl#FruttiDiMare_1'),'Frutti DiMare'),
                         sidebar3 = '<a href="{}?prefix={}&uri={}">{}</a>'.format('Soho',self.argm['prefix'],quote('http://www.co-ode.org/ontologies/pizza/pizza.owl#NamedIndividual_9'),'Пицца Сохо 3'),
