@@ -20,8 +20,6 @@ class DataPublisher(DataManager):
         self._log_func = None
         self._on_ts = {}
         self._on_files = {}
-        self._prefixes = {}
-        self.__init_q_prefixes()
 
     def set_success_trigger(self, trigger):
         """"""
@@ -67,10 +65,6 @@ class DataPublisher(DataManager):
             """"""
             answer = self._publish_simple()
         self.to_log('End loop over catched files')
-        # теперь надо вызвать хранимые процедуры для обработки новой информации
-        self.to_log('Try execute triggers after uploading files')
-        self.post_publish_trigger()
-        self.to_log('Execute triggers after uploading files is DONE')
         # теперь изменим время публикации данных
         self.to_log('Try set new publish time')
         self._set_last_publish_time()
@@ -81,6 +75,13 @@ class DataPublisher(DataManager):
         self.to_log('Start upload files to TS with named graphs')
         """"""
         answer = {'total': 0, 'success': 0, 'fails': [], 'errors': []}
+        if not self._on_files:
+            # пабликовать нечего - очищаем хранилище
+            self.to_log('No data for publishing')
+            self.to_log('Try clear storage')
+            self._clear_storage()
+            self.to_log('Clear storage done!')
+            return answer
         # получим все именный графы с порталаъ
         self._on_ts = self.get_graph_list()
         # определим список именных графов с TS которые требуется удалить
@@ -204,31 +205,6 @@ class DataPublisher(DataManager):
             self.to_log('DataPublisher.post_publish_trigger: No data for operation in TS - no needs for triggers')
             return
         """ """
-        if self._use_named_graph:
-            # удаляем флаг последней версии у требований
-            self.to_log('Try execute "Rem Req last version" trigger')
-            flg = self._rem_req_last_version()
-            self.to_log('Execute "Rem Req last version" trigger DONE. Result: ' + str(flg))
-            # удаляем флаг последней версии у документов
-            self.to_log('Try execute "Rem Doc last version" trigger')
-            flg = self._rem_doc_last_version()
-            self.to_log('Execute "Rem Doc last version" trigger DONE. Result: ' + str(flg))
-        # устанавливаем флаг последней версии требований ТЗ
-        self.to_log('Try execute "Set TZ Req last version" trigger')
-        flg = self._set_tz_req_last_version()
-        self.to_log('Execute "Set TZ Req last version" trigger DONE. Result: ' + str(flg))
-        # устанавливаем флаг последней версии требований НТД
-        self.to_log('Try execute "Set NTD Req last version" trigger')
-        flg = self._set_ntd_req_last_version()
-        self.to_log('Execute "Set NTD Req last version" trigger DONE. Result: ' + str(flg))
-        # устанавливаем последнюю версию документов
-        self.to_log('Try execute "Set Doc last version" trigger')
-        flg = self._set_doc_last_version()
-        self.to_log('Execute "Set Doc last version" trigger DONE. Result: ' + str(flg))
-        # устанавливаем флаг Доп к ТЗ на экземплярах класса ТЗ
-        self.to_log('Try execute "Set Extend TZ last version" trigger')
-        flg = self._set_extending_tzdoc()
-        self.to_log('Execute "Set Extend TZ last version" trigger DONE. Result: ' + str(flg))
         # теперь надо вызвать специфичные действия для хранилища
         if self._app_data_manager is not None:
             try:
@@ -254,9 +230,11 @@ class DataPublisher(DataManager):
                 if graph_name in graphs:
                     _exists.append(graph_name)
             self.to_log('DataPublisher._get_namedgraphs_to_delete.graphs_exists - {}'. format(str(_exists)))
-            to_delete = list(set(graphs) - set(_exists))
             # так как мы очищаем имя графа для сравнения то надо обратно вернуть
-            to_delete = ['<' + graph_name + '>' for graph_name in to_delete ]
+            to_delete = ['<' + graph_name + '>' for graph_name in to_delete if graph_name not in _exists ]
+        else:
+            # считаем что все данные удалены
+            to_delete =  ['<' + graph_name + '>' for graph_name in graphs ]
         self.to_log('DataPublisher._get_namedgraphs_to_delete.to_delete - {}'.format(str(to_delete)))
         return to_delete
 
@@ -335,155 +313,3 @@ class DataPublisher(DataManager):
                 # оставляет URI графа
                 result_rows = [r[k] for r in result_rows for k in r]
         return result_rows
-
-    def __init_q_prefixes(self):
-        from app import app_api
-        if app_api.is_app_module_enabled('onto_mgt'):
-            _onto_api = app_api.get_mod_api('onto_mgt')
-            self._prefixes = _onto_api.get_all_prefixes()
-        if not isinstance(self._prefixes, dict):
-            self._prefixes = {}
-        self._prefixes['rdfs'] = 'http://www.w3.org/2000/01/rdf-schema#'
-        self._prefixes['rdf'] = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
-        self._prefixes['xs'] = 'http://www.w3.org/2001/XMLSchema#'
-
-    def _cook_q_prefixes(self, _filtr=[]):
-        _prefixes = ''
-        if self._prefixes:
-            for _sp in self._prefixes:
-                if _filtr and _sp not in _filtr:
-                    continue
-                _prefixes += 'PREFIX ' + _sp + ':<' + self._prefixes[_sp] + '>'
-        return _prefixes
-
-    def _rem_req_last_version(self):
-        """ """
-        _prefs = self._cook_q_prefixes(['rdfs', 'onto', 'xs'])
-        query = _prefs + '''
-                delete { ?itemver ?p ?o . }
-                where {?itemver onto:latestVersion ?o .
-                       ?itemver ?p ?o .
-                       ?itemver a onto:TextItemVersion .
-                }'''
-        return self._exec_query(query)
-
-    def _rem_doc_last_version(self):
-        """ """
-        _prefs = self._cook_q_prefixes(['rdfs', 'onto', 'xs'])
-        query = _prefs + '''
-                delete { ?docver ?p ?o }
-                where {?docver onto:latestVersion ?o .
-                       ?docver ?p ?o .
-                       ?typ rdfs:subClassOf onto:Document .
-                        ?doc a ?typ .
-                        ?doc onto:hasVersion ?docver.
-                }
-                '''
-        return self._exec_query(query)
-
-    def _set_req_last_version(self):
-        """ """
-        _prefs = self._cook_q_prefixes(['rdfs', 'onto', 'xs'])
-        query = _prefs + '''
-                INSERT {?itemver onto:latestVersion xs:true .}
-         WHERE {
-         ?item onto:hasVersion ?itemver .
-         ?itemver onto:value ?version .
-         {
-         select distinct ?item (max(?ver) as ?version) 
-         where {
-         ?typ rdfs:subClassOf onto:TextItem .
-         ?item a ?typ .
-         ?item onto:hasVersion ?itemver.
-         ?itemver onto:value ?ver .
-         } group by ?item 
-         }
-        }'''
-        return self._exec_query(query)
-
-    def _set_tz_req_last_version(self):
-        """ """
-        _prefs = self._cook_q_prefixes(['rdfs', 'onto', 'xs'])
-        query = _prefs + '''
-                INSERT {?itemver onto:latestVersion xs:true .}
-        WHERE {
-            ?item onto:hasVersion ?itemver .
-            ?itemver onto:value ?version .
-            {
-                select distinct ?item (max(?ver) as ?version)
-                where {
-                ?typ rdfs:subClassOf onto:TextItem .
-                ?item a ?typ .
-                  FILTER NOT EXISTS {
-                    ?item onto:hasAttribute ?att .
-				            ?att a onto:Status .
-            				?att onto:hasAttributeValue/rdfs:label ?val . filter (?val = "Удалено")
-                          }
-                ?item onto:isCreatedIn ?doc .
-                ?doc a onto:TZ .
-                ?item onto:hasVersion ?itemver.
-                ?itemver onto:value ?ver .
-                } group by ?item
-            }
-        }'''
-        return self._exec_query(query)
-
-    def _set_ntd_req_last_version(self):
-        """ """
-        _prefs = self._cook_q_prefixes(['rdfs', 'onto', 'xs'])
-        query = _prefs + '''
-                INSERT {?itemver onto:latestVersion xs:true .}
-        WHERE {
-            ?item onto:hasVersion ?itemver .
-            ?itemver onto:value ?version .
-            {
-                select distinct ?item (max(?ver) as ?version)
-                where {
-                    ?typ rdfs:subClassOf onto:TextItem .
-                    ?item a ?typ .
-                    ?item onto:isCreatedIn ?doc .
-                    ?doc a onto:RegulatoryDocument .
-                    ?doc onto:hasAttribute ?att .
-                    ?att a onto:Status .
-                    ?att onto:hasAttributeValue/rdfs:label "Действует" .
-                    ?item onto:hasVersion ?itemver.
-                    ?itemver onto:value ?ver .
-                } group by ?item
-            }
-        }'''
-        return self._exec_query(query)
-
-    def _set_doc_last_version(self):
-        """ """
-        _prefs = self._cook_q_prefixes(['rdfs', 'onto', 'xs'])
-        query = _prefs + '''
-                INSERT {?docver onto:latestVersion xs:true . 
-         xs:true rdfs:label "Правда" .}
-         WHERE {
-         ?doc onto:hasVersion ?docver .
-         ?docver rdfs:label ?version .
-         {
-         select distinct ?doc (max(?ver) as ?version) 
-         where {
-         ?doc onto:hasVersion ?docver .
-         ?docver rdfs:label ?ver .
-         ?docver a onto:DocumentVersion .
-         } group by ?doc 
-         }
-        }'''
-        return self._exec_query(query)
-
-    def _set_extending_tzdoc(self):
-        """ """
-        _prefs = self._cook_q_prefixes(['rdfs', 'onto', 'xs'])
-        query = _prefs + '''
-                Insert {?tz onto:hasSupplementaryAgreement ?dop . }
-                    WHERE {
-                    ?dop a onto:TZ .
-                      ?dop rdfs:label ?dop_lbl . filter(!STRENDS(?dop_lbl, "0" ))
-                      ?dop onto:hasAttribute ?att .
-                      ?att a onto:DocumentationPlanHierarchy .
-                      BIND (concat(substr(?dop_lbl, 1, strlen(?dop_lbl)-1 ), "0") as ?main )
-                      ?tz rdfs:label ?main .
-                    }'''
-        return self._exec_query(query)

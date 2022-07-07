@@ -119,15 +119,15 @@ if onto_list:
 
 if 0 == len(onto_list):
     process_protocol.write('No ontology files!')
-    # Аварийно завершаем работу
-    if process_logger:
-        msg = 'Аварийное завершение процесса публикации данных: Отсутствуют файлы онтологий!'
-        process_logger.set('process.Done', True)
-        process_logger.set('errors', msg)
-        process_logger.set('process.crash_message', msg)
-        if process_protocol:
-            process_protocol.write('Write process.Done to tracker file: TRUE')
-    exit(0) # выходим для завершения
+#     # Аварийно завершаем работу
+#     if process_logger:
+#         msg = 'Аварийное завершение процесса публикации данных: Отсутствуют файлы онтологий!'
+#         process_logger.set('process.Done', True)
+#         process_logger.set('errors', msg)
+#         process_logger.set('process.crash_message', msg)
+#         if process_protocol:
+#             process_protocol.write('Write process.Done to tracker file: TRUE')
+#     exit(0) # выходим для завершения
 
 
 # подготовка файлов данных для публикации {
@@ -157,11 +157,11 @@ if _fm.get_section_path('res') is not None:
 
 """ собственно начинаем публикацию """
 
+process_logger.set('upload_files.total', len(for_publish))
+process_protocol.write('Catch {} files for upload to triplestore' . format(len(for_publish)))
+
 # for_publish используме как маркер что мы обошли файлы данных
 if for_publish:
-    process_logger.set('upload_files.total', len(for_publish))
-    process_protocol.write('Catch {} files for upload to triplestore' . format(len(for_publish)))
-
     for it in for_publish:
         process_protocol.write(str(it))
         pf_name = os.path.basename(it)
@@ -169,74 +169,74 @@ if for_publish:
         process_protocol.write('Add {} to publish list'.format(pf_name))
     process_protocol.write('Add all files to publish list')
 
-    """ собственно начинаем публикацию """
-    data_publisher.set_success_trigger(trigger_upload_success)
-    process_protocol.write('Set trigger for success uploading!')
-    data_publisher.set_fail_trigger(trigger_upload_fail)
-    process_protocol.write('Set trigger for fail uploading!')
-    data_publisher.set_log_func(log_function_proxy)
-    process_protocol.write('Set function for logging (Publish tool)')
-    # сперва сделаем резервную копию текущего хранилища
-    data_backuper = DataBackuper()
-    data_backuper.use_named_graph = USE_NAMED_GRAPHS
-    data_backuper.set_log_func(log_function_proxy)
-    process_protocol.write('Set function for logging (Backup tool)')
-    process_protocol.write('Try create backup file')
-    backup_file = os.path.join(_fm.get_section_path('backups'), data_backuper.generate_filename())
-    process_protocol.write('Backup data try save to: {}'.format(backup_file))
-    flg_backup = data_backuper.create(backup_file)
-    process_protocol.write('Create backup: {}'.format(flg_backup))
-    if flg_backup:
-        # создали файл резервной копии - надо синхронизировать директорию
-        _fm.sync_section_content('backups')
-        # теперь укажем что даннаая резервная копия была сделана руками
-        call_args = {'comment': 'Cоздана автоматически перед публикацией данных'}
-        name = os.path.basename(backup_file)
-        name = os.path.basename(data_backuper.get_last_downloaded_file())
-        _fm.update_section_file('backups', name, call_args)
-        process_protocol.write('Sync backup files directory description')
-    else:
-        """ надо ли прекращать если не смогли """
-        process_protocol.write('Creating backup FAIL!')
+""" собственно начинаем публикацию """
+data_publisher.set_success_trigger(trigger_upload_success)
+process_protocol.write('Set trigger for success uploading!')
+data_publisher.set_fail_trigger(trigger_upload_fail)
+process_protocol.write('Set trigger for fail uploading!')
+data_publisher.set_log_func(log_function_proxy)
+process_protocol.write('Set function for logging (Publish tool)')
+# сперва сделаем резервную копию текущего хранилища
+# data_backuper = DataBackuper()
+# data_backuper.use_named_graph = USE_NAMED_GRAPHS
+# data_backuper.set_log_func(log_function_proxy)
+# process_protocol.write('Set function for logging (Backup tool)')
+# process_protocol.write('Try create backup file')
+# backup_file = os.path.join(_fm.get_section_path('backups'), data_backuper.generate_filename())
+# process_protocol.write('Backup data try save to: {}'.format(backup_file))
+# flg_backup = data_backuper.create(backup_file)
+# process_protocol.write('Create backup: {}'.format(flg_backup))
+# if flg_backup:
+#     # создали файл резервной копии - надо синхронизировать директорию
+#     _fm.sync_section_content('backups')
+#     # теперь укажем что даннаая резервная копия была сделана руками
+#     call_args = {'comment': 'Cоздана автоматически перед публикацией данных'}
+#     name = os.path.basename(backup_file)
+#     name = os.path.basename(data_backuper.get_last_downloaded_file())
+#     _fm.update_section_file('backups', name, call_args)
+#     process_protocol.write('Sync backup files directory description')
+# else:
+#     """ надо ли прекращать если не смогли """
+#     process_protocol.write('Creating backup FAIL!')
 
-    # запускаем непосредственно процесс публикации
+# запускаем непосредственно процесс публикации
 
-    # требуется установить режим портала ограничивающий
-    _admin_mgt_api = app_api.get_mod_api('admin_mgt')
-    _portal_modes_util = _admin_mgt_api.get_portal_mode_util()
-    _portal_mode = None
-    if _portal_modes_util is not None:
-        _mode_name = ModUtils().get_portal_mode_name()
-        _portal_mode = _portal_modes_util.set_portal_mode(_mode_name)
-        _mod = os.path.basename(ModUtils().get_mod_path())
-        _portal_mode.set_target(_mod + '.__publish_proc_info')
-        _lst = []
-        """
-        portal.publish_proc_info, 'data_management.publish_process_step',
-        'data_management.publish_process_done', 'data_management.publish_process_break'
-        """
-        _lst.append(_mod + '.static')
-        _lst.append(_mod + '.publish_process_step')
-        _lst.append(_mod + '.publish_process_done')
-        _lst.append(_mod + '.publish_process_break')
-        _portal_mode.set_opened(_lst)
-        _portal_mode.enable_redirect()
-        _portal_mode.enable()
-        process_protocol.write('Enable portal publish mode')
+# требуется установить режим портала ограничивающий
+_admin_mgt_api = app_api.get_mod_api('admin_mgt')
+_portal_modes_util = _admin_mgt_api.get_portal_mode_util()
+_portal_mode = None
+if _portal_modes_util is not None:
+    _mode_name = ModUtils().get_portal_mode_name()
+    _portal_mode = _portal_modes_util.set_portal_mode(_mode_name)
+    _mod = os.path.basename(ModUtils().get_mod_path())
+    _portal_mode.set_target(_mod + '.__publish_proc_info')
+    _lst = []
+    """
+    portal.publish_proc_info, 'data_management.publish_process_step',
+    'data_management.publish_process_done', 'data_management.publish_process_break'
+    """
+    _lst.append(_mod + '.static')
+    _lst.append(_mod + '.publish_process_step')
+    _lst.append(_mod + '.publish_process_done')
+    _lst.append(_mod + '.publish_process_break')
+    _portal_mode.set_opened(_lst)
+    _portal_mode.enable_redirect()
+    _portal_mode.enable()
+    process_protocol.write('Enable portal publish mode')
 
-    process_protocol.write('Start upload/update process')
-    pub_answer = data_publisher.publish()
-    process_protocol.write('Upload/update process DONE!')
+process_protocol.write('Start upload/update process')
+pub_answer = data_publisher.publish()
+process_protocol.write('Upload/update process DONE!')
 
-    # теперь выключим режим блокировки
-    if _portal_mode is not None:
-        try:
-            _portal_mode.disable()
-            process_protocol.write('Disable portal publish mode')
-        except Exception as ex:
-            if _portal_modes_util is not None:
-                _portal_modes_util.drop(_portal_mode)
-        pass
+# теперь выключим режим блокировки
+if _portal_mode is not None:
+    try:
+        _portal_mode.disable()
+        process_protocol.write('Disable portal publish mode')
+    except Exception as ex:
+        if _portal_modes_util is not None:
+            _portal_modes_util.drop(_portal_mode)
+    pass
 
 if process_logger:
     process_logger.set('process.Done', True)
