@@ -1,0 +1,22 @@
+{% extends admin_root_tpl() %}
+
+{% block page_sidenav %}
+<button id="reg-new-server">Добавить</button>
+<hr style="margin-top:2px"/>
+Список серверов авторизации на портале
+{% endblock %}
+{% block page_main_content %}
+<input type="hidden" value="{{base_url}}" id="js-base-url" />
+<span id="page-content-marker" style="display:none;"></span>
+{% if servers %}
+    <ul>
+    {% for _srv in servers %}
+        <li><a href="{{ _srv['href'] }}">{{ _srv['label'] }}</a></li>
+    {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}
+{%- block page_scripts %}
+{{super()}}
+    <script src="{{url_for('mod_auth_ldap.static', filename='main.js')}}" type="text/javascript"></script>
+{%- endblock page_scripts %}
