@@ -1,0 +1,48 @@
+.row {
+    padding: 0px 5px 20px 5px;
+}
+ .brand-bg  {
+    background: #fff;
+    padding: 10px 10px 10px 10px;
+    text-align: center;
+    background-color: #ecf1f7;
+  }
+ .brand-bg .brand-box {
+    font-size: 24px;
+    height: 44px;
+    font-weight: 400;
+    padding: 5px 0px;
+    margin: 10px 0 20px 0;
+ }
+ .brand-bg:hover {
+    box-shadow: #ddd 0px 0px 19px 8px;
+    background: #ecf1f7;
+ }
+ .brand-bg .count-box {
+    font-size: 18px;
+    border: solid 2px Grey;
+    border-radius: 15px 15px 15px 15px;
+    padding: 10px 10px 10px 10px;
+    margin: 10px;
+}
+ .brand-bg .count-box-empty {
+    font-size: 18px;
+    color: #ecf1f7;
+    border: solid 2px #ecf1f7;
+    border-radius: 15px 15px 15px 15px;
+    padding: 10px 10px 10px 10px;
+    margin: 10px;
+}
+ .brand-bg .text {
+    font-size: 18px;
+}
+ .brand-bg .digit {
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+}
+ .brand-bg .img-box {
+   display: inline-block;
+    max-width: auto;
+    padding: 20px 20px 0px 20px;
+}

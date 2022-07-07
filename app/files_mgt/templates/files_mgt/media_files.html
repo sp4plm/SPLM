@@ -1,0 +1,26 @@
+{% extends admin_root_tpl() %}
+
+{%- block vend_styles %}
+    {{super()}}
+    <link href="{{theme_static('vend/jquery.jqGrid-' + jqgrid_vers() + '/css/ui.jqgrid.min.css')}}" type="text/css" rel="stylesheet" />
+    <link href="{{theme_static('vend/jquery.jqGrid-' + jqgrid_vers() + '/css/ui.jqgrid-bootstrap.css')}}" type="text/css" rel="stylesheet" />
+    <link href="{{theme_static('vend/vakata-jstree-' + jstree_vers() + '/themes/default/style.min.css')}}" type="text/css" rel="stylesheet" />
+{%- endblock vend_styles %}
+{% block page_styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{url_for('files_mgt.static', filename='css/files.manager.css')}}" />
+{% endblock page_styles %}
+{% block page_main_content %}
+<input type="hidden" value="/mediadata" id="js-base-url" />
+<span id="page-content-marker" style="display:none;"></span>
+{% endblock %}
+{%- block vend_scripts %}
+    {{super()}}
+    <script src="{{theme_static('vend/jquery.jqGrid-' + jqgrid_vers() + '/js/jquery.jqgrid.min.js')}}" type="text/javascript"></script>
+    <script src="{{theme_static('vend/jquery.jqGrid-' + jqgrid_vers() + '/js/i18n/grid.locale-ru.min.js')}}" type="text/javascript"></script>
+    <script src="{{theme_static('vend/vakata-jstree-' + jstree_vers() + '/jstree.min.js')}}" type="text/javascript"></script>
+{%- endblock vend_scripts %}
+{%- block page_scripts %}
+    {{super()}}
+    <script src="{{url_for('files_mgt.static', filename='js/files.manager.js')}}" type="text/javascript"></script>
+{%- endblock page_scripts %}

@@ -1,0 +1,68 @@
+{% extends admin_root_tpl() %}
+
+{% block title %}
+    {% if title %}SPLM: {{ title }}{% else %}Редактор SPARQL шаблонов{% endif %}
+{% endblock %}
+
+
+
+{% block page_main_content %}
+	<form method="post" >
+		<h1>Шаблон</h1>
+		<br/>
+
+		Название шаблона:
+		<br/>
+		{% if template %}
+			<input type="text" value="{{template}}" name="template" readonly>
+		{% else %}
+			<input type="text" value="" name="template">
+		{% endif %}
+		<br/>
+
+		Комментарий:
+		<br/>
+		{% if cmt %}
+			<textarea name="cmt" rows="2" cols="100">{{cmt}}</textarea>
+		{% else %}
+			<textarea name="cmt" rows="2" cols="100"></textarea>
+		{% endif %}
+		<br/>
+
+		Переменные:
+		<br/>
+		{% if vars %}
+			<textarea name="vars" rows="2" cols="100">{{vars}}</textarea>
+		{% else %}
+			<textarea name="vars" rows="2" cols="100"></textarea>
+		{% endif %}
+		<br/>
+
+		Запрос:
+		<br/>
+		{% if txt %}
+			<textarea name="txt" rows="30" cols="100">{{txt}}</textarea>
+		{% else %}
+			<textarea name="txt" rows="30" cols="100"></textarea>
+		{% endif %}
+
+		<br/>
+
+
+		<input type="submit" value="Сохранить" name="save" formaction="{{url_for(module + '.sparqt_template', file = file, template = template)}}">
+		{% if can_delete %}
+		<input type="submit" value="Удалить шаблон" name="delete" formaction="{{url_for(module + '.sparqt_template', file = file, template = template)}}">
+		{% endif %}
+		<br/>
+	</form>
+
+	<form method="get">
+		<input type="submit" value="К списку шаблонов" formaction="{{url_for(module + '.sparqt_file', file = file)}}">
+	</form>
+{% endblock %}
+
+
+{% block scripts %}
+    {{super()}}
+    <script src="{{url_for('query.static', filename='js/main.js')}}" type="text/javascript"></script>
+{% endblock %}

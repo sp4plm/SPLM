@@ -1,0 +1,15 @@
+{% extends admin_root_tpl() %}
+
+{% block page_main_content %}
+	<form method="get">
+	<h1>Список Schedule файлов</h1>
+	<ul>
+		{% for schedule in schedules %}
+			<li>
+				<a href="{{url_for('portal_management.schedule_item', schedule_item = schedule)}}">{{schedules[schedule].name}}</a>
+			</li>
+		{% endfor %}
+	</ul>
+	<input type="submit" value="Создать" formaction="{{url_for('portal_management.schedule_item')}}">
+	</form>
+{% endblock %}

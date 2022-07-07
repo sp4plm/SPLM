@@ -1,0 +1,38 @@
+{% extends admin_root_tpl() %}
+{%- block page_styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{url_for('portal_configurator.static', filename='css/config_editor.css')}}" />
+{%- endblock page_styles %}
+
+{% block page_main_content %}
+{% set readonly="" %}
+{% if is_default %}
+{% set readonly=" readonly" %}
+{% endif %}
+<input type="hidden" value="/portal/configurator" id="js-base-url" />
+<span id="page-content-marker" style="display:none;"></span>
+<form name="ConfigEditorFrm" style="width:98%;height:auto;margin: 0px auto;" onsubmit="return false;" method="POST">
+    <div class="config-info">
+        <input type="hidden" name="ConfigOrigin" value="{{edit_name}}" />
+        <div class="config-name">
+            <label>Имя файла:&nbsp;</label><input class="value-editor" type="text" name="ConfigName"{{readonly}} value="{{edit_name}}" />
+        </div>
+        <div class="config-editor-toolbar">
+            {% if not is_default %}
+            <button name="AddSection" class="ui-button">Добавить секцию</button>
+            {% endif %}
+            <button name="SaveConfig" class="ui-button">Сохранить</button>
+        </div>
+    </div>
+    {% if edit_data %}
+    {% for sec, sec_data in edit_data.items() %}
+    {% include _tpl_path + "config_section.html" ignore missing %}
+    {% endfor %}
+    {% endif %}
+</form>
+<div style="height:40px;width:100%;margin:0px;padding:0px;">&nbsp;</div>
+{% endblock %}
+{%- block page_scripts %}
+    {{super()}}
+    <script src="{{url_for('portal_configurator.static', filename='js/config_editor.js')}}" type="text/javascript"></script>
+{%- endblock page_scripts %}

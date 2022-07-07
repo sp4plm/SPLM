@@ -1,0 +1,93 @@
+{% extends _base_tpl + "navigation.html" %}
+{% block page_main_content %}
+<input type="hidden" value="/portal/management/navigation" id="js-base-url" />
+<span id="page-content-marker" style="display:none;"></span>
+<div id="naviitem-edit-form">
+<form name="NaviItemEditForm" onsubmit="return false;" action="{{ save_action }}">
+    <input type="hidden" name="NaviCode" value="{{ curr_blk['code'] }}" />
+    <input type="hidden" name="NaviItem" value="{{ curr_point['code'] }}" />
+    <input type="hidden" name="next_page" value="{{ back_url }}" />
+    <table class="simple-tbl">
+        <tbody>
+            <tr>
+                <td>Наименование пункта навигации:</td>
+                <td><input type="text" name="NaviItemName" value="{{ curr_point['label'] }}" /></td>
+                <td rowspan="2"><button id="link-selector">Выбрать</button></td>
+            </tr>
+            <tr>
+                <td>Ссылка:</td>
+                <td>
+                    {% if curr_point['code'] in is_locked %}
+                    <input type="text" name="NaviItemLink" value="{{ curr_point['href'] }}" readonly />
+                    {% else %}
+                    <input type="text" name="NaviItemLink" value="{{ curr_point['href'] }}" />
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>Код пункта навигации:</td>
+                <td colspan="2">
+                    {% if curr_point['code'] in is_locked %}
+                    <input type="text" name="NaviItemCode" value="{{ curr_point['code'] }}" readonly />
+                    {% else %}
+                    <input type="text" name="NaviItemCode" value="{{ curr_point['code'] }}" />
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>Блокировать для выпадающщего меню:</td>
+                <td colspan="2">
+                    {% set dis_dropdown='' %}
+                    {% if 'DisDropdown' in curr_point %}
+                        {% if 1 == curr_point['DisDropdown']  %}
+                            {% set dis_dropdown=' checked' %}
+                        {% endif %}
+                    {% endif %}
+                    {% if curr_point['code'] in is_locked %}
+                    <input type="checkbox" name="NaviItemDisDropdown" value="{{ curr_point['DisDropdown']|default(0) }}" readonly{{dis_dropdown}} />
+                    {% else %}
+                    <input type="checkbox" name="NaviItemDisDropdown" value="{{ curr_point['DisDropdown']|default(0) }}"{{dis_dropdown}} />
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>Роли пользователя (для ограничения доступа):
+                    <input type="hidden" name="NaviItemRoles" value="{{ curr_point['roles'] }}" />
+                </td>
+                <td colspan="2">
+                    <ul class="link-items-list items-edit-list" style="margin:10px;">
+                        {% if user_roles %}
+                        {% for r in user_roles %}
+                        {% set checked='' %}
+                        {% if curr_point['roles_'] %}
+                            {% if r in curr_point['roles_'] %}
+                                {% set checked=' checked' %}
+                            {% endif %}
+                        {% endif %}
+                        <li class="link-item">
+                            <input class="input-checkbox user-role" type="checkbox" name="Roles[]" value="{{ r }}"{{ checked }}>
+                            <span class="link-item-label">{{ r }}</span>
+                        </li>
+                        {% endfor %}
+                        {% endif %}
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" align="center">
+                    <button class="ui-button" name="CloseForm">Закрыть</button>
+                    <button class="ui-button" name="SaveItem">Сохранить</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+</div>
+<div id="serve-conte" class="hidden">
+    <div id="link-selector-dialog">
+    {% if link_selector %}
+        {% include link_selector ignore missing %}
+    {% endif %}
+    </div>
+</div>
+{% endblock %}

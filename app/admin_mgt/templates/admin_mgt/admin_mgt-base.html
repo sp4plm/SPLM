@@ -1,0 +1,75 @@
+{% extends app_root_tpl() %}
+{% block title %}
+    {% if title %}SPLM: {{ title }}{% else %}Symantic PLM admin{% endif %}
+{% endblock %}
+
+{% block vend_styles %}
+    {{super()}}
+   {# <link type="text/css" rel="stylesheet" href="{{theme_static('vend/jquery-ui-1.10.4/themes/redmond/jquery-ui.min.css')}}" /> #}
+{% endblock vend_styles %}
+{% block page_styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{url_for('static', filename='css/portal.manager.css')}}" />
+{% endblock page_styles %}
+
+{% if sections is not defined %} {% set sections=admin_sections() %} {% endif %}
+{% if current_section is not defined %} {% set current_section=admin_current_section(flask_request) %} {% endif %}
+{% block page_nav %}
+<div id="page-nav-container" class="container page-nav-container_st">
+    <button type="button" class="navbar-toggle collapsed pagenavbar" data-toggle="collapse" data-target="#pagenavbar" aria-expanded="false" aria-controls="pagenavbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar pagenavbar_icon"></span>
+        <span class="icon-bar pagenavbar_icon"></span>
+        <span class="icon-bar pagenavbar_icon"></span>
+    </button>
+    <nav id="pagenavbar" class="navbar-collapse collapse navbar-inverse page-nav">
+        <ul class="nav navbar-nav">
+        {% if sections %}
+            {% for nav_item in sections %}
+                {% set current_cls='' %}
+                {% if current_section %}
+                    {% if current_section.code == nav_item.code %} {% set current_cls=' current-section' %} {% endif %}
+                {% endif %}
+                <li class="nav-item{{ current_cls }}" id="section-{{ nav_item.code }}"><a class="nav-link" href="{{ nav_item.href }}">{{ nav_item.label }}</a></li>
+            {% endfor %}
+        {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endblock %}
+{% block bread_crumbs %}{% endblock %}
+{% if current_subitem is not defined %} {% set current_subitem=admin_current_subitem(flask_request) %} {% endif %}
+{% if page_side_title is not defined %} {% set page_side_title="Содержание раздела" %} {% endif %}
+{% block page_sidenav %}
+{% if navi is not defined %}
+    {% if current_section %}
+        {% set navi=admin_section_navi(current_section.code) %}
+    {% endif %}
+{% endif %}
+{% if navi %}
+    <ul class="nav">
+    {% for item in navi %}
+        {% set current_subitem_cls='' %}
+        {% if current_subitem %}
+            {% if current_subitem.code == item.code %}
+                {% set current_subitem_cls=' current-subsection' %}
+            {% endif %}
+        {% endif %}
+        <li class="nav-item{{ current_subitem_cls }}" id="page-{{ item.code }}">
+            <a id="side-nav-item-{{ item.code }}" class="nav-link" href="{{ item.href }}">{{ item.label }}</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}
+{% block vend_scripts %}
+    {{super()}}
+    {# <script src="{{theme_static('vend/jquery-ui-1.10.4/ui/jquery-ui.min.js')}}" type="text/javascript"></script> #}
+{% endblock vend_scripts %}
+{% block page_scripts %}
+    <script src="{{url_for('static', filename='js/cust_events.js')}}" type="text/javascript"></script>
+    <script src="{{url_for('static', filename='js/jquery.wfm-loader.js')}}" type="text/javascript"></script>
+    <script src="{{url_for('static', filename='js/wfm.js')}}" type="text/javascript"></script>
+    <script src="{{url_for('static', filename='js/main.js')}}" type="text/javascript"></script>
+    <script src="{{url_for('admin_mgt.static', filename='js/portal_manager.js')}}" type="text/javascript"></script>
+{% endblock page_scripts %}

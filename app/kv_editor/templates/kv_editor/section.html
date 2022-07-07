@@ -1,0 +1,11 @@
+<div class="section-box">
+    <div class="section-name">
+        <label>Имя секции:&nbsp;</label><input class="value-editor" type="text" name=""{{readonly}} value="{{ sec }}" />
+    </div>
+    <div class="section-data">
+        {% if sec_data %}
+            {% for key, val in sec_data.items() %} {% include "kv_editor/param.html" ignore missing %}  {% endfor %}
+        {% endif %}
+    </div>
+    <div class="section-toolbar"></div>
+</div>

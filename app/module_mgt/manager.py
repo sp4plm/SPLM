@@ -167,6 +167,21 @@ class Manager:
         if 0 < len(_inf0):
             # osplm:hasAccessRight
             OSPLM = self._resolve_graph_ns(_inf0, 'osplm')
+            _q = """
+            PREFIX osplm: <%s>
+            SELECT ?m ?r WHERE {
+                ?u osplm:hasAccessRight ?r .
+                ?m osplm:hasURL ?u .
+            }
+            """ % self._get_app_uri()
+            # mods_roles = _inf0.query(_q)
+            # _t = []
+            # for _r in mods_roles:
+            #     _t = _r.asdict()
+            #     _mod = str(_t['m']).replace(str(OSPLM), '').strip()
+            #     lst.append([_mod, str(_t['r'])])
+            # print(self._debug_name + '.get_described_roles: lst', lst)
+            lst = []
             mods_roles = _inf0.subject_objects(predicate=OSPLM.hasAccessRight)
             lst = [it[1] for it in mods_roles]
             pass

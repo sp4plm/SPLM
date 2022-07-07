@@ -1,0 +1,45 @@
+{% extends admin_root_tpl() %}
+{% block bread_crumbs %}{% endblock %}
+
+{% block page_sidenav %}
+Список включенных режимов портала
+{% endblock %}
+{% block page_main_content %}
+<input type="hidden" value="{{base_url}}" id="js-base-url" />
+<span id="page-content-marker" style="display:none;"></span>
+{% if modes_list %}
+<table class="simple-tbl" id="portal-modes-list">
+    <thead>
+        <tr>
+            <th>-</th>
+            <th>Название</th>
+            <th>Модуль инициатор</th>
+            <th>Время старта</th>
+            <th>Использует перенаправление</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for _mode in modes_list %}
+        <tr>
+            <td class="row-toolbar"><button>Выключить</button></td>
+            <td class="mode-name">{{ _mode.get('name', '') }}</td>
+            <td class="app-module-name">{{ _mode.get('app_module', '') }}</td>
+            <td class="mode-started">{{ _mode.get('started', '') }}</td>
+            {% if _mode.use_redirect %}
+            <td class="mode-redirecting">Да</td>
+            {% else %}
+            <td class="mode-redirecting">Нет</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<pre><p>Сейчас на портале не действует не один режим!</p></pre>
+{% endif %}
+{% endblock %}
+
+{%- block page_scripts %}
+    {{super()}}
+    <script src="{{url_for('admin_mgt.static', filename='js/portal_modes.js')}}" type="text/javascript"></script>
+{%- endblock page_scripts %}

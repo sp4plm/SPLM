@@ -1,0 +1,9 @@
+{
+    "application": "splm",
+    "identifier": "light",
+    "name": "Light theme",
+    "author": "Administrator",
+    "license": "GNU",
+    "description": "Light theme based on bootstrap css framework",
+    "version": "0.0.1"
+}

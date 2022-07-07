@@ -1,0 +1,37 @@
+{# % if to_extend is not defined %} {% set to_extend='kv_editor/index.html' %} {% endif % #}
+{% extends to_extend|default('kv_editor/index.html') %}
+{% block page_styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{url_for('kv_editor.static', filename='css/editor.css')}}" />
+{% endblock page_styles %}
+{% block page_main_content %}
+{% set readonly=" readonly" %}
+<input type="hidden" value="{{ js_base_url|default('/kv_editor') }}" id="js-base-url" />
+<span id="page-content-marker" style="display:none;"></span>
+<form name="KVEditorFrm" style="width:98%;height:auto;margin: 0px auto;" onsubmit="return false;" method="POST">
+    <input type="hidden" value="{{ source_name|default }}" name="SOURCE_NAME" id="SOURCE_NAME" />
+    <input type="hidden" value="{{ mod_name|default }}" name="MOD_NAME" id="MOD_NAME" />
+    <div class="config-info">
+        <input type="hidden" name="ConfigOrigin" value="{{edit_name}}" />
+        <div class="config-name">
+            <label>Имя файла:&nbsp;</label><input class="value-editor" type="text" name="ConfigName"{{readonly}} value="{{edit_name}}" />
+        </div>
+        <div class="config-editor-toolbar">
+            <button name="SaveConfig" class="ui-button">Сохранить</button>
+            {% if can_remove %}
+            <button name="RemoveConfig" class="ui-button">Удалить</button>
+            {% endif %}
+        </div>
+    </div>
+    {% if edit_data %}
+    {% for sec, sec_data in edit_data.items() %}
+    {% include "kv_editor/section.html" ignore missing %}
+    {% endfor %}
+    {% endif %}
+</form>
+<div style="height:40px;width:100%;margin:0px;padding:0px;">&nbsp;</div>
+{% endblock %}
+{% block page_scripts %}
+    {{ super() }}
+    <script src="{{url_for('kv_editor.static', filename='js/editor.js')}}" type="text/javascript"></script>
+{% endblock page_scripts %}

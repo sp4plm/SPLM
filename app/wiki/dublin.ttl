@@ -12,9 +12,9 @@
 
 <http://splm.portal.web/osplm#wiki> <http://purl.org/dc/elements/1.1/contributor> "Максим Ефимовский"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://www.w3.org/2000/01/rdf-schema#label> "Wiki Module"^^<http://www.w3.org/2001/XMLSchema#string> ;
-  <http://purl.org/dc/elements/1.1/title> "Модуль вики"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/title> "Модуль WIKI"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://purl.org/dc/elements/1.1/subject> "Info pages management"^^<http://www.w3.org/2001/XMLSchema#string> ;
-  <http://purl.org/dc/elements/1.1/description> "Модуль предоставляет функциональность для работы с wiki pages"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/description> "Модуль предоставляет функциональность для работы с WIKI-страничками"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://purl.org/dc/elements/1.1/date> "$Date: 2021-07-15 09:00:00 0300 (Thu, 15 Jul 2021) $"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://purl.org/dc/elements/1.1/creator> "Максим Ефимовский"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://purl.org/dc/elements/1.1/rights> "GNU"^^<http://www.w3.org/2001/XMLSchema#string> ;
@@ -26,11 +26,8 @@
   <http://splm.portal.web/osplm#httpEnambled> xsd:true .
 
 
-<http://splm.portal.web/osplm#wiki> osplm:hasURL "/wiki"^^<http://www.w3.org/2001/XMLSchema#string> .
-
-
 <http://splm.portal.web/osplm#wiki> osplm:hasURL <http://splm.portal.web/osplm/data#url_wiki_1> .
-<http://splm.portal.web/osplm/data#url_wiki_1> osplm:value "/wiki/"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_wiki_1> osplm:value "/wiki"^^<http://www.w3.org/2001/XMLSchema#string> .
 <http://splm.portal.web/osplm/data#url_wiki_1> rdfs:label "Wiki"^^<http://www.w3.org/2001/XMLSchema#string> .
 <http://splm.portal.web/osplm/data#url_wiki_1> osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> .
 <http://splm.portal.web/osplm/data#url_wiki_1> osplm:hasHTMLtemplate "pages.html"^^<http://www.w3.org/2001/XMLSchema#string> .

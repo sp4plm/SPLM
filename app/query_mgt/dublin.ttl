@@ -12,9 +12,9 @@
 
 <http://splm.portal.web/osplm#query_mgt> <http://purl.org/dc/elements/1.1/contributor> "Максим Ефимовский"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://www.w3.org/2000/01/rdf-schema#label> "Query Module"^^<http://www.w3.org/2001/XMLSchema#string> ;
-  <http://purl.org/dc/elements/1.1/title> "Модуль Query sparql requests"^^<http://www.w3.org/2001/XMLSchema#string> ;
-  <http://purl.org/dc/elements/1.1/subject> "Triplestore management"^^<http://www.w3.org/2001/XMLSchema#string> ;
-  <http://purl.org/dc/elements/1.1/description> "Модуль предоставляет функциональность для работы с триплстором"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/title> "Модуль работы со SPARQL запросами"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/subject> "Triplestore SPARQL-request manager"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/description> "Модуль предоставляет функциональность для работы с триплстором через SPARQL запросы."^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://purl.org/dc/elements/1.1/date> "$Date: 2021-07-07 11:05:00 0300 (Thu, 08 Jul 2021) $"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://purl.org/dc/elements/1.1/creator> "Максим Ефимовский"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://purl.org/dc/elements/1.1/rights> "GNU"^^<http://www.w3.org/2001/XMLSchema#string> ;
@@ -33,7 +33,7 @@
 <http://splm.portal.web/osplm#query_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_querymgt_1> .
 <http://splm.portal.web/osplm/data#url_querymgt_1> osplm:value "/portal/manager"^^<http://www.w3.org/2001/XMLSchema#string> ;
   rdfs:label "SPARQLManager"^^<http://www.w3.org/2001/XMLSchema#string> ;
-  osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> ;
+  osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#false> ;
   osplm:hasHTMLtemplate "ontos.html"^^<http://www.w3.org/2001/XMLSchema#string> .
 
 <http://splm.portal.web/osplm#query_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_querymgt_2> .

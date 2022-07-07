@@ -1,0 +1,15 @@
+{% extends admin_root_tpl() %}
+
+{% block page_main_content %}
+	<form method="get">
+	<h1>Список cron файлов</h1>
+	<ul>
+		{% for cron in crons %}
+			<li>
+				<a href="{{url_for('portal_management.cron_item', cron_item = cron)}}">{{crons[cron].name}}</a>
+			</li>
+		{% endfor %}
+	</ul>
+	<input type="submit" value="Создать" formaction="{{url_for('portal_management.cron_item')}}">
+	</form>
+{% endblock %}

@@ -529,10 +529,21 @@ def described_roles():
         desc_roles = []
         desc_roles = app_api.get_described_roles()
         if 0 < len(desc_roles):
-            for role in desc_roles:
-                if role in answer['data']:
-                    continue
-                answer['data'].append(role)
+            # надо для каждой роли показывать список модулей-родителей
+            if isinstance(desc_roles[0], list):
+                _t = {}
+                for role in desc_roles:
+                    if role[1] not in _t:
+                        _t[role[1]] = []
+                    _t[role[1]].append(role[0])
+                for role in _t:
+                    r = role + ' (' + ','.join(_t[role]) + ')'
+                    answer['data'].append(r)
+            if isinstance(desc_roles[0], str):
+                for role in desc_roles:
+                    if role in answer['data']:
+                        continue
+                    answer['data'].append(role)
         answer['state'] = 200
     except:
         answer['state'] = 500

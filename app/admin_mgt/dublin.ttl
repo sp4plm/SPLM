@@ -13,7 +13,7 @@
 
 <http://splm.portal.web/osplm#admin_mgt> <http://purl.org/dc/elements/1.1/contributor> "Антон Новиков"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://www.w3.org/2000/01/rdf-schema#label> "Portal Admin"^^<http://www.w3.org/2001/XMLSchema#string> ;
-  <http://purl.org/dc/elements/1.1/title> "Модуль Portal administrative interface"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/title> "Модуль управления порталом"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://purl.org/dc/elements/1.1/subject> "Portal managment"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://purl.org/dc/elements/1.1/description> "Модуль предоставляет административный интерфейс портала"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://purl.org/dc/elements/1.1/date> "$Date: 2021-06-28 11:33:00 0300 (Tue, 28 Jun 2021) $"^^<http://www.w3.org/2001/XMLSchema#string> ;
@@ -58,5 +58,5 @@
 
 <http://splm.portal.web/osplm#admin_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_adminmgt_8> .
 <http://splm.portal.web/osplm/data#url_adminmgt_8> osplm:value "/portal/management/schedule"^^<http://www.w3.org/2001/XMLSchema#string> ;
-  rdfs:label "Schedule"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  rdfs:label "Периодические задания"^^<http://www.w3.org/2001/XMLSchema#string> ;
   osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> .

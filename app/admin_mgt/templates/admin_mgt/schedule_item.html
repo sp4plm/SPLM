@@ -1,0 +1,83 @@
+{% extends admin_root_tpl() %}
+
+{% block page_main_content %}
+	<form method="post">
+		<h1>Schedule</h1>
+
+		<input type="hidden" value="{{schedule_item}}" name="schedule_item" readonly>
+		<br/>
+
+		Имя: 
+		<br/>
+		{% if values.name %}
+			<input type="text" value="{{values.name}}" name="name">
+		{% else %}
+			<input type="text" value="" name="name">
+		{% endif %}
+		<br/>
+
+		Период:
+		<br/>
+		{% if values.period %}
+			<textarea name="period" rows="2" cols="100">{{values.period}}</textarea> 
+		{% else %}
+			<textarea name="period" rows="2" cols="100"></textarea> 
+		{% endif %}
+		<br/>
+
+		Исполняемый файл:
+		<br/>
+		<select name="action" id="action"></select>
+		<br/>
+
+		Активно: 
+		{% if values.active == '1' %}
+			<input type="checkbox" name="active" checked value="{{values.active}}">
+		{% else %}
+			<input type="checkbox" name="active" value="">
+		{% endif %}
+		<br/>
+
+		<input type="submit" value="Сохранить" name="save" formaction="{{url_for('portal_management.schedule_item', schedule_item = schedule_item)}}">
+		<input type="submit" value="Удалить" name="delete" formaction="{{url_for('portal_management.schedule_item', schedule_item = schedule_item)}}">
+
+		<br/>
+
+	</form>
+	<form method="get">
+		<input type="submit" value="К списку schedule" formaction="{{url_for('portal_management.schedule_main')}}">
+	</form>
+
+{% endblock %}
+
+{% block scripts %}
+	{{super()}}
+	<script type="text/javascript">
+		$(function(){
+
+			$('[type="checkbox"]').on('change', function(){
+			   this.value = this.checked ? 1 : 0;
+			}).change();
+
+			// добавляю пустое значение
+			$('#action').append($('<option>', {value: '', text: ''}));
+
+			items = {{executable_files | safe}}
+			$.each(items, function (i, item) {
+			    $('#action').append($('<option>', { 
+			        value: item.value,
+			        text : item.text 
+			    }));
+			});
+			// присваиваем значение
+			values = {{values | safe}}
+			$('#action').val(values.action)
+
+			alert_message = "{{alert_message|safe}}"
+			if (alert_message) alert(alert_message);
+
+		});
+	</script>
+{% endblock %}
+
+

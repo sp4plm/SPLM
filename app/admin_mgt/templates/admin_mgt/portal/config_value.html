@@ -1,0 +1,11 @@
+{% if work_val is mapping %}
+<span class="multiple-value" style="display:none;"></span>
+{% for vk, vd in work_val.items() %}
+<div class="multival-data">
+    <input class="value-editor multival-key" type="text" name=""{{readonly}} value="{{ vk }}" />
+    <input class="value-editor w400 multival-data" type="text" name="" value="{{ vd }}" />
+</div>
+{% endfor %}
+{% else %}
+<input class="value-editor w400" type="text" name="" value="{{ work_val }}" />
+{% endif %}

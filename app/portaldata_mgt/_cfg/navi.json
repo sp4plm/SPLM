@@ -1,0 +1,4 @@
+[
+  {"id": 1, "label": "Данные", "rules": "", "href": "/portaldatamgt/section/res", "parid": 0, "srtid": 1, "icon": "", "thumb": "", "descr": "", "code": "Results", "roles": ""},
+  {"id": 2, "label": "Резерв. копии", "rules": "", "href": "/portaldatamgt/section/backups", "parid": 0, "srtid": 2, "icon": "", "thumb": "", "descr": "", "code": "Backups", "roles": ""}
+]

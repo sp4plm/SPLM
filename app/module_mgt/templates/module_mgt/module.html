@@ -1,0 +1,43 @@
+{% extends admin_root_tpl() %}
+{% block page_styles %}
+{{super()}}
+<link href="{{url_for('module_mgt.static', filename='module.css')}}" type="text/css" rel="stylesheet" />
+{% endblock %}
+{% block bread_crumbs %}{% endblock %}
+{#% block page_sidenav %}
+{% endblock %#}
+{% block page_main_content %}
+<input type="hidden" value="{{base_url}}" id="js-base-url" />
+<span id="page-content-marker" style="display:none;"></span>
+{% if module %}
+<div class="well">
+    <table class="simple">
+        {% for inf in module %}
+        <tr>
+            <th>{{ inf }}</th>
+            <td>{{ module[inf] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% if _admin_links %}
+<hr />
+<h2>Зарегистрированные ссылки</h2>
+<ul class="links-list">
+{% for _l in _admin_links %}
+<li>
+    <a href="{{  _l.get('href') }}">{{ _l.get('label', _l.get('href')) }}</a>
+</li>
+{% endfor %}
+</ul>
+{% endif %}
+{% else %}
+
+{% endif %}
+<iframe name="FMIFrameHelper" style="display:none;width:0px;height:0px;"></iframe>
+{% endblock %}
+{%- block page_scripts %}
+    {% set super_lst=super().strip().split("\n") %}
+    {% for scr in super_lst %}{% if not -1 < scr.find('src="/static/js/main.js"') %}{{ scr|trim() }}{% endif %}{% endfor %}
+    {# <script src="{{url_for('module_mgt.static', filename='module.js')}}" type="text/javascript"></script> #}
+{%- endblock page_scripts %}

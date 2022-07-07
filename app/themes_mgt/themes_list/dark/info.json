@@ -1,0 +1,9 @@
+{
+    "application": "splm",
+    "identifier": "dark",
+    "name": "Dark theme",
+    "author": "Administrator",
+    "license": "GNU",
+    "description": "Dark theme based on bootstrap css framework and jqueryui.ui-darkness",
+    "version": "0.0.1"
+}

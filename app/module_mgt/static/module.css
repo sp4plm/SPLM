@@ -1,0 +1,5 @@
+.maincontent .well table th{padding:4px;}
+.maincontent .well table td{padding:4px;}
+.maincontent .links-list {list-style: initial;list-style-type: disc;padding-left: 30px;}
+.maincontent .links-list li {padding:4px;}
+.maincontent .links-list a {font-size: 20px;}

@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{# шаблон основной раскладки для всех страниц темы #}
+{% block base_styles %}
+<link type="text/css" rel="stylesheet" href="{{theme_static('vend/bootstrap/css/bootstrap.css')}}" />
+{% endblock %}
+{% block vend_styles %}
+<link type="text/css" rel="stylesheet" href="{{theme_static('vend/jquery-ui-1.10.4/themes/redmond/jquery-ui.min.css')}}" />
+{% endblock %}
+{% block page_styles %}
+<link rel="stylesheet" href="{{theme_static('css/main.css')}}" />
+{% endblock %}
+{% block navbar %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{{site_home_link|default('/')}}">{% if project_name %}{{ project_name }}{%else%}{{ portal_labels("projectLabel") }}{% endif %}</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                {# подключать ссылку на авторизацию требуется только при включенной настройки авторизации портала #}
+                {% if check_module('user_mgt') %}
+                    {% if current_user.is_anonymous %}
+                        <ul class="nav navbar-nav navbar-left">
+                            <li><a href="{{ url_for('portal.login') }}">Авторизация</a></li>
+                        </ul>
+                    {% else %}
+                        {% set tnavi = top_navi(current_user) %}
+                        {% if tnavi %}
+                        <ul class="nav navbar-nav navbar-left">
+                            {% for link in tnavi %}
+                            <li><a href="{{ link.href }}">{{ link.label}}</a></li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        {# вставка формы поиска в шапке портала - если есть модуль поиска #}
+                        {% if check_module('search_mgt') %}
+                            {% include "search_form.html" %}
+                        {% endif %}
+                        {% include mod_tpl_path('admin_mgt', "user_navi.html") ignore missing %}
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        {% block page_nav %}
+            {% include theme("main_navi.html") ignore missing %}
+        {% endblock %}
+        {# вывод сообщений на портал #}
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-info" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {# вывод сообщений на портал #}
+        {% block bread_crumbs %}
+            <nav class="navbar-inverse breadcrumbs">
+                <ul class="nav navbar-left">
+                {% if page_path %}
+                    <li class="start"><span>&nbsp;</span></li>
+                    {% for step in page_path %}
+                        <li><a href="{{ step.href }}">{{ step.label }}</a></li>
+                        {% if loop.index != page_path|length %}
+                            <li class="delim"><span>/</span></li>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                </ul>
+            </nav>
+        {% endblock %}
+        {# содержимое приложения которое должно быть предоставлено в блоке app_content #}
+        <div class="row content-cols">
+        {% block app_content %}
+            <div class="col-xs-6 col-sm-3 sidebar">
+                {% if page_side_title %}<h2 class="content-header">{{ page_side_title | safe }}</h2>{% endif %}
+                <div class="well">
+                    {% block page_sidenav %}
+                        {% if navi %}
+                            <ul class="nav">
+                            {% for item in navi %}
+                                <li class="nav-item" id="page-{{ item.code }}">
+                                    <a id="side-nav-item-{{ item.code }}" class="nav-link" href="{{ item.href }}">{{ item.label }}</a>
+                                </li>
+                            {% endfor %}
+                            </ul>
+                        {% elif __toc__ %}
+                            {{ __toc__ }}
+                        {% else %}
+                            <div>
+                                <img class="img-responsive" style="margin: 20 auto; padding:40px" src={{theme_static('img/logo.png')}} width="auto" alt="SPLM">
+                            </div>
+                        {% endif %}
+                    {% endblock %}
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-9 maincontent">
+                {% if page_title %}<h1 class="content-header">{{ page_title | safe }}</h1>{% endif %}
+                {% block page_main_content %}{% endblock %}
+            </div>
+        {% endblock %}
+        </div>
+    </div>
+    <footer class="footer">
+        {% block footer %}{% endblock %}
+        {% if copyright %}<div class="container"><p class="text-muted">&copy; </p></div>{% endif %}
+    </footer>
+{% endblock %}
+
+{% block base_scripts %}
+    <script src="{{theme_static('vend/bootstrap/jquery.js')}}" type="text/javascript"></script>
+    <script src="{{theme_static('vend/bootstrap/js/bootstrap.js')}}" type="text/javascript"></script>
+{% endblock %}
+{% block vend_scripts %}
+    <script src="{{theme_static('vend/jquery-ui-1.10.4/ui/jquery-ui.min.js')}}" type="text/javascript"></script>
+{% endblock %}
+{% block page_scripts %}{% endblock %}

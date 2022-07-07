@@ -1,0 +1,20 @@
+.config-info{height:40px;margin-bottom:10px;}
+.config-name{height:38px;clear:none;width:48%;display:inline-block;}
+.config-name input{height:36px;}
+.config-editor-toolbar{height:38px;clear:none;width:300px;display:inline-block;}
+
+.section-box{margin:5px auto;border:1px solid #CACACA;}
+.section-box .section-name{}
+.section-box .section-name input{height:36px;}
+.section-box .section-toolbar{float:none;clear:both;position:inherit;display:inline-block;text-align:right;}
+.section-box .section-data{margin:10px auto;}
+.section-box .section-data .section-param{}
+
+.section-param{clear:both;height:38px;}
+.section-param .param-toolbar{height:38px;float:left;clear:none;}
+.section-param .param-name{height:38px;float:left;clear:none;margin:0px 8px;}
+.section-param .param-name input{height:36px;}
+.section-param .param-value{min-height:38px;float:left;clear:none;}
+.section-param .param-value input{height:36px;}
+
+.w400{width:400px;}

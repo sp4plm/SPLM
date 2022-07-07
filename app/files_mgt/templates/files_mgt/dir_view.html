@@ -1,0 +1,24 @@
+{% extends app_root_tpl() %}
+{% block page_main_content %}
+{% if dir_source %}
+    {% if dir_source['files'] %}
+        <br /><br />
+        <ol>
+        {% for doc in dir_source['files'] %}
+            <li><a href="{{doc.href}}" target="_blank">{{doc.label}}</a></li>
+        {% endfor %}
+        </ol>
+    {% endif %}
+    {% if dir_source['dirs'] %}
+        <br /><br />
+        {% for item in dir_source['dirs'] %}
+        <h3 id="tzb{{loop.index - 1}}" class="content-header">{{item}}</h3>
+        <ol>
+        {% for doc in dir_source['dirs'][item] %}
+            <li><a href="{{doc.href}}" target="_blank">{{doc.label}}</a></li>
+        {% endfor %}
+        </ol>
+        {% endfor %}
+    {% endif %}
+{% endif %}
+{% endblock %}

@@ -157,8 +157,8 @@ class LDAPAuthProvider():
         flg = False
         if self._conn is not None:
             try:
-                self._conn.rebind(u_name, u_secret)
-                flg = True
+                _flg = self._conn.rebind(u_name, u_secret)
+                flg = _flg
             except:
                 flg = False
         return flg

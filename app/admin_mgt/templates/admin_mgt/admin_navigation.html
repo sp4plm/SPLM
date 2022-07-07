@@ -1,0 +1,78 @@
+{% extends admin_root_tpl() %}
+{%- block page_styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{url_for('admin_mgt.static', filename='css/navigation.css')}}" />
+{%- endblock page_styles %}
+
+{% block page_main_content %}
+<span id="page-content-marker" style="display:none;"></span>
+<div id="navi-tool-toolbar" style="margin-bottom:20px;">
+    <button class="ui-button" name="AddNewNavi">Добавить</button>
+</div>
+<div id="awailable-navigations">
+    {% if navi_blocks %}
+    <table class="simple-tbl">
+        <thead>
+            <tr>
+                <th> -- </th>
+                <th>Наименование блока навигации</th>
+                <th>Код блока навигации</th>
+                <th>Ссылка</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for blk in navi_blocks %}
+            <tr>
+                <td class="">
+                    <span class="act-btn ui-state-default ui-corner-all toolbar-btn" action="edit"><span class="edit-navi-block ui-icon ui-icon-pencil"></span></span>
+                    {% if blk['code'] not in def_blocks %}
+                    <span class="act-btn ui-state-default ui-corner-all toolbar-btn" action="delete"><span class="del-navi-block ui-icon ui-icon-trash"></span></span>
+                    {% endif %}
+                    <span class="act-btn ui-state-default ui-corner-all toolbar-btn" action="add_links"><span class="del-navi-block ui-icon ui-icon-gear"></span></span>
+                </td>
+                <td>{{ blk['label'] }}</td>
+                <td>{{ blk['code'] }}</td>
+                <td>{{ blk['href'] }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+<div id="navi-edit-form" style="display:none;">
+<form name="NaviEditForm" onsubmit="return false;" action="{{ save_action }}">
+    <input type="hidden" name="NaviCode" value="" />
+    <input type="hidden" name="next_page" value="portal_management.admin_navigation" />
+    {% if def_blocks %}
+        <input type="hidden" name="DefCodes" value="{{def_blocks|join(',')}}" />
+    {% endif %}
+    <table class="simple-tbl">
+        <tbody>
+            <tr>
+                <td>Наименование блока навигации:</td>
+                <td><input type="text" name="NaviBlockName" value="" /></td>
+            </tr>
+            <tr>
+                <td>Код блока навигации:</td>
+                <td><input type="text" name="NaviBlockCode" value="" /></td>
+            </tr>
+            <tr>
+                <td>Ссылка:</td>
+                <td><input type="text" name="NaviBlockLink" value="" /></td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <button class="ui-button" name="CloseNaviForm">Закрыть</button>
+                    <button class="ui-button" name="SaveNavi">Сохранить</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+</div>
+{% endblock %}
+{%- block page_scripts %}
+    {% set super_lst=super().strip().split("\n") %}
+    {% for scr in super_lst %}{% if not -1 < scr.find('src="/static/js/main.js"') %}{{ scr|trim() }}{% endif %}{% endfor %}
+    <script src="{{url_for('admin_mgt.static', filename='js/navigation.js')}}" type="text/javascript"></script>
+{%- endblock page_scripts %}

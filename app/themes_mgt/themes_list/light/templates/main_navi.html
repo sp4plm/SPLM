@@ -1,0 +1,33 @@
+{% set page_navi = main_navi(current_user) %}
+<div id="page-nav-container" class="container page-nav-container_st">
+    <button type="button" class="navbar-toggle collapsed pagenavbar" data-toggle="collapse" data-target="#pagenavbar" aria-expanded="false" aria-controls="pagenavbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar pagenavbar_icon"></span>
+        <span class="icon-bar pagenavbar_icon"></span>
+        <span class="icon-bar pagenavbar_icon"></span>
+    </button>
+    <nav id="pagenavbar" class="navbar-collapse collapse navbar-inverse page-nav">
+        <ul class="nav navbar-nav">
+        {% if page_navi %}
+            {% for nav_item in page_navi %}
+                {% if 'childs' in nav_item %}
+                <li class="dropdown">
+                    <a href="{{ nav_item.href }}" id="{{ nav_item.id }}" class="dropdown-toggle" data-toggle="dropdown">{{ nav_item.label }}</a>
+                    <ul class="dropdown-menu">
+                        {% for sub_item in nav_item['childs'] %}
+                        <li>
+                            <a href="{{ sub_item.href }}" id="{{ sub_item.id }}">{{ sub_item.label }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% else %}
+                <li>
+                    <a href="{{ nav_item.href }}" id="{{ nav_item.id }}">{{ nav_item.label }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        </ul>
+    </nav>
+</div>

@@ -1,0 +1,7 @@
+{% set work_key=key %}
+{% set work_val=val %}
+<div class="section-param">
+    <div class="param-toolbar"></div>
+    <div class="param-name"><input class="value-editor" type="text" name=""{{readonly}} value="{{ work_key }}" /></div>
+    <div class="param-value">{% include "kv_editor/value.html" ignore missing %}</div>
+</div>
