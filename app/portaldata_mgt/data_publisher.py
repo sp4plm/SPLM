@@ -65,6 +65,10 @@ class DataPublisher(DataManager):
             """"""
             answer = self._publish_simple()
         self.to_log('End loop over catched files')
+        # теперь надо вызвать хранимые процедуры для обработки новой информации
+        self.to_log('Try execute triggers after uploading files')
+        self.post_publish_trigger()
+        self.to_log('Execute triggers after uploading files is DONE')
         # теперь изменим время публикации данных
         self.to_log('Try set new publish time')
         self._set_last_publish_time()

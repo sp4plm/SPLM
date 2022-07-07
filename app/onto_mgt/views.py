@@ -240,7 +240,11 @@ def nav_ontology():
 
         session[_onto] = navigation_graph_file
     else:
-        graph = DataSerializer().restore(session[_onto])
+        if os.path.exists(session[_onto]):
+            graph = DataSerializer().restore(session[_onto])
+        else:
+            graph = Graph().parse(onto_file, format='ttl')
+            DataSerializer().dump(os.path.join(NAVIGATION_GRAPH_PATH, _onto), graph)
 
     TREE = json.dumps(create_graph_by_node(owl_Thing, graph))
 
@@ -666,6 +670,11 @@ def remove_file():
                             answer['State'] = 200
                             answer['Msg'] = ''
                             answer['Data'] = {'file': name}
+
+
+            # удаляем конфигурацию из navigation_graphs
+            meta.remove_file(name, NAVIGATION_GRAPH_PATH)
+
         else:
             answer['Msg'] = 'Неизвестная директория -> ' + dir_name + '!'
     return json.dumps(answer)
@@ -719,6 +728,10 @@ def remove_selection():
                             meta.remove_item('res', file_info['result'])
                     meta.set_current_dir(dir_name)
                 deleted.append(fi)
+
+                # удаляем конфигурацию из navigation_graphs
+                meta.remove_file(fi, NAVIGATION_GRAPH_PATH)
+
                 """ end loop of deleted items """
             if 0 < len(deleted):
                 answer['State'] = 200
