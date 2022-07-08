@@ -58,13 +58,14 @@ class PortalModeUtil():
         """
         _mode = None
         # _name = ''  # видимо данная опция должна быть частью имени файла
-        _file = self.__search_mode_file()
-        from app.admin_mgt.portal_mode import PortalMode
+        _file = self.__search_mode_file(_name)
         if '' == _name:
             _name = self._get_mode_name(_file)
-        _mode = PortalMode(_name)
-        _mode_store = self.__cook_mode_store(_file)
-        _mode.set_store(_mode_store)
+        if _name and os.path.exists(_file):
+            from app.admin_mgt.portal_mode import PortalMode
+            _mode = PortalMode(_name)
+            _mode_store = self.__cook_mode_store(_file)
+            _mode.set_store(_mode_store)
         return _mode
 
     def set_portal_mode(self, _name):
@@ -190,12 +191,21 @@ class PortalModeUtil():
 
         return _store
 
-    def __search_mode_file(self):
+    def __search_mode_file(self, name=''):
         _dir = self.__get_work_dir()
         _find = self.__get_files()
         _file = ''
         if _find:
-            _file = os.path.join(_dir, _find[0])
+            _work_fname = ''
+            if '' == name:
+                _work_fname = _find[0]
+            else:
+                for _fn in _find:
+                    _mn = self._get_mode_name(_fn)
+                    if _mn == name:
+                        _work_fname = _fn
+                        break
+            _file = os.path.join(_dir, _work_fname)
         return _file
 
     def __get_files(self):
