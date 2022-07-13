@@ -19,9 +19,12 @@ pizza:America
   pizza:hasSize "31" ;
   pizza:hasTopping pizza:gorgonzola_top_inst ;
 .
+pizza:Hot_1
+  a pizza:Hot ;
+  rdfs:label "Hot" ;
+.
 pizza:AmericanHot_1
   a pizza:AmericanHot ;
-  a pizza:Hot ;
   pizza:hasBase pizza:base_2 ;
   pizza:hasPrice "1250"^^xsd:integer ;
   pizza:hasSize "31" ;
@@ -161,11 +164,12 @@ pizza:GreenPepperTopping_1
 .
 pizza:HotGreenPepperTopping_1
   a pizza:HotGreenPepperTopping ;
-  pizza:hasSpiciness pizza:AmericanHot_1 ;
+  pizza:hasSpiciness pizza:Hot_1 ;
   rdfs:label "Hot Green Pepper Topping" ;
 .
 pizza:HotSpicedBeefTopping_1
   a pizza:HotSpicedBeefTopping ;
+  pizza:hasSpiciness pizza:Hot_1 ;
   rdfs:label "Hot Spiced Beef Topping" ;
 .
 pizza:Italy
@@ -253,6 +257,16 @@ pizza:NamedIndividual_3
   pizza:hasTopping pizza:SundriedTomatoTopping_1 ;
   pizza:hasTopping pizza:gorgonzola_top_inst ;
   rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
+  rdfs:label "Грибная пицца 1" ;
+.pizza:NamedIndividual_33
+  a pizza:Pizza ;
+  pizza:hasBase pizza:base_2 ;
+  pizza:hasPrice "1300"^^xsd:integer ;
+  pizza:hasSize "39" ;
+  pizza:hasTopping pizza:MushroomTopping_1 ;
+  pizza:hasTopping pizza:SundriedTomatoTopping_1 ;
+  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  rdfs:comment "Это вкусная вегтарианская пицца." ;
   rdfs:label "Грибная пицца 1" ;
 .
 pizza:NamedIndividual_4

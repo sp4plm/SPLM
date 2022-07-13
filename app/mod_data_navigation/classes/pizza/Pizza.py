@@ -6,17 +6,24 @@ Created on 4 sept. 2021 г.
 
 import pandas as pd
 import numpy as np
+import re, copy, os
 from urllib.parse import quote
-from app.app_api import tsc_query
-from app import app_api
 from hashlib import sha1
 from rdflib import URIRef, Graph
 from rdflib.plugins.sparql.results.jsonresults import JSONResult
 from pyshacl import validate
-import re
+
+from app.app_api import tsc_query
+from app import app_api
+from app.utilites.data_upload_manager import DataUploadManager
 
 onto_mod_api = app_api.get_mod_api('onto_mgt')
 from app.utilites.axiom_reader import getClassAxioms
+
+MOD_PATH = app_api.get_mod_path( "mod_data_navigation" )
+
+# with open(os.path.join( MOD_PATH, FILE ), 'r', encoding='utf-8') as f:
+FILE = 'shacl/shacl.ttl'
 
 def make_breadcrumbs(prefix, pref_unquote, cls):
 
@@ -92,18 +99,21 @@ class Pizza:
 
 
     def __get_requirements__(self):
-        G = onto_mod_api.get_graph(self.argm['prefix'])
-        query_str = """prefix sh: <http://www.w3.org/ns/shacl#>
-                       prefix pz: <%s> 
-                    select distinct ?code ?text {
-                    ?sh a sh:NodeShape .
-                    ?sh sh:targetClass <%s> .
-                    ?sh sh:property ?pr .
-                    ?pr sh:name ?code .
-                    ?pr sh:description ?text .} order by ?code
-                    """ % (self.pref_unquote, self.pref_unquote + self.argm['class'])
+        reqs = pd.DataFrame()
+        with open( os.path.join( MOD_PATH, FILE ), 'r', encoding='utf-8' ) as f:
+            G = Graph()
+            G.parse( f )
+            query_str = """prefix sh: <http://www.w3.org/ns/shacl#>
+                           prefix pz: <%s> 
+                        select distinct ?code ?text {
+                        ?sh a sh:NodeShape .
+                        ?sh sh:targetClass <%s> .
+                        ?sh sh:property|sh:rule ?pr .
+                        ?pr sh:name ?code .
+                        ?pr sh:description ?text .} order by ?code
+                        """ % (self.pref_unquote, self.pref_unquote + self.argm['class'])
 
-        reqs = pd.DataFrame(G.query(query_str))
+            reqs = pd.DataFrame(G.query(query_str))
 
         if not reqs.empty:
             reqs.columns = ['Код', 'Текст требования']
@@ -251,8 +261,12 @@ def get_reqs_verification(prefix, ontoclass):
     # Выбираем из всех данных только те, которые имеют отношение к текущему классу
     data = tsc_query('mod_data_navigation.Pizza.get_subgraph',
                       {'URI': pref_unquote + ontoclass})
-
     data_graph = Graph()
+
+    with open( os.path.join( MOD_PATH, FILE ), 'r', encoding='utf-8' ) as f:
+        shacl = Graph()
+        shacl.parse( f )
+        shacl.serialize("shacl_1.ttl", format="turtle")
 
     if data != []:
         js = JSONResult(data)
@@ -260,17 +274,19 @@ def get_reqs_verification(prefix, ontoclass):
         for i in js:
             data_graph.add(i[:3])
 
+        data_graph2 = copy.deepcopy( data_graph )
         G = onto_mod_api.get_graph(prefix)
 
         r = validate(data_graph,
-                     shacl_graph=G,
+                     shacl_graph=shacl,
                      ont_graph=G,
-                     inference='rdfs',
+                     inference='none',
                      abort_on_first=False,
                      allow_warnings=False,
                      meta_shacl=False,
-                     advanced=False,
+                     advanced=True,
                      js=False,
+                     inplace=True,
                      debug=False)
 
         conforms, results_graph, results_text = r
@@ -291,11 +307,26 @@ def get_reqs_verification(prefix, ontoclass):
                                        } order by ?code"""
 
             val = pd.DataFrame(results_graph.query(qry_validat))
-            val.columns = ['Код', 'Текст требования', 'Выполнено', 'Обоснование', 'Объект', 'Значение']
-            val['Объект'] = val['Объект'].str.replace(pref_unquote, '', regex=True)
-            val['Выполнено'] = val['Выполнено'].str.replace('false', 'Нет')
+            if len( val.columns ) == 6:
+                val.columns = ['Код', 'Текст требования', 'Выполнено', 'Обоснование', 'Объект', 'Значение']
+                val['Объект'] = val['Объект'].str.replace(pref_unquote, '', regex=True)
+                val['Выполнено'] = val['Выполнено'].str.replace('false', 'Нет')
         else:
             val = pd.DataFrame([['Нарушений требований не выявлено, либо требования для данного класса отсутствуют']], columns=['Результат'])
+
+        new_triples = data_graph - data_graph2 - G          # Вычисляет только добавленные в SHACL триплеты
+        new_triples_f = os.path.join( MOD_PATH, 'new_triples.ttl')
+        new_triples.serialize( new_triples_f, format='turtle' )
+        data_uploader = DataUploadManager()
+
+        cfg = app_api.get_app_config()
+        if '1' == cfg.get('data_storages.Main.use_named_graphs') or \
+            1 == cfg.get('data_storages.Main.use_named_graphs'):
+            data_uploader.use_named_graph = True
+
+        flag = data_uploader.upload_file(new_triples_f)
+        if not flag:
+            print('Can not upload new triplets')
 
     else:
         val = pd.DataFrame([['Не получен ответ от базы данных, обратитесь к администратору портала.']],

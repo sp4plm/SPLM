@@ -313,7 +313,6 @@ pizza:Country
   rdfs:comment "A class that is equivalent to the set of individuals that are described in the enumeration - ie Countries can only be either America, England, France, Germany or Italy and nothing else. Note that these individuals have been asserted to be allDifferent from each other."@en ;
   rdfs:label "Пицца по названию страны" ;
   rdfs:subClassOf pizza:Pizza ;
-  rdfs:subClassOf owl:Thing ;
   skos:prefLabel "Country"@en ;
 .
 pizza:DeepPanBase
@@ -365,14 +364,14 @@ pizza:Fiorentina
 .
 pizza:FishTopping
   a owl:Class ;
-  rdfs:label "Seafood Topping"@en ;
+  rdfs:label "Fish Topping"@en ;
   rdfs:subClassOf pizza:PizzaTopping ;
   rdfs:subClassOf [
       a owl:Restriction ;
       owl:onProperty pizza:hasSpiciness ;
       owl:someValuesFrom pizza:Mild ;
     ] ;
-  skos:prefLabel "Seafood"@en ;
+  skos:prefLabel "Fish"@en ;
 .
 pizza:Food
   a owl:Class ;
@@ -843,17 +842,9 @@ pizza:Napoletana
 pizza:NonVegetarianPizza
   a owl:Class ;
   rdfs:label "NonVegetarianPizza"@en ;
+  rdfs:label "Не вегетарианская пицца"@ru ;
   owl:disjointWith pizza:VegetarianPizza ;
-  owl:equivalentClass [
-      a owl:Class ;
-      owl:intersectionOf (
-          pizza:Pizza
-          [
-            a owl:Class ;
-            owl:complementOf pizza:VegetarianPizza ;
-          ]
-        ) ;
-    ] ;
+  rdfs:subClassOf pizza:Pizza ;
   skos:definition "Any Pizza that is not a VegetarianPizza"@en ;
   skos:prefLabel "Non Vegetarian Pizza"@en ;
 .
@@ -1372,17 +1363,8 @@ pizza:Spiciness
 pizza:SpicyPizza
   a owl:Class ;
   rdfs:label "SpicyPizza"@en ;
-  owl:equivalentClass [
-      a owl:Class ;
-      owl:intersectionOf (
-          pizza:Pizza
-          [
-            a owl:Restriction ;
-            owl:onProperty pizza:hasTopping ;
-            owl:someValuesFrom pizza:SpicyTopping ;
-          ]
-        ) ;
-    ] ;
+  rdfs:label "Острая пицца"@ru ;
+  rdfs:subClassOf pizza:Pizza ;
   skos:definition "Any pizza that has a spicy topping is a SpicyPizza"@en ;
   skos:prefLabel "Spicy Pizza"@en ;
 .
@@ -1533,6 +1515,8 @@ pizza:VegetableTopping
 pizza:VegetarianPizza
   a owl:Class ;
   rdfs:label "VegetarianPizza"@en ;
+  rdfs:label "Вегетарианская пицца"@ru ;
+  rdfs:subClassOf pizza:Pizza ;
   owl:equivalentClass [
       a owl:Class ;
       owl:intersectionOf (
@@ -1796,49 +1780,3 @@ skos:prefLabel
       pizza:PizzaTopping
     ) ;
 ].
-pizza:PizzaShape
-	a sh:NodeShape ;
-	sh:targetClass pizza:Pizza ;    # Applies to all pizza
-	sh:property [
-		sh:name "req 1" ;
-		sh:description "Пицца должна иметь свойство Размер. У пиццы свойство Размер должно иметь только одно значение. Допускается иметь следующие варианты размеров пиццы: 25 см, 31 см или 38см." ;
-		sh:path pizza:hasSize ;           # constrains the values of pizza:hasSize
-		sh:maxCount 1 ;
-		sh:in ("25" "31" "38") ;
-	] ;
-	sh:property [
-		sh:name "req 2" ;
-		sh:description "Пицца должна иметь Топпиги. У пиццы должен быть как минумум 1 Топпиг." ;
-		sh:path pizza:hasTopping ;
-		sh:class pizza:PizzaTopping ;
-		sh:minCount 1 ;
-		sh:nodeKind sh:IRI ;
-	] ;
-		sh:property [
-		sh:name "req 3" ;
-		sh:description "Пицца должна иметь Топпиги. У пиццы должен быть как максиму 5 Топпигов." ;
-		sh:path pizza:hasTopping ;
-		sh:class pizza:PizzaTopping ;
-		sh:maxCount 6 ;
-		sh:nodeKind sh:IRI ;
-	] ;
-		sh:property [
-		sh:name "req 4" ;
-		sh:description "Пицца должна иметь Основу. У пиццы может быть только 1 Основа." ;
-		sh:path pizza:hasBase ;
-		sh:minCount 1 ;
-		sh:maxCount 1 ;
-		sh:class pizza:PizzaBase ;
-		sh:nodeKind sh:IRI ;
-	] ;
-		sh:property [
-		sh:name "req 5" ;
-		sh:description "Пицца должна иметь свойство Цена. У пиццы свойство Цена должно иметь только одно значение. Цена не должна быть выше 5000" ;
-		sh:path pizza:hasPrice ;
-		sh:maxCount 1 ;
-		sh:maxInclusive 5000 ;
-		sh:nodeKind sh:Literal ;
-	] ;
-	sh:closed true ;
-	sh:ignoredProperties ( rdf:type rdfs:comment pizza:hasIngredient rdfs:label) ;
-	.

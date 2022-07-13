@@ -64,7 +64,7 @@
         "#VARS":{"URI":{"mark":"#{URI}","default":""}},
         "#TXT":"select ?cls ?cls_lbl (count(distinct ?inst) as ?cnt)  {
                 ?cls rdfs:subClassOf #{URI} .
-                ?cls rdfs:label ?cls_lbl .
+                ?cls rdfs:label ?cls_lbl . FILTER (LANG(?cls_lbl) = '' || langMatches(lang(?cls_lbl), \"ru\"))
                 Optional {?cls2 rdfs:subClassOf+ ?cls .
                         ?inst a ?cls2 .}
                 Optional { ?inst a ?cls .}
@@ -87,10 +87,7 @@
         "get_subgraph":{
         "_CMT_":"Возвращает часть графа для заданного узла (для экземпляров)",
         "#VARS":{"URI":{"mark":"#{URI}","default":""}},
-        "#TXT":"construct {?s ?p ?o }
-                where {
-                ?cls rdfs:subClassOf* <#{URI}> .
-                ?s a ?cls .
-                ?s ?p ?o } "
+        "#TXT":"construct {?s ?p ?o .}
+                where { ?s ?p ?o .}"
     }
 }
