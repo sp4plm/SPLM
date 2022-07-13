@@ -78,43 +78,47 @@ pizza:HotSpicedPizzaRuleShape
         sh:condition pizza:HotSpicedPizzaShape ;
         ] ;
 .
-#pizza:NonVegetarianPizzaRulesShape
-#	a sh:NodeShape ;
-#	sh:targetClass pizza:Pizza ;
-#	sh:rule [
-#		a sh:SPARQLRule ;
-#		sh:name "req 7" ;
-#        sh:description "Если у пиццы мясной или рыбный топпинг, то это НЕ вегитарианская пицца." ;
-#		sh:prefixes pizza: ;
-#		sh:construct """
-#			CONSTRUCT {
-#				$this rdf:type pizza:NonVegitarianPizza .
-#			}
-#			WHERE {
-#  					$this a/rdfs:subClassOf* pizza:Pizza .
-#  					$this pizza:hasTopping ?o .
-#  					?o a/rdfs:subClassOf* ?cls . filter (?cls IN (pizza:FishTopping, pizza:MeatTopping))
-#			}
-#			""" ;
-#	] ;
-#.
-#pizza:VegetarianPizzaRulesShape
-#	a sh:NodeShape ;
-#	sh:targetClass pizza:Pizza ;
-#	sh:rule [
-#		a sh:SPARQLRule ;
-#		sh:name "req 8" ;
-#        sh:description "Если у пиццы нет мясного или рыбного топпинга, то это Вегитарианская пицца." ;
-#		sh:prefixes pizza: ;
-#		sh:construct """
-#			CONSTRUCT {
-#				$this rdf:type pizza:VegetarianPizza .
-#			}
-#			WHERE {
-#  					$this a/rdfs:subClassOf* pizza:Pizza .
-#  					$this pizza:hasTopping ?o .
-#  					?o a/rdfs:subClassOf* ?cls . filter (?cls NOT IN (pizza:FishTopping, pizza:MeatTopping))
-#			}
-#			""" ;
-#	] ;
-#.
+pizza:NonVegetarianPizzaRulesShape
+	a sh:NodeShape ;
+	sh:targetClass pizza:Pizza ;
+	sh:rule [
+		a sh:SPARQLRule ;
+		sh:name "req 7" ;
+        sh:description "Если у пиццы мясной или рыбный топпинг, то это НЕ вегитарианская пицца." ;
+		sh:prefixes pizza: ;
+		sh:construct """
+			CONSTRUCT {
+				$this rdf:type pizza:NonVegetarianPizza .
+			}
+			WHERE {
+  					$this a/rdfs:subClassOf* pizza:Pizza .
+  					$this pizza:hasTopping ?o .
+  					?o a/rdfs:subClassOf* ?cls . filter (?cls IN (pizza:FishTopping, pizza:MeatTopping))
+			}
+			""" ;
+	] ;
+.
+pizza:VegetarianPizzaRulesShape
+	a sh:NodeShape ;
+	sh:targetClass pizza:Pizza ;
+	sh:rule [
+		a sh:SPARQLRule ;
+		sh:name "req 8" ;
+        sh:description "Если у пиццы нет мясного или рыбного топпинга, то это Вегитарианская пицца." ;
+		sh:prefixes pizza: ;
+		sh:construct """
+			CONSTRUCT {
+				$this rdf:type pizza:VegetarianPizza .
+			}
+			WHERE {
+				  $this a/rdfs:subClassOf* pizza:Pizza .
+				  $this pizza:hasTopping ?tp .
+				  minus {
+				  ?fish rdfs:subClassOf* pizza:FishTopping .
+				  ?meat rdfs:subClassOf* pizza:MeatTopping .
+				  $this a/rdfs:subClassOf* pizza:Pizza .
+				  $this pizza:hasTopping ?o . #filter (?o != ?fish && ?o != ?meat)
+				  ?o a ?cls . filter (?cls IN (?fish, ?meat)) }			}
+			""" ;
+	] ;
+.

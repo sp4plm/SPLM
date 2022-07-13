@@ -266,7 +266,6 @@ def get_reqs_verification(prefix, ontoclass):
     with open( os.path.join( MOD_PATH, FILE ), 'r', encoding='utf-8' ) as f:
         shacl = Graph()
         shacl.parse( f )
-        shacl.serialize("shacl_1.ttl", format="turtle")
 
     if data != []:
         js = JSONResult(data)
@@ -315,18 +314,23 @@ def get_reqs_verification(prefix, ontoclass):
             val = pd.DataFrame([['Нарушений требований не выявлено, либо требования для данного класса отсутствуют']], columns=['Результат'])
 
         new_triples = data_graph - data_graph2 - G          # Вычисляет только добавленные в SHACL триплеты
-        new_triples_f = os.path.join( MOD_PATH, 'new_triples.ttl')
-        new_triples.serialize( new_triples_f, format='turtle' )
-        data_uploader = DataUploadManager()
 
-        cfg = app_api.get_app_config()
-        if '1' == cfg.get('data_storages.Main.use_named_graphs') or \
-            1 == cfg.get('data_storages.Main.use_named_graphs'):
-            data_uploader.use_named_graph = True
+        if len(new_triples) > 0:
+            new_triples_f = os.path.join( MOD_PATH, 'new_triples.ttl')
+            new_triples.serialize( new_triples_f, format='turtle' )
+            data_uploader = DataUploadManager()
 
-        flag = data_uploader.upload_file(new_triples_f)
-        if not flag:
-            print('Can not upload new triplets')
+            cfg = app_api.get_app_config()
+            if '1' == cfg.get('data_storages.Main.use_named_graphs') or \
+                1 == cfg.get('data_storages.Main.use_named_graphs'):
+                data_uploader.use_named_graph = True
+
+            flag = data_uploader.upload_file(new_triples_f)
+
+            if not flag:
+                print('Can not upload new triplets')
+
+            os.unlink(new_triples_f)  # delete files with SHACL resoning
 
     else:
         val = pd.DataFrame([['Не получен ответ от базы данных, обратитесь к администратору портала.']],
