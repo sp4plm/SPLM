@@ -186,7 +186,7 @@ class Driver():
 
     def is_active_directory(self, server=None):
         if server is not None:
-            flg = True if 1==server['Info']['ActiveDirectory'] else False
+            flg = True if 1==server['Info']['ActiveDirectory'] or '1'==server['Info']['ActiveDirectory'] else False
         else:
             flg = self._is_active_directory
         return flg

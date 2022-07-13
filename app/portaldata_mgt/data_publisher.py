@@ -235,7 +235,7 @@ class DataPublisher(DataManager):
                     _exists.append(graph_name)
             self.to_log('DataPublisher._get_namedgraphs_to_delete.graphs_exists - {}'. format(str(_exists)))
             # так как мы очищаем имя графа для сравнения то надо обратно вернуть
-            to_delete = ['<' + graph_name + '>' for graph_name in to_delete if graph_name not in _exists ]
+            to_delete = ['<' + graph_name + '>' for graph_name in graphs if graph_name not in _exists ]
         else:
             # считаем что все данные удалены
             to_delete =  ['<' + graph_name + '>' for graph_name in graphs ]

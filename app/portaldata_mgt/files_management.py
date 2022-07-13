@@ -61,7 +61,7 @@ class FilesManagement(object):
         return _inf
 
     def __normalize_filter(self, _sec, filter):
-        if filter is not None:
+        if filter is not None and filter:
             filters = loads(filter)
             if 'rules' in filters:
                 filters = filters['rules']

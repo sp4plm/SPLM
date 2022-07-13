@@ -96,7 +96,7 @@ class JsonRegister():
         _lst = loads(_json)
 
         if _lst:
-            if filter is not None:
+            if filter is not None and filter:
                 _lst = self.__apply_filters(_lst, filter)
 
             """ теперь после поиска надо отсортировать """

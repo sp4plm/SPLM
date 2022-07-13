@@ -243,7 +243,7 @@ class SqliteRegister(object):
             _str_fields = ', '.join(fields)
         _q = 'SELECT %s FROM %s ' % (_str_fields, self.__get_tbl_name())
         # возможно нам передали фильтр
-        if filter is not None:
+        if filter is not None and filter:
             # print(self._debug_name + '.get_records->filter', filter)
             _q += ' ' + self.__filter_2_where(filter)
         if sort is not None:
@@ -279,7 +279,7 @@ class SqliteRegister(object):
         _cnt = 0
         _q = 'SELECT COUNT(1) FROM %s ' % self.__get_tbl_name()
         # возможно нам передали фильтр
-        if filter is not None:
+        if filter is not None and filter:
             # print(self._debug_name + '.count_records->filter', filter)
             _q += ' ' + self.__filter_2_where(filter)
         try:
@@ -301,7 +301,7 @@ class SqliteRegister(object):
             self.__to_log(_msg)
             return _flg
         _q = 'DELETE FROM %s ' % self.__get_tbl_name()
-        if _filter is not None:
+        if _filter is not None and filter:
             _q += ' ' + self.__filter_2_where(_filter)
         _t = []
         try:
@@ -326,7 +326,7 @@ class SqliteRegister(object):
             self.__to_log(_msg)
             return _flg
         _q = 'DELETE FROM %s ' % self.__get_tbl_name()
-        if _filter is not None:
+        if _filter is not None and filter:
             _q += ' ' + self.__filter_2_where(_filter)
         _t = []
         try:
