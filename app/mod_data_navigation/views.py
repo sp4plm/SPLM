@@ -1,18 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import json
 import os
-from urllib.parse import quote, unquote
 from flask import Blueprint, request, flash, g, session, redirect, url_for
-from flask.views import MethodView
-from flask_login import current_user, login_user, logout_user, login_required
-from sqlalchemy.exc import NoResultFound
-from werkzeug.urls import url_parse
+from rdflib import Graph
 from app.app_api import tsc_query
 from app import app_api
-from app.user_mgt.user_conf import UserConf
-from app.user_mgt.models.users import db, User
-from app.user_mgt.models.roles import Role
+from .shacl import Shacl
+
 onto_mod_api = app_api.get_mod_api('onto_mgt')
 qry_mod_api = app_api.get_mod_api('query_mgt')
 
@@ -174,3 +168,42 @@ def get_verif_result(class_object):
     df = get_reqs_verification(argms['prefix'],argms['class'])
     html += df.to_html(index=False)
     return html
+
+
+@mod.route( url_prefix + '/shacl' )
+@_auth_decorator
+def shacl():
+    '''
+    Функция возвращает список файлов SHACL для последующего редактирования
+    '''
+    return app_api.render_page( '/data_navigation/files.html', files=Shacl().get_list_shacl() )
+
+
+@mod.route( url_prefix + '/shacl/file/<file>', methods=["GET", "POST"] )
+@mod.route( url_prefix + '/shacl/file/', methods=["GET", "POST"] )
+@_auth_decorator
+def shacl_file(file=''):
+    if 'save' in request.form:
+        if os.path.exists( Shacl().get_full_file_path( file ) ):
+            try:
+                g = Graph()
+                result = g.parse( data=request.form['data'], format="turtle" )
+                # согласно новой концепции сохранять редактируемый файл требуется в директорию общего конфига
+                Shacl().edit_file( file, request.form['data'] )
+            except Exception as e:
+                print( e )
+                pass
+
+        else:
+            pass
+        return redirect( url_for( 'data_navigation.shacl', file=file ) )
+
+    elif 'delete' in request.form:
+        Shacl().delete_file( file )
+        return redirect( url_for( 'data_navigation.shacl', file=file ) )
+
+    else:
+        data = Shacl().get_file( file )
+        _can_remove = False
+        _can_remove = Shacl().can_remove( file )
+        return app_api.render_page( '/data_navigation/edit.html', file=file, data=data, can_delete=_can_remove )

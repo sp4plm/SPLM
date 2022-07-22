@@ -1,0 +1,21 @@
+{% extends admin_root_tpl() %}
+
+{% block title %}
+    {% if title %}SPLM: {{ title }}{% else %}Редактор SHACL шаблонов{% endif %}
+{% endblock %}
+
+
+{% block page_main_content %}
+<div>
+	<form method="get">
+	<h1>Список shacl файлов</h1>
+	<ul>
+		{% for file in files %}
+			<li>
+				<a href="{{url_for('data_navigation.shacl_file', file = file)}}">{{file}}</a>
+			</li>
+		{% endfor %}
+	</ul>
+	</form>
+</div>
+{% endblock %}

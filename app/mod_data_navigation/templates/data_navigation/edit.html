@@ -1,0 +1,40 @@
+{% extends admin_root_tpl() %}
+
+{% block title %}
+    {% if title %}SPLM: {{ title }}{% else %}Редактор SHACL шаблонов{% endif %}
+{% endblock %}
+
+
+
+{% block page_main_content %}
+	<form method="post" >
+		<h1>Файл {{file}}</h1>
+		<br/>
+
+		<br/>
+		{% if data %}
+			<textarea name="data" rows="30" cols="120">{{data}}</textarea>
+		{% else %}
+			<textarea name="data" rows="30" cols="120"></textarea>
+		{% endif %}
+
+		<br/>
+
+		<input type="submit" value="Сохранить" name="save" formaction="{{url_for('data_navigation.shacl_file', file = file)}}">
+		{% if can_delete %}
+		<input type="submit" value="Удалить изменения" name="delete" formaction="{{url_for('data_navigation.shacl_file', file = file)}}">
+		{% endif %}
+		<br/>
+	</form>
+
+	<form method="get">
+		<input type="submit" value="К списку файлов" formaction="{{url_for('data_navigation.shacl')}}">
+	</form>
+	<br/>
+	<br/>
+	<br/>
+	<br/>
+	<br/>
+
+{% endblock %}
+

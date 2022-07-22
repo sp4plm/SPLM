@@ -104,7 +104,7 @@ pizza:VegetarianPizzaRulesShape
 	sh:rule [
 		a sh:SPARQLRule ;
 		sh:name "req 8" ;
-        sh:description "Если у пиццы нет мясного или рыбного топпинга, то это Вегитарианская пицца." ;
+        sh:description "Если у пиццы нет мясного или рыбного топпинга, или вообще нет топпинга, то это Вегитарианская пицца." ;
 		sh:prefixes pizza: ;
 		sh:construct """
 			CONSTRUCT {
@@ -112,7 +112,7 @@ pizza:VegetarianPizzaRulesShape
 			}
 			WHERE {
 				  $this a/rdfs:subClassOf* pizza:Pizza .
-				  $this pizza:hasTopping ?tp .
+				  #$this pizza:hasTopping ?tp .
 				  minus {
 				  ?fish rdfs:subClassOf* pizza:FishTopping .
 				  ?meat rdfs:subClassOf* pizza:MeatTopping .
