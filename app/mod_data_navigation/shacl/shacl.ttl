@@ -68,7 +68,7 @@ pizza:HotSpicedPizzaRuleShape
     a sh:NodeShape ;
     sh:targetClass pizza:Pizza ;
     sh:rule [
-        sh:name "req 6" ;
+        sh:name "rule 6" ;
         sh:description "Если в топпиге есть острый перец, то пицца относится к классу Острые пиццы" ;
         sh:prefixes pizza: ;
         a sh:TripleRule ;
@@ -83,7 +83,7 @@ pizza:NonVegetarianPizzaRulesShape
 	sh:targetClass pizza:Pizza ;
 	sh:rule [
 		a sh:SPARQLRule ;
-		sh:name "req 7" ;
+		sh:name "rule 7" ;
         sh:description "Если у пиццы мясной или рыбный топпинг, то это НЕ вегитарианская пицца." ;
 		sh:prefixes pizza: ;
 		sh:construct """
@@ -103,7 +103,7 @@ pizza:VegetarianPizzaRulesShape
 	sh:targetClass pizza:Pizza ;
 	sh:rule [
 		a sh:SPARQLRule ;
-		sh:name "req 8" ;
+		sh:name "rule 8" ;
         sh:description "Если у пиццы нет мясного или рыбного топпинга, или вообще нет топпинга, то это Вегитарианская пицца." ;
 		sh:prefixes pizza: ;
 		sh:construct """
