@@ -24,7 +24,7 @@
 .. code-block:: console
     
     # cd /opt/
-    # git clone git://github.com/oleg-post/SPLM
+    # git clone https://github.com/sp4plm/SPLM
 
 и перейдите в директорию проекта:
 
