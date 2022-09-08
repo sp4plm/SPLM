@@ -27,7 +27,6 @@
   <http://splm.portal.web/osplm#hasPathForSPARQLquery> "sparqt/"^^<http://www.w3.org/2001/XMLSchema#string> .
 
 <http://splm.portal.web/osplm#mod_data_navigation> osplm:hasURL <http://splm.portal.web/osplm/data#url_data_nav_1> .
-
 <http://splm.portal.web/osplm/data#url_data_nav_1> osplm:value "/datanav"^^<http://www.w3.org/2001/XMLSchema#string> ;
   rdfs:label "Стартовая страница"^^<http://www.w3.org/2001/XMLSchema#string> ;
   osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#flase> ;

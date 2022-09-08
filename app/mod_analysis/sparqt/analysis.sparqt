@@ -1,0 +1,64 @@
+{
+    "one_instances":{
+    "_CMT_":"Возвращает один экземпляр класса для определения префикса данных",
+    "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+    "#TXT":"select ?inst ?inst_lbl {
+            ?inst a #{URI} .
+            ?inst rdfs:label ?inst_lbl .
+            } limit 1"
+    },
+    "attributes":{
+        "_CMT_":"Возвращает список пицц с характеристиками",
+        "#VARS":{"PREF":{"mark":"#{PREF}","default":""}, "URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"prefix onto: <#{PREF}>
+                select ?pz_lbl ?price ?size {
+                ?cls rdfs:subClassOf* onto:Pizza .
+                ?pz a ?cls .
+                ?pz rdfs:label ?pz_lbl .
+                ?pz onto:hasPrice ?price .
+                ?pz onto:hasSize ?size .
+               } order by ?pz_lbl"
+    },
+    "hierarchy":{
+        "_CMT_":"Возвращает список пицц с топпингами",
+        "#VARS":{"PREF":{"mark":"#{PREF}","default":""}, "URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"prefix onto: <#{PREF}>
+               select ?short_cls3 ?short_cls2 ?short_cls (count(?pz) as ?count) {
+                {select distinct ?pz ?class ?class2 ?class3 {
+                  BIND(onto:Pizza as ?class)
+                  BIND('#.' as ?class2)
+                  BIND('' as ?class3)
+                  ?pz a ?class . }
+                }
+                UNION
+                {select distinct ?pz ?class ?class2 ?class3 {
+                  BIND(onto:Pizza as ?class)
+                  BIND('' as ?class3)
+                  ?class2 rdfs:subClassOf ?class .
+                  ?pz a ?class2 . }
+                }
+                UNION
+                {select distinct ?pz ?class ?class2 ?class3 {
+                  BIND(onto:Pizza as ?class)
+                  ?class2 rdfs:subClassOf ?class .
+                  ?class3 rdfs:subClassOf ?class2 .
+                  ?pz a ?class3 . }
+                }
+                BIND(STRAFTER(STR(?class), '#') as ?short_cls)
+                BIND(STRAFTER(STR(?class2), '#') as ?short_cls2)
+                BIND(STRAFTER(STR(?class3), '#') as ?short_cls3)
+                } Group by ?short_cls3 ?short_cls2 ?short_cls"
+    },
+    "toppings":{
+        "_CMT_":"Возвращает список пицц с характеристиками",
+        "#VARS":{"PREF":{"mark":"#{PREF}","default":""}, "URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"prefix onto: <#{PREF}>
+                select ?pz_lbl ?topping ('1' as ?cnt) {
+                ?cls rdfs:subClassOf* onto:Pizza .
+                ?pz a ?cls .
+                ?pz rdfs:label ?pz_lbl .
+                ?pz onto:hasTopping ?top .
+                ?top rdfs:label ?topping .
+               } order by ?pz_lbl"
+    }
+                                                                                                                                                                                                                                                                                                                                  }
