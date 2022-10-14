@@ -23,6 +23,8 @@ from urllib.parse import urlparse
 
 from flask_login import current_user
 
+from .prompt import _help
+
 _auth_decorator = app_api.get_auth_decorator()
 
 @mod.route(url_prefix, strict_slashes=False)
@@ -47,9 +49,10 @@ def page(page_id = ""):
 	if request.method == 'GET':
 		if request.args.get("do") == "edit":
 			page_data = get_page_data(page_id)
-			return app_api.render_page('page_edit.html', page_id = page_id, page = page_data['text'], is_navigation = page_data['is_navigation'])
+			title = page_data['title'] if 'title' in page_data else ""
+			return app_api.render_page('page_edit.html', page_id = page_id, page = page_data['text'], is_navigation = page_data['is_navigation'], page_title = title, help = _help())
 		if not page_id:
-			return app_api.render_page('page_edit.html', page_id = '', page = '', is_navigation = '')
+			return app_api.render_page('page_edit.html', page_id = '', page = '', is_navigation = '', page_title = '', help = _help())
 
 		return redirect(url_for('wiki.wiki'))
 
@@ -57,7 +60,7 @@ def page(page_id = ""):
 		if 'save' in request.form:
 			# user_id = current_user.get_id()
 			is_navigation = request.form['is_navigation'] if 'is_navigation' in request.form and request.form['is_navigation'] else '0'
-			values = {'text' : request.form['page'], "is_navigation" : is_navigation}
+			values = {'text' : request.form['page'], "is_navigation" : is_navigation, 'title' : request.form['page_title']}
 			edit_page(request.form['page_id'], values)
 		elif 'delete' in request.form:
 			delete_page(page_id)
@@ -74,42 +77,30 @@ def show_page(page_id = ""):
 	:return:
 	'''
 	if request.method == 'GET':
-		compile_text = compile_wiki(get_page_data(page_id)['text'])
-		is_toc = get_page_data(page_id)['is_navigation']
+		page = get_page_data(page_id)
+		title = page['title'] if 'title' in page else ""
+		compile_text = compile_wiki(page['text'], title)
+		is_toc = bool(int(page['is_navigation']))
 		toc = create_toc(compile_text) if is_toc else ""
 
-		return app_api.render_page('page.html', page = compile_text, is_navigation = is_toc, toc = toc)
+		return app_api.render_page('page.html', page = compile_text, is_navigation = is_toc, toc = toc, title = title)
 
 
 
-def compile_wiki(text):
+def compile_wiki(text, title):
 	'''
 	Метод компилирует wiki код в html
 	:param text:
 	:return:
 	'''
 
-	# добавление тега {{<tag>:<src_tag>}}
-	wiki_tag_pattern = r'(\{\{(\w+):(.+)\}\})'
-	for wiki_attrs in re.findall(wiki_tag_pattern, text):
-		if wiki_attrs:
-			wiki_html = '<' + wiki_attrs[1]+ ' src="' + wiki_attrs[2] + '" />' 
-			text = text.replace(wiki_attrs[0], wiki_html)
-
-	# добавление ссылки {{<href>|<label>}}
-	link_pattern = r'(\[\[(.+)\|(.+)\]\])'
-	for link_attrs in re.findall(link_pattern, text):
-		if link_attrs:
-			file_link_html = '<a href="' + link_attrs[1] + '" target="_blank">' + link_attrs[2] + '</a>'
-			text = text.replace(link_attrs[0], file_link_html)
-
 	# компилируем ссылки
 	# url_pattern = r"\b((?:https?://)?(?:(?:www\.)?(?:[\da-z\.-]+)\.(?:[a-z]{2,6})|(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)|(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:(?:(?::[0-9a-fA-F]{1,4}){1,6})|:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(?::[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-fA-F]{1,4}:){1,4}:(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])))(?::[0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])?(?:/[\w\.-]*)*/?)\b"
 	# for url in re.findall(url_pattern, text):
 	# 	text = re.sub(url, urlparse(url).path, text)
 
-
 	compile_text = markdown2.markdown(text)
+	compile_text = "<h1>" + title + "</h1>" + compile_text
 	return compile_text
 
 
@@ -118,10 +109,5 @@ def create_toc(text):
 
 	toc = '<ul class="page_toc">' + ''.join(['<li><a href="' + '#' + '">' + name + '</a></li>' for name in _headers]) + '</ul>'
 	return toc
-
-
-
-
-
 
 

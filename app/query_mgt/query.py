@@ -33,11 +33,13 @@ class Query:
         self.http_headers = ""
         self.namespaces = ""
 
-        self.storage_driver = Utilites.get_storage_driver()
+        self.storage_driver = None
 
         self.logger = self.initLoggerComponent().getAppLogger()
 
         try:
+            self.storage_driver = Utilites.get_storage_driver()
+
             if module_name:
                 from app.app_api import get_module_sparqt_dir
                 self.SPARQT_DIR = get_module_sparqt_dir(module_name)
@@ -80,6 +82,7 @@ class Query:
         """
         try:
             response = self.storage_driver._exec_query(_query)
+            # self.logger.info("This is the query string: \n" + _query)
             return json.loads(response)
         except Exception as e:
             self.logger.error("Request error: " + str(e))

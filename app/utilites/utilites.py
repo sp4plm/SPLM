@@ -28,8 +28,16 @@ class Utilites:
         app_cfg = SomeConfig(AdminConf.get_configs_path())
         _endpoint = app_cfg.get("data_storages.EndPoints.main")
         _driver_name = app_cfg.get("data_storages.Drivers.main")
-        _driver = StoreManager.get_driver(_driver_name)
-        _driver.set_endpoint(_endpoint)
+        _driver = None
+        if '' == _driver_name:
+            _driver_name = app_cfg.get("data_storages.Main.default_driver")
+        if '' == _driver_name:
+            raise Exception('Undefined store driver name -> "{}"!' . format(_driver_name))
+        try:
+            _driver = StoreManager.get_driver(_driver_name)
+            _driver.set_endpoint(_endpoint)
+        except Exception as ex:
+            raise ex
         return _driver
 
     @staticmethod

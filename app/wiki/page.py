@@ -69,9 +69,11 @@ def get_list_pages():
     :return: pages
     '''
     pages = get_data()
-    pages = list(pages.keys())
-    pages.sort()
-    return pages
+    pages_keys = list(pages.keys())
+    pages_keys.sort()
+
+    result = [{'id' : page, 'title' : pages[page]['title'] if 'title' in pages[page] else ""} for page in pages_keys]
+    return result
 
 
 def get_page_data(page_id):

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import os
 import sqlite3
 from datetime import datetime
@@ -34,12 +35,12 @@ class SqliteRegister(object):
         _files_has_records = []
         if _available_recs:
             _msg = self._debug_name + '.sync_description->_available_files: ' + str(_available_files)
-            self.__to_log(_msg)
+            # self.__to_log(_msg)
             _msg = self._debug_name + '.sync_description->_available_recs: ' + str(list(_available_recs))
-            self.__to_log(_msg)
+            # self.__to_log(_msg)
             for _ri in _available_recs:
                 _msg = self._debug_name + '.sync_description->_ri[\'name\']: ' + str(_ri['name'])
-                self.__to_log(_msg)
+                # self.__to_log(_msg)
                 has_file = _ri['name'] in _available_files
                 if has_file:
                     _files_has_records.append(_ri['name'])
@@ -67,7 +68,7 @@ class SqliteRegister(object):
                 _t += 1
             else:
                 _msg = self._debug_name + '.update_records -> Can not update ' + _file + ' info!'
-                self.__to_log(_msg)
+                # self.__to_log(_msg)
         if _cnt == _t:
             _flg = True
         self._conn.commit()
@@ -83,7 +84,7 @@ class SqliteRegister(object):
         for _c in _new_data:
             if _c not in _cols_map:
                 continue
-            _v = _c + ' = ' + self.__val_to_type(_new_data[_c], _types[_c])
+            _v = _c + ' = ' + str(self.__val_to_type(_new_data[_c], _types[_c]))
             _t.append(_v)
         _update_clause = ', '.join(_t)
         _q = ''
@@ -110,7 +111,7 @@ class SqliteRegister(object):
         _cols = self._get_columns_list()
         _ins_cols_construct = ', '.join([_c['name'] for _c in _cols])
         _q = 'INSERT INTO {}'.format(self.__get_tbl_name())
-        _q += ' ({})'.format(_ins_cols_construct)
+        _q += ' (' + _ins_cols_construct + ')'
         _q += ' VALUES'
 
         _insert_construct = ''
@@ -129,9 +130,16 @@ class SqliteRegister(object):
         _insert_construct = ', '.join(_v)
         if '' != _insert_construct:
             _q += _insert_construct
-            _res = self.__exec(_q)
-            # print('add_records:', str(_res))
-            self._conn.commit()
+            try:
+                _res = self.__exec(_q)
+                # print(self._debug_name + '.add_records -> :_res ', str(_res))
+                self._conn.commit()
+                _flg = True
+            except Exception as ex:
+                _msg = self._debug_name + '.add_records->Exception: {}'.format(ex.args)
+                # print(_msg)
+                self.__to_log(_msg)
+        return _flg
 
     def _add_records(self, _files):
         _flg = False
@@ -182,7 +190,7 @@ class SqliteRegister(object):
         _recs = self.get_records(filter=[{'field':'name', 'oper': '=', 'value': file_name}])
         if 0 < len(_recs):
             _msg = self._debug_name + '._add_record-> {} already have record!' . format(file_name)
-            self.__to_log(_msg)
+            # self.__to_log(_msg)
             return _flg
         _ins_cols_construct = ''
         _cols = self._get_columns_list()
@@ -298,7 +306,8 @@ class SqliteRegister(object):
         _recs = self.get_records(filter=_filter)
         if 0 == len(_recs):
             _msg = self._debug_name + '.remove_record-> no record for {}!' . format(file_name)
-            self.__to_log(_msg)
+            # self.__to_log(_msg)
+            _flg = True
             return _flg
         _q = 'DELETE FROM %s ' % self.__get_tbl_name()
         if _filter is not None and filter:
@@ -323,7 +332,8 @@ class SqliteRegister(object):
         _recs = self.get_records(filter=_filter)
         if 0 == len(_recs):
             _msg = self._debug_name + '.remove_record-> no records for {}!' . format(str(_lst))
-            self.__to_log(_msg)
+            # self.__to_log(_msg)
+            _flg = True
             return _flg
         _q = 'DELETE FROM %s ' % self.__get_tbl_name()
         if _filter is not None and filter:
@@ -341,30 +351,68 @@ class SqliteRegister(object):
             self._conn.commit()
         return _flg
 
+    def __get_escape_clause(self):
+        return 'ESCAPE \'\\\''
+
+    def __get2escape(self):
+        return ['_', '%']
+
+    def __has2escape(self, _in):
+        _flg = False
+        _2esc = self.__get2escape()
+        for _n in _2esc:
+            if _in.find(_n):
+                _flg = True
+        return _flg
+
+    def __escape_str(self, _in):
+        _out = ''
+        _out = _in
+        if self.__has2escape(_in):
+            _2esc = self.__get2escape()
+            for _s in _2esc:
+                _out = _out.replace(_s, '\\' + _s)
+        return _out
+
     def __filter_2_where(self, _filter):
         _where = ''
         if not _filter:
             return _where
+        if isinstance(_filter, str):
+            _filter = json.loads(_filter)
+        if 'rules' in _filter:
+            _filter = _filter['rules'] # для sql нам нужны только правила
         _cols = self._get_columns_list()
         _cols_map = [_c['name'] for _c in _cols]
         _types = {_c['name']: _c['type'] for _c in _cols}
         # filter=[{'field':'name', 'oper': '=', 'value': file_name}]
         _if = []
+        _escape_clause = self.__get_escape_clause()
+        # print(self._debug_name + '.__filter_2_where->_cols_map', _cols_map)
         for _fi in _filter:
             # print(self._debug_name + '.__filter_2_where->_fi', _fi)
             if _fi['field'] not in _cols_map:
                 continue
             _expression = ''
+            _has_escaped = False
             _val = _fi['data']
             if 'cn' == _fi['op']:
                 # 'cn' - содержит | поиск подстроки в строке
-                _val = '"%' + str(_val) + '%"'
+                _val = str(_val)
+                _has_escaped = self.__has2escape(_val)
+                _val = '\'%' + self.__escape_str(_val) + '%\''
                 _expression = _fi['field'] + ' LIKE ' + _val
+                if _has_escaped:
+                    _expression += ' ' + _escape_clause
                 pass  # flg = (-1 < item[field].find(val))
             elif 'nc' == _fi['op']:
                 # 'nc' - не содержит | поиск подстроки в строке инверсия
-                _val = '"%' + str(_val) + '%"'
+                _val = str(_val)
+                _has_escaped = self.__has2escape(_val)
+                _val = '"%' + self.__escape_str(_val) + '%"'
                 _expression = _fi['field'] + ' NOT LIKE ' + _val
+                if _has_escaped:
+                    _expression += ' ' + _escape_clause
                 pass  # flg = (-1 == item[field].find(val))
             elif 'eq' == _fi['op']:
                 # 'eq' - равно | прямое сравнение
@@ -378,23 +426,39 @@ class SqliteRegister(object):
                 pass  # flg = (val != item[field])
             elif 'bw' == _fi['op']:
                 # 'bw' - начинается | позиция 0 искомого вхождения
-                _val = '"' + str(_val) + '%"'
+                _val = str(_val)
+                _has_escaped = self.__has2escape(_val)
+                _val = '"' + self.__escape_str(_val) + '%"'
                 _expression = _fi['field'] + ' LIKE ' + _val
+                if _has_escaped:
+                    _expression += ' ' + _escape_clause
                 pass  # flg = item[field].startswith(val)
             elif 'bn' == _fi['op']:
                 # 'bn' - не начинается | инверсия от 0 позиции
-                _val = '"' + str(_val) + '%"'
+                _val = str(_val)
+                _has_escaped = self.__has2escape(_val)
+                _val = '"' + self.__escape_str(_val) + '%"'
                 _expression = _fi['field'] + ' NOT LIKE ' + _val
+                if _has_escaped:
+                    _expression += ' ' + _escape_clause
                 pass  # flg = not (item[field].startswith(val))
             elif 'ew' == _fi['op']:
                 # 'ew' - заканчивается на | подстрока является концом строки
-                _val = '"%' + str(_val) + '"'
+                _val = str(_val)
+                _has_escaped = self.__has2escape(_val)
+                _val = '"%' + self.__escape_str(_val) + '"'
                 _expression = _fi['field'] + ' LIKE ' + _val
+                if _has_escaped:
+                    _expression += ' ' + _escape_clause
                 pass  # flg = (item[field].endswith(val))
             elif 'en' == _fi['op']:
                 # 'en' - не заканчивается на | инверсия что подстрока является концом строки
-                _val = '"%' + str(_val) + '"'
+                _val = str(_val)
+                _has_escaped = self.__has2escape(_val)
+                _val = '"%' + self.__escape_str(_val) + '"'
                 _expression = _fi['field'] + ' NOT LIKE ' + _val
+                if _has_escaped:
+                    _expression += ' ' + _escape_clause
                 pass  # flg = not (item[field].endswith(val))
             elif 'in' == _fi['op']:
                 # 'in' - включает | самоделка для оператора IN в SQL
@@ -471,6 +535,13 @@ class SqliteRegister(object):
         if is_new:
             self.__create()
 
+    def drop(self):
+        self._db = os.path.join(self._work_path, 'register.sqlite3')
+        self._conn = None
+        if os.path.exists(self._db):
+            os.unlink(self._db)
+        return os.path.exists(self._db)
+
     def set_fields(self, _fields):
         """
         Метод устанавливает список свойст записи на основании которого будет создана таблица.
@@ -528,7 +599,7 @@ class SqliteRegister(object):
         _res = None
         if self._conn:
             _msg = self._debug_name + '.__exec->com: ' + com
-            self.__to_log(_msg)
+            # self.__to_log(_msg)
             with self._conn as c:
                 _cur = c.cursor()
                 _res = _cur.execute(com)

@@ -7,15 +7,21 @@
 {% block page_main_content %}
 <div class="scroll-ul-list">
 	<form method="post" >
-		<h1>Страница</h1>
-		<br/>
-
 		Id страницы:
 		<br/>
 		{% if page_id %}
 			<input type="text" value="{{page_id}}" name="page_id" readonly>
 		{% else %}
 			<input type="text" value="" name="page_id">
+		{% endif %}
+		<br/>
+
+		Заголовок wiki страницы
+		<br/>
+		{% if page_title %}
+			<input type="text" value="{{page_title}}" name="page_title">
+		{% else %}
+			<input type="text" value="" name="page_title">
 		{% endif %}
 		<br/>
 
@@ -46,6 +52,9 @@
 	<form method="get">
 		<input type="submit" value="К списку страниц" formaction="{{url_for('wiki.wiki')}}">
 	</form>
+
+	{{help | safe}}
+
 </div>
 {% endblock %}
 

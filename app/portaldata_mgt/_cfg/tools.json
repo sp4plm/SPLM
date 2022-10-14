@@ -1,0 +1,7 @@
+[
+  {"id": 2, "label": "Просмотреть последний протокол публикации", "rules": "", "href": "tools/view_protocol", "parid": 0, "srtid": 2, "icon": "", "thumb": "", "descr": "", "code": "ViewProtocol", "roles": ""},
+  {"id": 3, "label": "Скачать последний протокол публикации", "rules": "", "href": "tools/export/protocol", "parid": 0, "srtid": 3, "icon": "", "thumb": "", "descr": "", "code": "DownloadProtocol", "roles": ""},
+  {"id": 4, "label": "Сброс процесса публикации", "rules": "", "href": "tools/drop_publish", "parid": 0, "srtid": 4, "icon": "", "thumb": "", "descr": "", "code": "DropCurrentPublish", "roles": ""},
+  {"id": 5, "label": "Очистка файла результата публикации", "rules": "", "href": "tools/publish_result/clear", "parid": 0, "srtid": 5, "icon": "", "thumb": "", "descr": "", "code": "DropPublishResultFile", "roles": ""},
+  {"id": 6, "label": "Скачать файл с ошибкой публикации", "rules": "", "href": "tools/publish_error/export", "parid": 0, "srtid": 6, "icon": "", "thumb": "", "descr": "", "code": "ExportPublishErrorFile", "roles": ""}
+]

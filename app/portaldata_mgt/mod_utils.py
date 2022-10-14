@@ -4,6 +4,8 @@ import json
 import configparser
 from shutil import rmtree
 
+from time import time, strftime, localtime
+
 from app.utilites.code_helper import CodeHelper
 from app.utilites.jqgrid_helper import JQGridHelper
 
@@ -15,10 +17,59 @@ class ModUtils(object):
     def __init__(self):
         pass
 
+    def drop_publishing_pid_file(self):
+        _flg = False
+        _file = self.get_publishing_pid_file()
+        if os.path.exists(_file):
+            os.unlink(_file)
+            _flg = not os.path.exists(_file)
+        return _flg
+
+    def set_publishing_pid(self, _pid):
+        _file = self.get_publishing_pid_file()
+        _flg = False
+        if _file and not os.path.exists(_file):
+            with open(_file, 'w', encoding='utf-8') as file_p:
+                file_p.write('')
+        with open(_file, 'w', encoding='utf-8') as file_p:
+            file_p.write(str(_pid))
+            _flg = True
+        return _flg
+
+    def get_publishing_pid(self):
+        _file = self.get_publishing_pid_file()
+        _pid = ''
+        if os.path.exists(_file):
+            with open(_file, 'r', encoding='utf-8') as file_p:
+                _pid = file_p.read()
+        return _pid
+
+    def get_publishing_pid_file(self):
+        _pth = ''
+        try:
+            _cfg = self.get_config()
+            pid_name = ''
+            pid_name = _cfg['Main']['publish_pid']
+            from app import app_api
+            _pth = app_api.get_mod_data_path(self.get_mod_name())
+            _pth = os.path.join(_pth, pid_name)
+        except Exception as ex:
+            _pth = ''
+            print(self._debug_name + '.get_publishing_pid_file.Exception: ' + str(ex))
+        return _pth
+
+    def get_publish_result_file(self):
+        _cfg = self.get_config()
+        from app import app_api
+        _pth = app_api.get_mod_data_path(self.get_mod_name())
+        _pth = os.path.join(_pth, _cfg['Main']['publishResultFile'])
+        return _pth
+
     def get_navi(self, _user):
         _lst = self._get_navi_data()
         _navi = []
         if _lst:
+            _web_pref = self.get_web_prefix()
             for _li in _lst:
                 _miss = False
                 if '' != _li['roles']:
@@ -33,6 +84,8 @@ class ModUtils(object):
                         #         _miss = False
                 if _miss:
                     continue
+                if '/' != _li['href'][0]:
+                    _li['href'] = _web_pref + '/' + _li['href']
                 _navi.append(_li)
         return _navi
 
@@ -49,6 +102,11 @@ class ModUtils(object):
         _ini_parser.read(_file, encoding='utf8')
         _cfg = {}
         _cfg = _ini_parser
+        if _cfg:
+            """Теперь возьмем системные настройки по использованию именных графов"""
+            from app import app_api
+            _app_conf = app_api.get_app_config()
+            _cfg['Main']['use_named_graphs'] = _app_conf.get('data_storages.Main.use_named_graphs')
         return _cfg
 
     def get_config_file(self):
@@ -168,11 +226,9 @@ class ModUtils(object):
             return True
         CodeHelper.is_empty_dir(_check_path) # запускаем исключение
 
-
     def clear_upload_temp(self, _check_path):
         if CodeHelper.check_dir(_check_path) and CodeHelper.is_empty_dir(_check_path):
             rmtree(_check_path)  # удаляем ненужную директорию
-
 
     def get_dt_from_filename(self, filename):
         """"""
@@ -191,3 +247,77 @@ class ModUtils(object):
         pdt['min'] = int(b[1])
         pdt['s'] = int(b[2])
         return pdt
+
+    def get_tags_4_adddir(self):
+        _tags = [{'tag': 'img', 'attribute': 'src'}]
+        return _tags
+
+    def get_mod_data_path(self):
+        _name = self.get_mod_name()
+        _pth = ''
+        from app import app_api
+        _pth = app_api.get_mod_data_path(_name)
+        return _pth
+
+    def get_section_cols(self, _sec):
+        _fields = []
+        _fields.append({'name': 'name', 'type': 'TEXT', 'default': ''})
+        _fields.append({'name': 'mdate', 'type': 'TEXT', 'default': ''})
+        if 'backups' == _sec:
+            _fields.append({'name': 'comment', 'type': 'TEXT', 'default': ''})
+        if 'data' == _sec:
+            _fields.append({'name': 'result', 'type': 'TEXT', 'default': ''})
+            _fields.append({'name': 'map', 'type': 'TEXT', 'default': ''})
+        if 'res' == _sec:
+            _fields.append({'name': 'deleted', 'type': 'INTEGER', 'default': 0})
+        if 'maps' == _sec:
+            _fields.append({'name': 'active', 'type': 'INTEGER', 'default': 0})
+        if 'ontos' == _sec:
+            _fields.append({'name': 'fullname', 'type': 'TEXT', 'default': ''})
+            _fields.append({'name': 'result', 'type': 'TEXT', 'default': ''})
+            _fields.append({'name': 'prefix', 'type': 'TEXT', 'default': ''})
+        return _fields
+
+    def get_tools_navi(self, _user):
+        _lst = self._get_tools_navi_data()
+        _navi = []
+        if _lst:
+            _web_pref = self.get_web_prefix()
+            for _li in _lst:
+                _miss = False
+                if '' != _li['roles']:
+                    _miss = True
+                    if _user is not None:
+                        _rl = _li['roles'].split(',')
+                        # судя по реализации метод has_role использует теорию множеств - включает в себя
+                        if _user.has_role(_rl):
+                            _miss = False
+                        # for _r in _li['roles'].split(','):
+                        #     if _user.has_role(_r):
+                        #         _miss = False
+                if _miss:
+                    continue
+                if '/' != _li['href'][0]:
+                    _li['href'] = _web_pref + '/' + _li['href']
+                _navi.append(_li)
+        return _navi
+
+    def _get_tools_navi_data(self):
+        _data = None
+        _pth = self.get_tools_navi_file()
+        _data = []
+        if os.path.exists(_pth):
+            with open(_pth, 'r', encoding='utf-8') as fp:
+                try:
+                    _data = json.load(fp)
+                except Exception as ex:
+                    print(self._debug_name + '._get_tools_navi_data->Exception:', ex.args)
+        return _data
+
+    def get_tools_navi_file(self):
+        _root = self.get_cfg_path()
+        _pth = os.path.join(_root, 'tools.json')
+        return _pth
+
+    def formated_time_mark(self, _tpl='%Y%m%d_%H-%M-%S'):
+        return strftime(_tpl, localtime(time()))

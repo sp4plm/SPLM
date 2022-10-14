@@ -20,6 +20,9 @@ ul {list-style: none;}
 .toolbar-btn{border:1px solid #999999;margin:2px;cursor:pointer;}
     .toolbar-btn .text{padding:2px 2px;}
 
+.buttons-lbl {width: auto;float: left;clear: none;margin: 2px 2px;min-width: 16px;min-height: 16px;}
+    .buttons-lbl .text{padding:2px 2px;}
+
 div.toolbar{width:100%;padding-bottom:4px;min-height:2.4em;height:2.4em;}
 .row-toolbar{ width:60px;height:20px; overflow:hidden;}
 .row-toolbar .act-btn{ float:left; clear:none;margin-left:1px;}
@@ -70,4 +73,15 @@ div.toolbar{width:100%;padding-bottom:4px;min-height:2.4em;height:2.4em;}
 .sub-sidenavi-view {float:left;clear:none;min-width:83.5%;min-height:90%;}
 .sub-sidenavi-view .table-box {clear:both;}
 .sub-sidenavi-view .sub-sidenavi-toolbar {clear:both;margin-top:20px;text-align: center;}
+.sub-sidenavi-toolbar {clear:both;margin-top:10px;}
 .sidenavi-toolbar {width:100%;clear:both;}
+
+.disabled-btn{ cursor: text; }
+.disabled-btn .text{
+    cursor: text;
+    filter: sepia(97%) opacity(50%);
+}
+
+.annotated-btn{}
+.annotated-btn > .ui-icon{clear:none;float:left;}
+.annotated-btn > .uicon-annotate{color:#999999;line-height:16px;font-size:10px;display:block;float:right;clear:none;width:24px;height:16px;padding-top:1px;border:none;background:none;font-weight:normal;}

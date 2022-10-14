@@ -2,6 +2,7 @@
 import os
 from .driver import Driver
 
+
 class ModApi:
     _class_file = __file__
     _debug_name = 'LDAPAuthAPI'

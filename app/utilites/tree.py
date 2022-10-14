@@ -33,8 +33,14 @@ def get_data():
 
     # получение кодов на Порядок и Прорыв
     # получим именно /verification/documents, потому что последний в route
-    PARENTS_FOR_QUERY_URLS = [url_for("splm_nav.tracing"), url_for("splm_nav.reportdocs"), url_for("splm_nav.verification")]
-    ENUMERATION_URLS = [url_for("reports.analytics")]
+    p1 = url_for("splm_nav.tracing") if app_api.is_app_module_enabled('mod_splm_nav') else '#'
+    p2 = url_for("splm_nav.reportdocs") if app_api.is_app_module_enabled('mod_splm_nav') else '#'
+    p3 = url_for("splm_nav.verification") if app_api.is_app_module_enabled('mod_splm_nav') else '#'
+    PARENTS_FOR_QUERY_URLS = [p1, p2, p3]
+
+    e1 = url_for("reports.analytics") if app_api.is_app_module_enabled('mod_reports') else '#'
+    ENUMERATION_URLS = [e1]
+    
     for item in data:
         if item['href'] in PARENTS_FOR_QUERY_URLS:
             if item['code'] not in PARENTS_FOR_QUERY:

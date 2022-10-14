@@ -12,7 +12,7 @@
 	<ul>
 		{% for page in pages %}
 			<li>
-				<a href="{{url_for('wiki.page', page_id = page, do = 'edit')}}">{{page}}</a> (<a href="{{url_for('wiki.show_page', page_id = page)}}">просмотр</a>)
+				<a href="{{url_for('wiki.page', page_id = page.id, do = 'edit')}}">{{page.id}} - {{page.title}}</a>  - (<a href="{{url_for('wiki.show_page', page_id = page.id)}}">просмотр</a>)
 			</li>
 		{% endfor %}
 	</ul>

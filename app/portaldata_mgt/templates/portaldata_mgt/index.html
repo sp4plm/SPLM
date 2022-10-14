@@ -33,6 +33,19 @@
         <span>&nbsp;&nbsp;||&nbsp;&nbsp;</span>
         <label>Время последней резервной копии:&nbsp;&nbsp;</label><span class="publisher-info" id="last-backup"></span>
     </div>
+    {% if pub_result_messages %}
+    <div id="last-publish-info" class="log-box">
+        <br /><h4>Результат последней публикации данных:</h4>
+        {% for _pmsg in pub_result_messages %}
+        <p class="pub-result_msg">{{_pmsg}}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div style="text-align:right;height:24px;">
+        <span class="ui-corner-all toolbar-btn" style="float:right;line-height:18px;" id="export-btn" action="download-records">
+            <img style="width:16px;margin:1px;" src="{{url_for('portaldata_mgt.static', filename='img/excel-icon16.gif')}}" />
+        </span>
+    </div>
     {% endif %}
     <div class="table-box" dirname="{{dir_name}}">
         <div class="json-source" id="files-cfg-tbl" style="display:none">{{ tbl }}</div>

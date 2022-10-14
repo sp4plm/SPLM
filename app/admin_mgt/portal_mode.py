@@ -102,6 +102,8 @@ class PortalMode():
                 self.update_opened('admin_mgt.static')  # статичные файлы административного интерфейса
                 self.update_opened('admin_mgt.__modes_management')  # управление режимами портала
                 self.update_opened('admin_mgt.__drop_portal_mode')  # сброс режима портала
+                self.update_opened('portal.login')  # login
+                self.update_opened('portal.logout')  # logout
             self.__sync()
             self._started = datetime.now().timestamp()
             _t = self._data

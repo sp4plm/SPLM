@@ -57,7 +57,7 @@ class DataUploadManager:
         if self._check_storage_driver():
             flg = self._storage_driver.upload_file(file_path)
         else:
-            self._to_log('_upload_func: Storage driver is not defined!')
+            self._to_log(self._debug_name + '._upload_func: Storage driver is not defined!')
         return flg
 
     def upload_file(self, file_path):
@@ -68,12 +68,17 @@ class DataUploadManager:
         graph_name = graph_name.lstrip('<').rstrip('>')
         query = 'DELETE { GRAPH <' + graph_name + '> { ?s ?p ?o } } WHERE { ?s ?p ?o . }'
         self._to_log(self._debug_name + '.clear_named_graph_data: try send clear graph request!')
-        self._to_log(self._debug_name + '.clear_named_graph_data: request is ->' + query)
+        self._to_log(self._debug_name + '.clear_named_graph_data: request is -> ' + query)
         # HACK
         # нельзя удалять nullGraph при blazegraph
         if graph_name.endswith('#nullGraph'):
             return True # говорим что удаление прошло успешно
-        return self.exec_query(query)
+        _q_res = ''
+        try:
+            _q_res = self.exec_query(query)
+        except Exception as ex:
+            self._to_log(self._debug_name + '.clear_named_graph_data: execute query exception -> ' + str(ex))
+        return _q_res
 
     def cook_graph_name(self, item):
         g_name = ''
@@ -84,7 +89,13 @@ class DataUploadManager:
         """ send a query to the triple store """
         if self._storage_driver is None:
             return None
-        return self._storage_driver.query(query)
+        _q_res = ''
+        try:
+            _q_res = self._storage_driver.query(query)
+        except Exception as ex:
+            self._to_log(self._debug_name + '.exec_query: Execute query exception: ' + str(ex))
+            raise ex
+        return _q_res
 
     def _init_storage_driver(self):
         _store_cred = ''
@@ -94,7 +105,7 @@ class DataUploadManager:
                 self._storage_driver.set_portal_onto_uri(app_api.get_portal_onto_uri())
             _store_cred = self._app_cfg.get('data_storages.Accounts.main')
         except Exception as ex:
-            self._to_log('_init_storage_driver: Can not get storage driver - Exception: ' + str(ex))
+            self._to_log(self._debug_name + '._init_storage_driver: Can not get storage driver - Exception: ' + str(ex))
         if '' != _store_cred:
             _use_store_auth = True  # использовать для измененя хранилища авторизацию
             parsed_cred = self._get_parsed_store_credential(_store_cred)

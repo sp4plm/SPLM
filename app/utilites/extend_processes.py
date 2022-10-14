@@ -7,6 +7,7 @@ from .code_helper import CodeHelper
 
 class ExtendProcesses:
     _class_file = __file__
+    _debug_name = 'ExtendProcesses'
 
     @staticmethod
     def get_exec_path():
@@ -16,7 +17,7 @@ class ExtendProcesses:
     def run(script, script_args=[], errors=''):
         """ """
         if not CodeHelper.check_file(script):
-            raise FileExistsError('Try execute undefined script: {}'. format(script))
+            raise FileExistsError(ExtendProcesses._debug_name + '.run: Try execute undefined script: {}'. format(script))
         cmd_args = []
         cmd_args.append(sys.executable)
         cmd_args.append(script)
@@ -42,3 +43,21 @@ class ExtendProcesses:
     @staticmethod
     def update_sys_path():
         sys.path.insert(0, ExtendProcesses.get_exec_path())
+
+    @staticmethod
+    def stop(_pid):
+        _flg = False
+        try:
+            _pid = int(_pid)
+            _real_pid = _pid
+            ExtendProcesses.__kill_process(_real_pid)
+            _flg = True
+        except Exception as ex:
+            raise ex
+        return _flg
+
+    @staticmethod
+    def __kill_process(_pid):
+        import signal
+        os.kill(_pid, signal.SIGTERM)
+        pass

@@ -11,6 +11,7 @@ class FilesManagement(object):
     _class_file = __file__
     _debug_name = 'PortaldataFilesManagement'
     _register_name = 'register'
+    _delete_key = 'deleted'
 
     def __init__(self, _work_path):
         if not os.path.exists(_work_path) or not os.path.join(_work_path):
@@ -62,16 +63,20 @@ class FilesManagement(object):
 
     def __normalize_filter(self, _sec, filter):
         if filter is not None and filter:
-            filters = loads(filter)
-            if 'rules' in filters:
-                filters = filters['rules']
+            if isinstance(filter, str):
+                filter = loads(filter)
+            else:
+                filter = filter
+            if 'rules' in filter:
+                filters = filter['rules']
                 #  теперь нужно заменить колонки в правилах согласно карте
                 _c_map = self.__get_columns_map(_sec)
                 _t2 = []
                 for _r in filters:
-                    _r['field'] = _c_map[_r['field']]
+                    if _r['field'] in _c_map:
+                        _r['field'] = _c_map[_r['field']]
                     _t2.append(_r)
-                filter = _t2
+                filter['rules'] = _t2
                 _t2 = None
         return filter
 
@@ -95,6 +100,35 @@ class FilesManagement(object):
                         del kwargs['start']
                 _files = _register.get_records(filter=filters, **kwargs)
         return _files
+
+    def get_section_record_inf(self, _sec, _file_name):
+        _rec = {}
+        _filter = {'name':_file_name}
+        _t = self.search_section_records(_sec, _filter)
+        if _t:
+            _rec = _t.pop(0)
+        return _rec
+
+    def search_section_records(self, _sec, _description):
+        _recs = []
+        _filter = {"groupOp":"AND", 'rules':[]}
+        # _description - ожидаем фильтр в виде полей записи с искомыми значениями - словарь
+        if _description:
+            for _fld in _description:
+                _filter['rules'].append({"field":_fld,"op":"eq","data":_description[_fld]})
+        # print(self._debug_name + '.search_section_records -> _filter: ' + str(_filter))
+        _t = self.get_section_content(_sec, _filter)
+        if _t:
+            _recs = _t
+        return _recs
+
+    @staticmethod
+    def sort_files(file_list, ord='asc', attr='name'):
+        sort_result = []
+        sort_result = file_list
+        revers = True if 'asc' != ord else False
+        sort_result = sorted(sort_result, key=lambda x: x[attr], reverse=revers)
+        return sort_result
 
     def count_section_content(self, _sec, filters=None):
         _cnt = 0
@@ -136,6 +170,23 @@ class FilesManagement(object):
                     files.append(_w)
         return files
 
+    def is_deleted_section_item(self, _sec, _rec):
+        """
+        Проверяет установлен ли флаг удаления
+        :param item:
+        :return:
+        """
+        _flg = False
+        _pth = self.get_section_path(_sec)
+        if os.path.exists(_pth):
+            # получим информацию о секции
+            _inf = self.get_section_inf(_sec)
+            # теперь требуется получить реестр секции
+            _reg = self.get_section_register(_sec)
+            if self._delete_key in _rec:
+                _flg = bool(_rec[self._delete_key])
+        return _flg
+
     def remove_section_file(self, _sec, _file_name):
         _flg = False
         _pth = self.get_section_path(_sec)
@@ -153,12 +204,34 @@ class FilesManagement(object):
                     _flg = True # теперь честно говорим что удалили
         return _flg
 
+    def remove_section_files(self, _sec, _files_lst):
+        _flg = False
+        _pth = self.get_section_path(_sec)
+        if os.path.exists(_pth):
+            if _files_lst:
+                _t = []
+                for _file_name in _files_lst:
+                    _tf = os.path.join(_pth, _file_name)
+                    if os.path.exists(_tf):
+                        os.unlink(_tf)
+                        _flg = os.path.exists(_tf)
+                        if not _flg:
+                            _t.append(_file_name)
+                if _t:
+                    # получим информацию о секции
+                    _inf = self.get_section_inf(_sec)
+                    # теперь требуется получить реестр секции
+                    _reg = self.get_section_register(_sec)
+                    _flg = _reg.remove_records(_t)
+        return _flg
+
     def add_section_file(self, _sec, _file):
         _flg = False
         _pth = self.get_section_path(_sec)
         if os.path.exists(_pth):
             _recs = []
-            _recs.append(self.__create_section_record(_sec, os.path.basename(_file)))
+            _nr = self.__create_section_record(_sec, os.path.basename(_file))
+            _recs.append(_nr)
             _flg = self.__add_section_records(_sec, _recs)
         return _flg
 
@@ -170,6 +243,14 @@ class FilesManagement(object):
             _data[os.path.basename(_file_name)] = _new_data
             # print(self._debug_name + '.update_section_file -> _data', _data)
             _flg = self.__update_section_records(_sec, _data)
+        return _flg
+
+    def update_section_files(self, _sec, _update_data):
+        _flg = False
+        _pth = self.get_section_path(_sec)
+        if os.path.exists(_pth):
+            # print(self._debug_name + '.update_section_files -> _update_data', _update_data)
+            _flg = self.__update_section_records(_sec, _update_data)
         return _flg
 
     def __update_section_records(self, _sec, _files_data):

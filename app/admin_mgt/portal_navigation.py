@@ -135,7 +135,7 @@ class PortalNavigation(NavigationFiles):
             else:
                 _roles = point['roles'].split(',')
                 for _r in _roles:
-                    if user.has_role(_r):
+                    if not user.is_anonymous and user.has_role(_r):
                         flg = True
                         break
         return flg

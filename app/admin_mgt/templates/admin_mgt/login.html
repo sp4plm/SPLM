@@ -35,3 +35,10 @@
         </form>
     </div>
 {% endblock %}
+{%- block page_scripts %}
+    <script type="text/javascript">
+        $(function(){
+            $('#submit').button();
+        });
+    </script>
+{%- endblock page_scripts %}

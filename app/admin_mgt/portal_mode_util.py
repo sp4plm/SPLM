@@ -71,7 +71,7 @@ class PortalModeUtil():
     def set_portal_mode(self, _name):
         _mode = None
         from app.admin_mgt.portal_mode import PortalMode
-        _file = self.__search_mode_file()
+        _file = self.__search_mode_file(_name)
         if _file and os.path.exists(_file):
             _name = self._get_mode_name(_file)
             print(self._debug_name + '.set_portal_mode: Portal mode "' + _name + '" is enabled!')
@@ -206,6 +206,8 @@ class PortalModeUtil():
                         _work_fname = _fn
                         break
             _file = os.path.join(_dir, _work_fname)
+        if not os.path.isfile(_file):
+            _file = ''
         return _file
 
     def __get_files(self):

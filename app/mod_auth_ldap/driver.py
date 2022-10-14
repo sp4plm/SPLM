@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+from datetime import datetime
 import ldap3
 import configparser
 
@@ -28,17 +29,24 @@ class Driver():
             self._servers = os.path.join(self._conf_root, 'servers')
             self._logs = os.path.join(self._conf_root, 'logs')
 
+        # checked servers for instance
+        self._checked_DCs = []
+        # logining find user
+        self._logining_find_user = None
+        self._user_cDC = None  # описание сервера к которому смог забиндится пользователь
+
     def login(self, u_name, u_secret):
         flg = False
+        self._logining_find_user = None # для инициализации и сброса
         if not self._check_DCs():
             # write to log - No available servers
-            print(self._debug_name +'.login->No available servers')
+            # print(self._debug_name +'.login->No available servers')
             return flg
         self._logon_name = u_name
         DC_conf = self._get_user_DC(u_name, u_secret)
         if not DC_conf:
             # не получили конфигурацию сервера для пользователя
-            print(self._debug_name +'.login->No server configuration for user: ', u_name)
+            # print(self._debug_name +'.login->No server configuration for user: ', u_name)
             return flg
         # пытаемся соединиться
         self.connect(DC_conf)
@@ -49,44 +57,84 @@ class Driver():
             # чтобы проверить его группу на соответствие условия доступа
             ldap_user = None
             ldap_user = self.search_ldap_user(self._logon_name)
+            self._logining_find_user = ldap_user
             if ldap_user:
                 flg = True
+            else:
+                flg = False
+                if self._conn is not None:
+                    if self._conn.bound and not self._conn.closed:
+                        self._logining_find_user = self.__cook_connection_user()
         return flg
+
+    def __check_logining_login(self, _2check):
+        _flg = False
+        if not self._logining_find_user:
+            return _flg
+        if 'login' in self._logining_find_user:
+            if self._is_active_directory:
+                _2check = str(_2check) + '@'
+            else:
+                _2check = 'uid=' + str(_2check) + ','
+            _flg = self._logining_find_user['login'].startswith(_2check)
+        else:
+            server = self._var_get('CurrentServer')
+            if server is not None:
+                login_field = server['Attributes']['Login']
+                _flg = self._logining_find_user[login_field] == _2check
+            else:
+                _flg = self._logining_find_user['uid'] == _2check
+        return _flg
 
     def get_user(self, login):
         data = None
-        w = self.search_ldap_user(login)
+        w = None
+        # переменная заполняется методом логин
+        if self.__check_logining_login(login):
+            w = self._logining_find_user
+        if w is None:
+            w = self.search_ldap_user(login)
         server = self._var_get('CurrentServer')
         if w and server:
             data = {}
+            data = self.__cook_fake_user(login)
             data['login'] = login
             data['name'] = ''
-            str = ''
+            str1 = ''
             str2 = ''
-            if server['Attributes']['Firstname'] in w:
-                str = w[server['Attributes']['Firstname']]
-            if server['Attributes']['Lastname'] in w:
+            if server['Attributes']['Firstname'] in w and w[server['Attributes']['Firstname']]:
+                str1 = w[server['Attributes']['Firstname']]
+            if server['Attributes']['Lastname'] in w and w[server['Attributes']['Lastname']]:
                 str2 = w[server['Attributes']['Lastname']]
-            str += ' ' + str2
-            if '' == str:
-                str = login
-            data['name'] = str
+            if str2:
+                str1 += ' ' + str2
+            if '' == str1:
+                str1 = login
+            data['name'] = str1
+            str1 = ''
             data['email'] = ''
-            if server['Attributes']['Email'] in w:
-                str = w[server['Attributes']['Email']]
-            if '' == str:
-                str = self.cook_fake_mail(login)
-            data['email'] = str
+            if server['Attributes']['Email'] in w and w[server['Attributes']['Email']]:
+                str1 = w[server['Attributes']['Email']]
+            if '' == str1:
+                str1 = self.cook_fake_mail(login)
+            data['email'] = str1
             data['password'] = self.cook_usecret(data, 'password')
         return data
+
+    def __cook_fake_user(self, login):
+        _fake = {}
+        _fake['login'] = login
+        _fake['name'] = login
+        _fake['email'] = self.cook_fake_mail(login)
+        _fake['password'] = self.cook_usecret(_fake, 'password')
+        return _fake
 
     def cook_usecret(self, data, field):
         secret = ''
         login = data['login']
-        data[field] = ''
         base = self.cook_fake_mail(login)
         from hashlib import sha1
-        data[field] = sha1(base.encode())
+        secret = sha1(base.encode()).hexdigest()
         return secret
 
     def cook_fake_mail(self, login):
@@ -98,6 +146,16 @@ class Driver():
             domain = self.get_domain_from_base_dn(base_dn)
         fake = '{}@{}'.format(login, domain)
         return fake
+
+    def __cook_connection_user(self):
+        _u = {}
+        if self._conn is not None:
+            _u['login'] = self._conn.user
+            ldap_attributes = self.get_ldap_attributes()
+            if ldap_attributes:
+                for _a in ldap_attributes:
+                    _u[_a] = ''
+        return _u
 
     def search_ldap_user(self, login):
         u_name, u_domain = self.parse_uses_username(login)
@@ -120,10 +178,14 @@ class Driver():
                 search_result = None
                 try:
                     self._conn.search(base_dn, search_filter, attributes=ldap_attributes)
+                    if self._conn.last_error:
+                        print(self._debug_name + '.search_ldap_user -> after search self._conn.last_error: ', str(self._conn.last_error))
                     if self._conn.entries:
                         search_result = self._conn.entries
                 except Exception as ex:
                     print(self._debug_name +'.search_ldap_user Error: ', ex)
+                    if self._conn.last_error:
+                        print(self._debug_name + '.search_ldap_user -> self._conn.last_error(on Exception): ', str(self._conn.last_error))
                 if search_result:
                     user = self.search_result_format(search_result)
         return user
@@ -160,12 +222,15 @@ class Driver():
 
     def ldap_login(self, u_name, u_secret):
         flg = False
+        # print(self._debug_name + '.ldap_login: call')
         if self._conn is not None:
             try:
                 _flg = self._conn.rebind(u_name, u_secret)
                 flg = _flg
             except Exception as ex:
                 print(self._debug_name + '.ldap_login.Exception: ' + str(ex))
+                if self._conn.last_error:
+                    print(self._debug_name + '.ldap_login -> self._conn.last_error: ', str(self._conn.last_error))
                 flg = False
         return flg
 
@@ -203,7 +268,7 @@ class Driver():
         port = server_cfg['Info']['Port']
         version = server_cfg['Info']['Version']
         ldaps = server_cfg['Info']['LDAPS']
-        self._is_active_directory = True if 1==server_cfg['Info']['ActiveDirectory'] else False
+        self._is_active_directory = True if (1==server_cfg['Info']['ActiveDirectory'] or '1'==server_cfg['Info']['ActiveDirectory']) else False
         if 'on' == ldaps.lower():
             host = 'ldaps://' + host
         try:
@@ -215,19 +280,32 @@ class Driver():
 
     def get_actual_server(self):
         server = None
-        servers = self._get_servers()
-        if servers:
-            for srv in servers:
-                host = srv['Info']['Host']
-                port = srv['Info']['Port']
-                if self._check_server_connect(host, port):
-                    server = srv
+        # print(self._debug_name + '.get_actual_server')
+        if self._checked_DCs:
+            available = self._checked_DCs
+            # print(self._debug_name + '.get_actual_server: use _checked_DCs')
+            server = available[0]
+        else:
+            servers = self._get_servers()
+            if servers:
+                for srv in servers:
+                    host = srv['Info']['Host']
+                    port = srv['Info']['Port']
+                    if self._check_server_connect(host, port):
+                        if srv not in self._checked_DCs:
+                            # print(self._debug_name +'._check_DCs add new checked server -> ' + str(datetime.now()))
+                            self._checked_DCs.append(srv)
+                        server = srv
         return server
 
     def _get_user_DC(self, login, pswd):
-        user_DC = ''
+        user_DC = None
         u_name, u_domain = self.parse_uses_username(login)
         user_DC = self.get_dcconf_by_domain(u_domain)
+        """
+        Если не смогли по домену найти конфигурацию сервера по домену пользователя
+        пытаемся выполнить поиск по доступным серверам через ldap_login
+        """
         if not user_DC:
             servers = self.get_available_servers()
             if servers:
@@ -243,6 +321,7 @@ class Driver():
                                 break
                     except Exception as ex:
                         print(self._debug_name +'._get_user_DC: Exception ', ex)
+                        user_DC = None
 
         return user_DC
 
@@ -277,8 +356,8 @@ class Driver():
         key = 'DC'
         dc_pos = base_dn.find(key)
         if -1 < dc_pos:
-            str = base_dn[dc_pos:]
-            splita = str.split(',')
+            str1 = base_dn[dc_pos:]
+            splita = str1.split(',')
             for pair in splita:
                 key_val = pair.split('=')
                 domain += '.' + key_val[1]
@@ -302,8 +381,8 @@ class Driver():
             pos_d = 0
         if '' != delim:
             uname_list = uname.split(delim)
-            if pos_un in uname_list \
-                and pos_d in uname_list:
+            if (-1 < pos_un and pos_un < len(uname_list)) \
+                and (-1 < pos_d and pos_d < len(uname_list)):
                 u_name = uname_list[pos_un]
                 u_domain = uname_list[pos_d]
         else:
@@ -320,6 +399,8 @@ class Driver():
                 host = srv['Info']['Host']
                 port = srv['Info']['Port']
                 if self._check_server_connect(host, port):
+                    if srv not in self._checked_DCs:
+                        self._checked_DCs.append(srv) #  сохраняем проверенные
                     cnt += 1
         if 0 < cnt:
             flg = True
@@ -348,9 +429,15 @@ class Driver():
         conn = None
         try:
             conn = ldap3.Connection(server)
-        except:
+        except Exception as ex:
+            print(self._debug_name + '._ldap_connect->ldap3.Connection(server).Exception: ', str(ex))
+            if conn and conn.last_error:
+                self._errors['last_error'] = conn.last_error
             conn = None
+
+        if conn and conn.last_error:
             self._errors['last_error'] = conn.last_error
+            print(self._debug_name + '._ldap_connect->last_error: ', str(conn.last_error))
         return conn
 
     def _init_errors(self):
@@ -359,27 +446,39 @@ class Driver():
     def get_available_servers(self):
         servers = []
         available = []
-        servers = self._get_servers()
-        if 0 < len(servers):
-            for srv in servers:
-                host = srv['Info']['Host']
-                port = srv['Info']['Port']
-                if self._check_server_connect(host, port):
-                    available.append(srv)
+        # print(self._debug_name + '.get_available_servers: call')
+        if self._checked_DCs:
+            available = self._checked_DCs
+            # print(self._debug_name + '.get_available_servers: use _checked_DCs')
+        else:
+            servers = self._get_servers()
+            if 0 < len(servers):
+                # print(self._debug_name + '.get_available_servers: check from _get_servers')
+                for srv in servers:
+                    host = srv['Info']['Host']
+                    port = srv['Info']['Port']
+                    if self._check_server_connect(host, port):
+                        if srv not in self._checked_DCs:
+                            self._checked_DCs.append(srv) #  сохраняем проверенные
+                        available.append(srv)
         return available
 
     def _check_server_connect(self, host, port):
         flg = False
+        # print(self._debug_name + '._check_server_connect: call')
         try:
             conn = self._ldap_connect(host, port)
-            conn.bind()
+            _bind_flg = conn.bind()
+            # print(self._debug_name + '._check_server_connect bind:', _bind_flg)
             # Возможно нужно будет делать простой запрос поиска
-            conn.unbind()
+            _unbind_flg = conn.unbind()
+            # print(self._debug_name + '._check_server_connect unbind:', _unbind_flg)
             flg = True
         except Exception as ex:
             print(self._debug_name + '._check_server_connect Exception:', ex)
             print(self._debug_name + '._check_server_connect Exception (connect to):', 'host: %s | port: %s' % (host, port))
             flg = False
+        # print(self._debug_name + '._check_server_connect: result -> ', flg)
         return flg
 
     def set_servers_conf_path(self, path):

@@ -76,11 +76,11 @@ def login():
                         _t['name'] = form.username.data
                         _t['login'] = form.username.data
                         _t['email'] = form.username.data + '@company.local'
-                        from hashlib import sha1
-                        _t[spec_key] = ''
-                        base = _t['email'] + secret + '//'
-                        _t[spec_key] = sha1(base.encode()).hexdigest()
                         auth_user = _t
+                    from hashlib import sha1
+                    auth_user[spec_key] = ''
+                    base = auth_user['email'] + secret + '//'
+                    auth_user[spec_key] = sha1(base.encode()).hexdigest()
                     if not user:
                         new_user_data = {}
                         new_user_data['name'] = auth_user['name']

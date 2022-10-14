@@ -10,20 +10,27 @@ from app import app_api
 from app.utilites.code_helper import CodeHelper
 from app.portaldata_mgt.process_logger import ProcessLogger
 
+from app.portaldata_mgt.mod_utils import ModUtils
+_mod_utils = ModUtils()
 process_protocol = None
+publish_result = None
+_mod_cfg = None
 try:
+    _mod_cfg = _mod_utils.get_config()
     process_protocol = ProcessLogger()
+    publish_result = ProcessLogger()
 
     mod_data_path = app_api.get_mod_data_path('portaldata_mgt')
     protocol_file = os.path.join(mod_data_path, 'publish.protocol')
+    result_file = _mod_utils.get_publish_result_file()
     process_protocol.set_log_file(protocol_file)
+    publish_result.set_log_file(result_file)
     process_protocol.clear_log_file() # сбрасываем файл если он есть
+    publish_result.clear_log_file() # сбрасываем файл если он есть
 except Exception as ex:
     raise ex
 
 process_protocol.write('Starting publishing process')
-
-from app.portaldata_mgt.mod_utils import ModUtils
 
 from app.portaldata_mgt.data_publisher import DataPublisher
 from app.portaldata_mgt.data_backuper import DataBackuper
@@ -31,7 +38,6 @@ from app.portaldata_mgt.files_management import FilesManagement
 from app.portaldata_mgt.data_publish_logger import DataPublishLogger
 
 _fm = FilesManagement(mod_data_path)
-_mod_utils = ModUtils()
 
 USE_NAMED_GRAPHS = False
 app_cfg = app_api.get_app_config()
@@ -119,6 +125,7 @@ if onto_list:
 
 if 0 == len(onto_list):
     process_protocol.write('No ontology files!')
+    publish_result.write('Отсутствуют файлы онтологий для загрузки!')
 #     # Аварийно завершаем работу
 #     if process_logger:
 #         msg = 'Аварийное завершение процесса публикации данных: Отсутствуют файлы онтологий!'
@@ -129,10 +136,13 @@ if 0 == len(onto_list):
 #             process_protocol.write('Write process.Done to tracker file: TRUE')
 #     exit(0) # выходим для завершения
 
+# =============================================== {
 
 # подготовка файлов данных для публикации {
 if _fm.get_section_path('res') is not None:
     process_protocol.write('Directory with data files (ttl) is exists!')
+    drop_store = False
+
     files = _fm.get_section_content('res')
     # print('Data files', files)
 
@@ -150,6 +160,10 @@ if _fm.get_section_path('res') is not None:
     for idata_file in files:
         process_protocol.write('Process on file - {}'.format(idata_file['name']))
         data_file = os.path.join(res_path, idata_file['name'])
+        end_file_size = os.stat(result_file).st_size
+        if 2 > end_file_size:
+            process_protocol.write('Empty file - {}'.format(str(end_file_size)))
+            publish_result.write('Файл 0-ой длины -> ' + idata_file['name'])
         for_publish.append(data_file)
         total_operate +=1
         process_logger.set('work_files.done', total_operate)
@@ -219,6 +233,10 @@ if _portal_modes_util is not None:
     _lst.append(_mod + '.publish_process_step')
     _lst.append(_mod + '.publish_process_done')
     _lst.append(_mod + '.publish_process_break')
+    _lst.append(_mod + '.__export_protocol')
+    _lst.append(_mod + '.__view_protocol')
+    _lst.append(_mod + '.__drop_publish')
+    _lst.append(_mod + '.__view_protocol_tail')
     _portal_mode.set_opened(_lst)
     _portal_mode.enable_redirect()
     _portal_mode.enable()
@@ -242,4 +260,6 @@ if process_logger:
     process_logger.set('process.Done', True)
     if process_protocol:
         process_protocol.write('Write process.Done to tracker file: TRUE')
+if publish_result:
+    publish_result.write('Процесс публикации успешно завершен!')
 # завершение функции публикации

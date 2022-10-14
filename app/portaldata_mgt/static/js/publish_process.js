@@ -116,7 +116,7 @@ if(typeof void null!=typeof jQuery){
         }
 
         function _processIterationStart() {
-            _wait_proc_int=setInterval(publishProcessStep, 6000); // каждые двадцать секунд
+            _wait_proc_int=setInterval(publishProcessStep, 6000); // каждые шесть секунд
         }
 
         function _getPublishDialogTmpl(){

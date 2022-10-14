@@ -370,3 +370,31 @@ def render_page(tmpl_name, **tmpl_vars):
     """
     from flask_themes2 import render_theme_template, get_theme
     return render_theme_template(get_theme(get_current_theme()), tmpl_name, **tmpl_vars)
+
+
+
+def canExportReqs():
+    """
+    Функция проверяет возможность экспорта в xlsx для jqgrid
+    return <int>
+    """
+    from flask import g
+    if g.user and g.user.has_role(get_app_config().get('users.Roles.exportCReqsRole')):
+        return 1
+    return 0
+
+
+def get_useDBGMode():
+    """
+    Функция получает значение для debug mode для jqgrid
+    return <int>
+    """
+    from flask import g, session
+    app_cfg = get_app_config()
+    debug_key = app_cfg.get('main.Info.debugModeSesKey')
+
+    if g.user:
+        if g.user.has_role(app_cfg.get('users.Roles.debugRole')):
+            return session.get(debug_key) if debug_key in session else 0
+
+    return 0

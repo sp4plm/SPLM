@@ -28,8 +28,11 @@ class DataFiles():
         errors = {}
         answer = {'deleted': [], 'all':[]}
         for item in items_list:
+            # print('DataFiles.remove_selected_items: item', item)
             test_path = os.path.join(path, item)
+            answer['all'].append(item)
             if not os.path.exists(test_path.encode('utf-8')):
+                errors[item] = 'Not exists!'
                 continue
             if os.path.isfile(test_path.encode('utf-8')):
                 if self.remove_file(item, dirname):

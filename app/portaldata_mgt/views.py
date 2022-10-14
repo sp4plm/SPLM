@@ -69,7 +69,8 @@ def publish_proc():
     # print('ERRORS: =========>', errors)
     # По идее надо выполнить код управлением режимами портала и включить режим
     # обновления данных
-    # pid_file = PortalSettings.get_publishing_pid_file()
+    _mod_utils.set_publishing_pid(data.pid)
+    # pid_file = _mod_utils.get_publishing_pid_file()
     # with open(pid_file, 'w') as file_p:
     #     file_p.write(str(data))
 
@@ -82,7 +83,8 @@ def publish_proc():
 
 def __get_publish_error_file():
     check_errors = ''
-    data_path = app_api.get_mod_data_path('portaldata_mgt')
+    _mod_utils = ModUtils()
+    data_path = app_api.get_mod_data_path(_mod_utils.get_mod_name())
     check_name = 'publish-subproc.errors'
     check_errors = os.path.join(data_path, check_name)
     return check_errors
@@ -153,14 +155,26 @@ def publish_process_break():
                     _portal_modes_util.drop(_portal_mode)
             pass
 
-            check_errors = ''
-            check_errors = __get_publish_error_file()
-            # надо проверить - если файл не пустой
-            file_size = os.stat(check_errors).st_size
-            if file_size > 1:
-                answer['State'] = 301
-                answer['Msg'] = CodeHelper.read_file(check_errors)
-                answer['Data'] = None
+        _pub_file_result = ModUtils().get_publish_result_file()
+        publish_result = None
+        if os.path.exists(_pub_file_result):
+            from app.mod_portaldata.process_logger import ProcessLogger
+            publish_result = ProcessLogger()
+            publish_result.set_log_file(_pub_file_result)
+            publish_result.write('Процесс публикации завершен с ошибкой:')
+
+        ModUtils().drop_publishing_pid_file()
+
+        check_errors = ''
+        check_errors = __get_publish_error_file()
+        # надо проверить - если файл не пустой
+        file_size = os.stat(check_errors).st_size
+        if file_size > 1:
+            if publish_result is not None:
+                publish_result.write(CodeHelper.read_file(check_errors))
+            answer['State'] = 301
+            answer['Msg'] = CodeHelper.read_file(check_errors)
+            answer['Data'] = None
     return json.dumps(answer)
 
 
@@ -197,6 +211,7 @@ def publish_process_done():
                     if _portal_modes_util is not None:
                         _portal_modes_util.drop(_portal_mode)
                 pass
+            ModUtils().drop_publishing_pid_file()
             return json.dumps(answer)
 
         answer['State'] = 301
@@ -486,7 +501,7 @@ def accept_new_file(section):
         answer['Msg'] = ''
         # проверим пуста ли временная директория загрузки файлов
         if _mod_utils.is_empty_upload_temp(_upload_temp):
-            rmtree(_upload_temp) # удаляем поскольку пуста
+            rmtree(_upload_temp, ignore_errors=True) # удаляем поскольку пуста
     return json.dumps(answer)
 
 
@@ -513,7 +528,7 @@ def __reject_new_files(section):
         answer['Msg'] = ''
         # проверим пуста ли временная директория загрузки файлов
         if _mod_utils.is_empty_upload_temp(_upload_temp):
-            rmtree(_upload_temp) # удаляем поскольку пуста
+            rmtree(_upload_temp, ignore_errors=True) # удаляем поскольку пуста
     return json.dumps(answer)
 
 
@@ -522,10 +537,12 @@ def __reject_new_files(section):
 def __upload_files(section):
     """ загружаем файлы в определенную директорию """
     answer = {'Msg': '', 'Data': None, 'State': 404}
+    args = {"method": "POST"}
     answer['Msg'] = 'Нет файлов для сохранения.'
     if request.files and 'File[]' in request.files:
         # print('Catch files')
         file = None # type: werkzeug.datastructures.FileStorage
+        errors = []  # ошибки при попытке сохранить фалы
 
         _upload_dir = 'temp_upload_' + str(datetime.now())
 
@@ -640,6 +657,16 @@ def __section_view(section):
     _html = 'portaldata_mgt'
 
     _mod_utils = ModUtils()
+
+    _tpl_var['pub_result_messages'] = []
+    _publish_result = _mod_utils.get_publish_result_file()
+    if os.path.exists(_publish_result):
+        _lines = []
+        with open(_publish_result, 'r', encoding='UTF-8') as  _fh:
+            _lines = _fh.readlines()
+        if _lines:
+            _tpl_var['pub_result_messages'] = _lines
+
     _cfg = _mod_utils.get_config()
     _cur_user = None
     if g.user:
@@ -760,6 +787,680 @@ def __index():
     #  на основании навигации можно вывести описание блока для каждого пункта
     _tpl_name = os.path.join('portaldata_mgt', 'index.html')
     return app_api.render_page(_tpl_name, **_tpl_var)
+
+# tools {
+
+
+@mod.route('/tools/publish_result/export', methods=['POST', 'GET'])
+def __export_publish_result():
+    _answer = {'Msg': '', 'Data': None, 'State': 500}
+    _mod_utils = ModUtils()
+    _pub_file_result = _mod_utils.get_publish_result_file()
+    _answer['Msg'] = 'Отсутствует файл с результатом!'
+    publish_result = None
+    if os.path.exists(_pub_file_result):
+        _lines = []
+        _answer['State'] = 300
+        _answer['Msg'] = 'Файл с результатом публикации пуст!'
+        with open(_pub_file_result, 'r', encoding='UTF-8') as _fh:
+            _lines = _fh.readlines()
+        if _lines:
+            _answer['State'] = 200
+            _answer['Msg'] = ''
+            _answer['Data'] = _lines
+    return json.dumps(_answer)
+
+
+@mod.route('/tools/publish_result/clear', methods=['POST', 'GET'])
+def __clear_publish_result():
+    _answer = {'Msg': '', 'Data': None, 'State': 500}
+    _mod_utils = ModUtils()
+    _pub_file_result = _mod_utils.get_publish_result_file()
+    _answer['Msg'] = 'Отсутствует файл с результатом!'
+    publish_result = None
+    if os.path.exists(_pub_file_result):
+        _lines = []
+        _answer['State'] = 300
+        _answer['Msg'] = ''
+        with open(_pub_file_result, 'w', encoding='UTF-8') as _fh:
+            _fh.write('')
+        os.unlink(_pub_file_result)
+        _answer['State'] = 200
+        _answer['Msg'] = 'Clear and remove publish result file!'
+    return json.dumps(_answer)
+
+
+@mod.route('/tools/drop_publish')
+def __drop_publish():
+    """
+    Функция для сброса процесса публикации
+    :return:
+    """
+    _html_lst = []
+    _html = ''
+    _html_lst.append('Try drop current publication!')
+    from app.mod_portaldata.process_logger import ProcessLogger
+    from app.mod_portaldata.data_publish_logger import DataPublishLogger
+    _mod_utils = ModUtils()
+    _pid = _mod_utils.get_publishing_pid()
+    _html_lst.append('Catch subprocess PID -> ' + str(_pid))
+    _pub_file_result = _mod_utils.get_publish_result_file()
+    publish_result = None
+    if os.path.exists(_pub_file_result):
+        publish_result = ProcessLogger()
+        publish_result.set_log_file(_pub_file_result)
+    if _pid:
+        try:
+            """
+            записать в файл результата публикации - принудительная остановка публикации пользователем
+            остановить все запущенные режимы
+            записать что публикация закончена в файл прогресса
+            """
+            _flg = ExtendProcesses.stop(_pid)
+            process_protocol = ProcessLogger()
+            _admin_mgt_api = app_api.get_mod_api('admin_mgt')
+            _portal_modes_util = _admin_mgt_api.get_portal_mode_util()
+            mod_data_path = app_api.get_mod_data_path(_mod_utils.get_mod_name())
+            protocol_file = os.path.join(mod_data_path, 'publish.protocol')
+            process_protocol.set_log_file(protocol_file)
+            _portal_mode = None
+            _mode_name = _mod_utils.get_portal_mode_name()
+            #  теперь требуется завершить все режимы портала, связанные с публикацией
+            if _portal_modes_util is not None:
+                _pre_publish_mode = _portal_modes_util.get_current('publish_prepare')
+            # режим подготовки к публикации {
+            if _pre_publish_mode is not None:
+                _html_lst.append('Try to disable "pre_publishing" mode')
+                process_protocol.write(mod.name + '.views.__drop_publish: Enabled "pre_publishing" mode!')
+                try:
+                    _pre_publish_mode.disable()
+                    process_protocol.write(mod.name + '.views.__drop_publish: "Pre_publishing" mode disabled!')
+                    _html_lst.append('"Pre_publishing" mode is disabled')
+                except Exception as ex:
+                    _msg_ex = mod.name + '.views.__drop_publish.Exception: ' + str(ex)
+                    process_protocol.write(_msg_ex)
+                    if _portal_modes_util is not None:
+                        _msg_ex = mod.name + '.views.__drop_publish.Exception: Disabling "pre_publishing" mode failed!'
+                        process_protocol.write(_msg_ex)
+                        _msg_ex = mod.name + '.views.__drop_publish.Exception: Try to disable "pre_publishing" mode with ModeUtils!'
+                        process_protocol.write(_msg_ex)
+                        _portal_modes_util.drop(_pre_publish_mode)
+                    raise Exception(_msg_ex)
+                pass
+            # режим подготовки к публикации }
+            if _portal_modes_util is not None:
+                _portal_mode = _portal_modes_util.get_current(_mode_name)
+            # режим публикации (работа с хранилищем) {
+            if _portal_mode is not None:
+                _html_lst.append('Try to disable "publishing" mode')
+                process_protocol.write(mod.name + '.views.__drop_publish: Enabled "publishing" mode!')
+                try:
+                    _portal_mode.disable()
+                    process_protocol.write(mod.name + '.views.__drop_publish: "Publishing" mode disabled!')
+                    _html_lst.append('"Publishing" mode is disabled')
+                except Exception as ex:
+                    _msg_ex = mod.name + '.views.__drop_publish.Exception: ' + str(ex)
+                    process_protocol.write(_msg_ex)
+                    print(_msg_ex)
+                    if _portal_modes_util is not None:
+                        _msg_ex = mod.name + '.views.__drop_publish.Exception: Disabling "publishing" mode failed!'
+                        process_protocol.write(_msg_ex)
+                        _msg_ex = mod.name + '.views.__drop_publish.Exception: Try to disable "publishing" mode with ModeUtils!'
+                        process_protocol.write(_msg_ex)
+                        _portal_modes_util.drop(_portal_mode)
+                    raise Exception(_msg_ex)
+                pass
+            # режим публикации (работа с хранилищем) }
+
+            publish_result.write('Процесс публикации принудительно завершен администратором!')
+            _html_lst.append('Add message to the current publish result file!')
+            #  теперь надо сказать публикатору что процесс публикации завершен !!!!
+            process_logger = DataPublishLogger()
+            if process_logger:
+                process_logger.set('process.Done', True)
+                if process_protocol:
+                    process_protocol.write('Write process.Done to tracker file: TRUE')
+            _mod_utils.drop_publishing_pid_file()
+            _html_lst.append('Delete pid file!')
+        except Exception as ex:
+            publish_result.write('Не удалось принудительно завершить процесс публикации администратором!')
+            publish_result.write('Ошибка: ' + str(ex))
+            _html_lst.append('Drop current publishing is failed!')
+            if process_protocol:
+                process_protocol.write('Drop current publishing is failed! Exception: ' + str(ex))
+            pass
+    _html = '<br />' . join(_html_lst)
+    return _html
+
+
+@mod.route('/tools/drop_section/<name>')
+def __drop_section(name):
+    """
+    Функция реинициализирует раздел с указанным именем:
+    просто удаляет все файлы и создает занового реестр
+    :return:
+    """
+    _mod_utils = ModUtils()
+    _cfg = _mod_utils.get_config()
+    _w_pth = app_api.get_mod_data_path(_mod_utils.get_mod_name())
+    _fm = FilesManagement(_w_pth)
+    _sec = _fm.get_section_inf(name)
+    if _sec is not None:
+        _lst = _fm.get_section_files(name)
+        if _lst:
+            # удаляем все файлы без изменения реестра
+            for _li in _lst:
+                if os.path.exists(_li):
+                    os.unlink(_li)
+        # в любом случае удаляем реестр
+        if _sec['use_register']:
+            _sr = _fm.get_section_register(name)
+            _sr.drop()
+            _sr.init()
+    return 'Success section ' + name + 'reinicialization!'
+
+
+@mod.route('/tools/view_protocol', methods=['GET'])
+def __view_protocol():
+    """
+    Функция возвращает html страницу просмотра последнего протокола публикации
+    :return:
+    """
+    _mod_utils = ModUtils()
+    _tpl_vars = {}
+    _tpl_vars['title'] = ''
+    _tpl_vars['page_title'] = ''
+    _tpl_vars['inavi'] = []
+    _cur_user = None
+    if g.user:
+        _cur_user = g.user
+    _tpl_vars['inavi'] = _mod_utils.get_navi(_cur_user)
+    _tpl_name = ''
+    _tpl_name = os.path.join(_mod_utils.get_mod_name(), 'protocol.html')
+    return app_api.render_page(_tpl_name, _tpl_vars)
+
+
+@mod.route('/tools/view_protocol/tail', methods=['POST'], defaults={'num': 30})
+@mod.route('/tools/view_protocol/tail/<num>', methods=['POST'])
+def __view_protocol_tail(num):
+    _log = ''
+    _log_file = ''
+    filename = 'publish.protocol'
+    _mod_utils = ModUtils()
+    _cfg = _mod_utils.get_config()
+    _w_pth = app_api.get_mod_data_path(_mod_utils.get_mod_name())
+    _log_file = os.path.join(_w_pth, filename)
+    if 30 > int(num):
+        num = 30
+    if os.path.exists(_log_file):
+        _cmd = 'tail -n %s %s' %(num, _log_file)
+        _log = os.system(_cmd)
+    return _log
+
+
+@mod.route('/tools/export/protocol')
+def __export_protocol():
+    """
+    Функция возвращает файл протокола последней публикации
+    :return:
+    """
+    filename = 'publish.protocol'
+    _mod_utils = ModUtils()
+    _cfg = _mod_utils.get_config()
+    _w_pth = app_api.get_mod_data_path(_mod_utils.get_mod_name())
+    protocol_file = os.path.join(_w_pth, filename)
+    if os.path.exists(protocol_file):
+        download_file_name = filename
+        mime = 'application/octet-stream'
+        file_ext = 'txt'
+        _mime = CodeHelper.get_mime4file_ext(file_ext)
+        if '' != _mime:
+            mime = _mime
+        # print('Catch download file: ' + download_file)
+        from flask import send_file
+        return send_file(protocol_file, mimetype=mime,
+                             as_attachment=True, attachment_filename=download_file_name)
+    return app_api.render_page(os.path.join('errors', '404.html'),
+                               message='Отсутствует файл-протокол публикации данных')
+
+
+@mod.route('tools/publish_error/export')
+def __export_publish_error():
+    """
+    Функция возвращает файл с ошибками прервавшими подпроцесс публикации
+    :return:
+    """
+    filename = 'publish-subproc.errors'
+    _mod_utils = ModUtils()
+    _cfg = _mod_utils.get_config()
+    _w_pth = app_api.get_mod_data_path(_mod_utils.get_mod_name())
+    protocol_file = os.path.join(_w_pth, filename)
+    if os.path.exists(protocol_file):
+        download_file_name = filename
+        mime = 'application/octet-stream'
+        file_ext = 'txt'
+        _mime = CodeHelper.get_mime4file_ext(file_ext)
+        if '' != _mime:
+            mime = _mime
+        # print('Catch download file: ' + download_file)
+        from flask import send_file
+        return send_file(protocol_file, mimetype=mime,
+                             as_attachment=True, attachment_filename=download_file_name)
+    return app_api.render_page(os.path.join('errors', '404.html'),
+                               message='Отсутствует файл с ошибками публикации!')
+
+
+def __get_filtered_records(sec_name):
+    _records = []
+    sidx = 'Name'  # get index row - i.e. user click to sort
+    sord = 'asc'  # get the direction
+    filters = ''
+
+    _result_format = 'json'
+
+    _section_v = SectionView(sec_name)
+
+    if 'GET' == request.method:
+        sidx = request.args['sidx'] if 'sidx' in request.args else sidx
+        sord = request.args['sord'] if 'sord' in request.args else sord
+        filters = request.args['filters'] if 'filters' in request.args else filters
+        _result_format = request.args['fmt'] if 'fmt' in request.args else _result_format
+
+    if 'POST' == request.method:
+        sidx = request.form['sidx'] if 'sidx' in request.form else sidx
+        sord = request.form['sord'] if 'sord' in request.form else sord
+        filters = request.form['filters'] if 'filters' in request.form else filters
+    # =====
+    _mod_utils = ModUtils()
+    _cfg = _mod_utils.get_config()
+    _w_pth = app_api.get_mod_data_path(_mod_utils.get_mod_name())
+    _fm = FilesManagement(_w_pth)
+    _sec = _fm.get_section_inf(sec_name)
+    _records = []
+    if _sec is not None:
+        if _sec['use_register']:
+            _sr = _fm.get_section_register(sec_name)
+
+            USE_NAMED_GRAPHS = CodeHelper.conf_bool(_cfg['Main']['use_named_graphs'])
+
+            columns_map = _section_v.get_columns_map()
+            jq_grid = JQGridHelper()
+            jq_grid.set_map(columns_map)
+
+            _records = _fm.get_section_content(sec_name, filters, sort=columns_map[sidx], sord=sord)
+    return _records
+
+
+@mod.route('/tools/export/section/<name>')
+def __export_section(name):
+    """
+    Функция создает файл с содержимым реестра в формате xml
+    :return:
+    """
+
+    _result_format = 'json'
+    if request.args:
+        _result_format = request.args['fmt'] if 'fmt' in request.args else _result_format
+
+    _mod_utils = ModUtils()
+    _section_v = SectionView(name)
+    _records = []
+    _records = __get_filtered_records(name)
+
+    _result = None
+    if 'json' == _result_format:
+        _result = json.dumps(_records)
+    if 'xml' == _result_format:
+        _xml = ''
+        _xml = __records2xml(_records)
+        _result = _xml
+    #  теперь сохраним контент в виде файла
+    _download_file = os.path.join(_mod_utils.get_mod_data_path(), name + '_exported_records.' + _result_format)
+    with open(_download_file, 'w', encoding='utf-8') as _fp:
+        _fp.write(_result)
+    from flask import send_file
+    return send_file(_download_file, mimetype=_result_format,
+                     as_attachment=True, attachment_filename=os.path.basename(_download_file))
+
+
+def __records2xml(records=None):
+    _xml = ''
+    _xml_recs = ''
+    if records:
+        _t = []
+        for _r in records:
+            _s = ''
+            _s = _dictline2xml(_r)
+            _t.append(_s)
+        if _t:
+            _tn = 'Row'
+            _tag = _2xmltag(_tn)
+            _xml_recs = str('</' + _tag + '><' + _tag + '>').join(_t)
+            _xml_recs = '<' + _tag + '>' + _xml_recs + '</' + _tag + '>'
+    _xml = _2xmldoc(_xml_recs)
+    return _xml
+
+
+def _2xmldoc(_content=''):
+    _xml = ''
+    _xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+    _xml += '<Root>'
+    _xml += _content
+    _xml += '</Root>'
+    return _xml
+
+
+def _dictline2xml(_dictline={}):
+    _xml = ''
+    if _dictline:
+        _t = []
+        for k,v in _dictline.items():
+            k = _2xmltag(k)
+            _s = '<' + k + '>'
+            _s += _2xmlval(v)
+            _s += '</' + k + '>'
+            _t.append(_s)
+        if _t:
+            _xml = ''.join(_t)
+    return _xml
+
+
+def _2xmlval(_val):
+    new_val = ''
+    new_val = str(_val)
+    return new_val
+
+
+def _2xmltag(_tn):
+    _tag = str(_tn)
+    return _tag
+
+
+@mod.route('/tools/restore/<point>')
+def __restore_full_backup(point):
+    _html = ''
+    return _html
+
+
+@mod.route('/tools/filtered/remove/<name>', methods=['POST'])
+def __filtered_remove(name):
+    """
+    Функция удаления данных из реестр, выбранных с помощью фильтра
+    :return:
+    """
+    _answer = {'Msg': '', 'Data': None, 'State': 500}
+    _mod_utils = ModUtils()
+    _cfg = _mod_utils.get_config()
+    _w_pth = app_api.get_mod_data_path(_mod_utils.get_mod_name())
+    _fm = FilesManagement(_w_pth)
+    _sec = _fm.get_section_inf(name)
+    """
+    При удалении записи в данных, требуется пометить на удаление результат (если есть)
+    При удалении записи в резервных копиях - просто удаляем
+    При удалении записи в картах - нужно проверить использована ли данная карта для данных, удаляем если неиспользовалась
+    При удалении записи в медиа - надо использовать отличный метод
+    """
+
+    if 'media' == name:
+        # получить апи управления файлами
+        _files_api = app_api.get_mod_api('files_mgt')
+        _files_utils = _files_api.get_util()()
+
+        # будем получать отдельно медиа путь
+        sidx = ''
+        sord = ''
+        filters = ''
+        if 'GET' == request.method:
+            sidx = request.args['sidx'] if 'sidx' in request.args else sidx
+            sord = request.args['sord'] if 'sord' in request.args else sord
+            filters = request.args['filters'] if 'filters' in request.args else filters
+
+        if 'POST' == request.method:
+            sidx = request.form['sidx'] if 'sidx' in request.form else sidx
+            sord = request.form['sord'] if 'sord' in request.form else sord
+            filters = request.form['filters'] if 'filters' in request.form else filters
+
+        _media_src = _files_utils.get_dir_path(__get_media_root())
+        # print(mod.name + '.views.__filtered_download_files: _media_src -> ' + _media_src)
+        real_base_start = __get_media_root()
+        media_path = ''
+        media_path = request.args['base'] if 'base' in request.args else name
+        media_path = request.form['base'] if 'base' in request.form else media_path
+        if media_path.startswith('media'):
+            media_path = media_path.replace('media', real_base_start).lstrip('/')
+        items = []
+        _content_lst = []
+        if filters:
+            """ сперва будем искать """
+            _content_lst = _files_utils.search_items(media_path, filters)
+        else:
+            """ просто выбираем все """
+            _content_lst = _files_utils.get_dir_source(media_path)
+        if _content_lst:
+            items = [_item.name.decode('utf-8', 'unicode_escape') for _item in _content_lst]
+        result = _files_utils.remove_selected_items(items, media_path)
+        if result and 0 < len(result['deleted']):
+            _answer['State'] = 200
+            _answer['Msg'] = '' if len(result['deleted']) == len(result['all']) else 'Не все данные были удалены!'
+            _answer['Data'] = result # {'deleted': deleted, 'all': items}
+    else:
+        """
+           При удалении записи в данных, требуется пометить на удаление результат (если есть)
+           При удалении записи в резервных копиях - просто удаляем
+           При удалении записи в картах - нужно проверить использована ли данная карта для данных,
+            удаляем если неиспользовалась
+           """
+        _records = []
+        # контекстно зависимая функция, использует flask.request для получения входных параметров
+        _records = __get_filtered_records(name)
+        if 'maps' == name:
+            pass
+            # убираем из отфильрованных карты которые указаны
+            datas = _fm.get_section_content('data')
+            usd_maps = set([di['map'] for di in datas if '' != di['result']])
+            _records = [_m for _m in _records if _m['name'] not in usd_maps]
+        _remove_results = {}
+        if 'data' == name:
+            # если включен режим подготовки публикации, то удалять данные нельзя
+            _admin_mgt_api = app_api.get_mod_api('admin_mgt')
+            _portal_modes_util = _admin_mgt_api.get_portal_mode_util()
+            _portal_mode = None
+            if _portal_modes_util is not None:
+                _portal_mode = _portal_modes_util.get_current('publish_prepare')
+                if _portal_mode is not None:
+                    pass
+                    # возвращаем результат
+                    _answer['State'] = 201
+                    _answer['Msg'] = 'Запущен процесс подготовки к публикации. Удаление данных запрещено!'
+                    return json.dumps(_answer)
+            pass
+            # создаем список результатов для пометки на удаление
+            _d2 = {'deleted': True}
+            for _r in _records:
+                if _r['result']:
+                    _remove_results[_r['result']] = _d2
+
+        _sec_pth = _fm.get_section_path(name)
+        _del_lst = [_r['name'] for _r in _records]
+        # print('Delete list: ', _del_lst)
+        _del_flg = _fm.remove_section_files(name, _del_lst)
+        if _remove_results:
+            _upd_flg2 = _fm.update_section_files('res', _remove_results)
+            pass
+            #  помечаем указанные результаты на удаление
+        _answer['Msg']  = 'Can not delete filtered records, count: ' + str(len(_del_lst))
+        if _del_flg:
+            _answer['Msg']  = 'Delete records(count: ' + str(len(_del_lst)) + ') Complete!'
+        if _del_flg:
+            _html = 'Success'
+            _answer['State'] = 200
+            # _answer['Msg'] = 'Операция выполнена успешно!'
+            _answer['Data'] = {}
+    return json.dumps(_answer)
+
+
+@mod.route('/tools/export/files/<name>', methods=['GET', 'POST'])
+def __filtered_download_files(name):
+    """
+    Функция скачивает файлы из отфильтрованных записей
+    :param name: имя секции записей для скачивания файлов
+    :return:
+    """
+
+    _mod_utils = ModUtils()
+    _cfg = _mod_utils.get_config()
+    _w_pth = app_api.get_mod_data_path(_mod_utils.get_mod_name())
+    _fm = FilesManagement(_w_pth)
+    _download_files = []
+    # print(mod.name + '.views.__filtered_download_files: section name -> ' + name)
+    zip_file_name = name + '_download_files_' + _mod_utils.formated_time_mark()
+    zip_file_name += '.zip'
+    # получить апи управления файлами
+    _files_api = app_api.get_mod_api('files_mgt')
+    _files_utils = _files_api.get_util()()
+    _temp_pth = _files_utils.get_dir_path('temp')
+    zip_file = os.path.join(_temp_pth, zip_file_name)
+    if not os.path.exists(_temp_pth):
+        os.mkdir(_temp_pth)
+    if 'media' != name:
+        _records = []
+        _records = __get_filtered_records(name)
+        if _records:
+            _sec_pth = _fm.get_section_path(name)
+            for _rec in _records:
+                pass
+                _file_path_to_arch = ''
+                _file_path_to_arch = os.path.join(_sec_pth, _rec['name'])
+                # print(mod.name + '.views.__filtered_download_files: ' + _file_path_to_arch)
+                if os.path.exists(_file_path_to_arch):
+                    _download_files.append(_file_path_to_arch)
+        if _download_files:
+            import zipfile
+            if not os.path.exists(zip_file):
+                with open(zip_file, 'a') as fm:
+                    os.utime(zip_file, None)
+            with zipfile.ZipFile(zip_file, 'w') as myzip:
+                for ifile in _download_files:
+                    add_file_name = os.path.basename(ifile)
+                    myzip.write(ifile, arcname=add_file_name)
+    else:
+        """
+        требуется определить текущую директорию
+        затем скопировать ее во временную
+        создать архив
+        """
+        sidx = ''
+        sord = ''
+        filters = ''
+        if 'GET' == request.method:
+            sidx = request.args['sidx'] if 'sidx' in request.args else sidx
+            sord = request.args['sord'] if 'sord' in request.args else sord
+            filters = request.args['filters'] if 'filters' in request.args else filters
+
+        if 'POST' == request.method:
+            sidx = request.form['sidx'] if 'sidx' in request.form else sidx
+            sord = request.form['sord'] if 'sord' in request.form else sord
+            filters = request.form['filters'] if 'filters' in request.form else filters
+
+        _media_src = _files_utils.get_dir_path(__get_media_root())
+        # print(mod.name + '.views.__filtered_download_files: _media_src -> ' + _media_src)
+        real_base_start = __get_media_root()
+        media_path = ''
+        media_path = request.args['base'] if 'base' in request.args else name
+        media_path = request.form['base'] if 'base' in request.form else media_path
+        if media_path.startswith('media'):
+            media_path = media_path.replace('media', real_base_start).lstrip('/')
+        # print(mod.name + '.views.__filtered_download_files: media_path -> ' + media_path)
+
+        if filters:
+            """ сперва будем искать """
+            file_list = _files_utils.search_items(media_path, filters)
+        else:
+            """ просто выбираем все """
+            file_list = _files_utils.get_dir_source(media_path)
+        # print(mod.name + '.views.__filtered_download_files: file_list -> ' + str(file_list))
+
+        if file_list:
+            if not os.path.exists(zip_file):
+                with open(zip_file, 'a') as fm:
+                    os.utime(zip_file, None)
+            _zip_target = _files_utils.get_dir_path(media_path)
+            _zip_src = os.path.join(_temp_pth, os.path.basename(_zip_target))
+            if not os.path.exists(_zip_src):
+                os.mkdir(_zip_src)
+            # требуется делать через копирование иначе не работает фильтр внутри!!!!!
+            # print(mod.name + '.views.__filtered_download_files: _zip_src -> ' + str(_zip_src))
+            from shutil import make_archive, rmtree, copytree
+            # когда все подготовили копируем отфильтрованные источники для архива
+            for _ix in file_list:
+                # print(mod.name + '.views.__filtered_download_files: str(_ix.name) -> ' + str(_ix.name))
+                _t1 = os.path.join(_zip_target, str(_ix.name.decode('utf-8', 'unicode_escape')))
+                # print(mod.name + '.views.__filtered_download_files: _t1 -> ' + _t1)
+                _to1 = os.path.join(_zip_src, str(_ix.name.decode('utf-8', 'unicode_escape')))
+                # print(mod.name + '.views.__filtered_download_files: _to1 -> ' + _to1)
+                if os.path.isdir(_t1):
+                    _cp_flg = copytree(_t1, _to1, dirs_exist_ok=True)
+                    # print(mod.name + '.views.__filtered_download_files: _cp_flg (dir) -> ' + str(_cp_flg))
+                if os.path.isfile(_t1):
+                    _cp_flg = copyfile(_t1, _to1)
+                    # print(mod.name + '.views.__filtered_download_files: _cp_flg (file) -> ' + str(_cp_flg))
+            # интересное дело для данной функции в имени файла не надо указывать расширение
+            # она сама назначает его
+            _zip_flg = make_archive(zip_file.replace('.zip', ''), 'zip', _zip_src)
+            # print(mod.name + '.views.__filtered_download_files: _zip_flg -> ' + str(_zip_flg))
+            # print(mod.name + '.views.__filtered_download_files: os.path.basename(zip_file) -> ' + str(zip_file))
+            if _zip_flg == zip_file:
+                rmtree(_zip_src, ignore_errors=True)
+                pass
+
+    if os.path.exists(zip_file):
+        from flask import send_file, after_this_request
+        @after_this_request
+        def __remove_sended_file(response):
+            try:
+                os.remove(zip_file)
+            except Exception as ex:
+                print('Не удалось сформировать архив со списком файла!', str(ex))
+            return response
+        return send_file(zip_file, mimetype='application/zip',
+                         as_attachment=True, attachment_filename=zip_file_name)
+
+    return app_api.render_page("/errors/404.html", message='Не удалось сформировать архив со списком файла!')
+
+
+@mod.route('/tools/section/sync/<name>')
+def __sync_section_register(name):
+    _mod_utils = ModUtils()
+    _cfg = _mod_utils.get_config()
+    _w_pth = app_api.get_mod_data_path(_mod_utils.get_mod_name())
+    _fm = FilesManagement(_w_pth)
+    _sec = _fm.get_section_inf(name)
+    _html = 'Error'
+    _nL = "\n\r"
+    _nL = '<br />'
+    _fm.sync_section_content(name)
+    _html = ''
+    _html += 'Sync is with!' + _nL
+    return _html
+
+
+@mod.route('/tools', methods=['GET'], strict_slashes=False)
+def __view_tools():
+    """
+    Функция возвращает html страницу просмотра последнего протокола публикации
+    :return:
+    """
+    _mod_utils = ModUtils()
+    _tpl_vars = {}
+    _tpl_vars['title'] = 'Страница технической помощи управления данными'
+    _tpl_vars['page_title'] = 'Страница технической помощи управления данными'
+    _tpl_vars['inavi'] = []
+    _tpl_vars['inavi'] = _mod_utils.get_tools_navi(g.user)
+    _tpl_name = ''
+    _tpl_name = os.path.join(_mod_utils.get_mod_name(), 'tools.html')
+    return app_api.render_page(_tpl_name, **_tpl_vars)
+
+# tools }
 
 
 @mod.route('/sync/dataresults', methods=['GET'])
