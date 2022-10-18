@@ -160,7 +160,7 @@ if _fm.get_section_path('res') is not None:
     for idata_file in files:
         process_protocol.write('Process on file - {}'.format(idata_file['name']))
         data_file = os.path.join(res_path, idata_file['name'])
-        end_file_size = os.stat(result_file).st_size
+        end_file_size = os.stat(data_file).st_size
         if 2 > end_file_size:
             process_protocol.write('Empty file - {}'.format(str(end_file_size)))
             publish_result.write('Файл 0-ой длины -> ' + idata_file['name'])
