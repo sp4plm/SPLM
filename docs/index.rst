@@ -10,6 +10,7 @@ Contents:
    installation
    first_start
    api
+   modules
 
 Indices and tables
 ==================
