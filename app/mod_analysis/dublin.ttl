@@ -11,16 +11,16 @@
 <http://splm.portal.web/osplm#mod_analysis> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://splm.portal.web/osplm#Module> .
 
 <http://splm.portal.web/osplm#mod_analysis> <http://purl.org/dc/elements/1.1/contributor> "Столяров Олег"^^<http://www.w3.org/2001/XMLSchema#string> ;
-  <http://www.w3.org/2000/01/rdf-schema#label> "Module for semantic data navigation"^^<http://www.w3.org/2001/XMLSchema#string> ;
-  <http://purl.org/dc/elements/1.1/title> "Модуль навигации по семантическим данным"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://www.w3.org/2000/01/rdf-schema#label> "Module for semantic data report"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/title> "Модуль формирования отчетов"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://purl.org/dc/elements/1.1/subject> "Onto management"^^<http://www.w3.org/2001/XMLSchema#string> ;
-  <http://purl.org/dc/elements/1.1/description> "Модуль предоставляет функциональность для работы с онтологиями"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/description> "Модуль предоставляет функциональность для построения отчетов."^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://purl.org/dc/elements/1.1/date> "$Date: 2021-09-29 11:30:00 0300 (29 Sep 2021) $"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://purl.org/dc/elements/1.1/creator> "Столяров Олег"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://purl.org/dc/elements/1.1/rights> "GNU"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://purl.org/dc/elements/1.1/type> <http://purl.org/dc/dcmitype/Service> ;
   <http://purl.org/dc/elements/1.1/format> "text/html, application"^^<http://www.w3.org/2001/XMLSchema#string> ;
-  <http://splm.portal.web/osplm#versionInfo> "$Id: 0.0.1 1 2021-09-29 11:30:00Z $"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#versionInfo> "$Id: 0.0.2 2 2022-09-02 11:30:00Z $"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://splm.portal.web/osplm#type> "webservice"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://splm.portal.web/osplm#web_prefix> "/analysis"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://splm.portal.web/osplm#httpEnabled> xsd:true ;
