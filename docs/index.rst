@@ -9,8 +9,8 @@ Contents:
    main
    installation
    first_start
-   api
    modules
+   api
 
 Indices and tables
 ==================
