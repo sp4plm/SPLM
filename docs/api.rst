@@ -1,7 +1,7 @@
 .. highlight:: shell
 
 
-API Documentation
+API документация
 =================
 
 .. toctree::
