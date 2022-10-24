@@ -82,7 +82,7 @@
     
 Если все прошло успешно, то в терминале появится информация о запуске приложения в отладочном режиме:
 
-.. image:: screenshot_1.png
+.. image:: images/screenshot_1.png
   :width: 90 %
   :align: center
 
