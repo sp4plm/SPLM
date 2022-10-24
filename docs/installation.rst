@@ -95,7 +95,7 @@
 
 Если передти по указанной выше ссылке http://127.0.0.1:5001 то попадете на следующую страничку портала:
 
-.. image:: screenshot_2.png
+.. image:: images/screenshot_2.png
   :width: 90 %
   :align: center
 
@@ -106,13 +106,13 @@
 
 в появившемся окне нажимаем единственную кнопку и ждем несколько секунд ...
 
-.. image:: screenshot_3.png
+.. image:: images/screenshot_3.png
   :width: 90 %
   :align: center
 
 Через несколько секунд дожно появится сообщение об окончании кофиигурирования:
 
-.. image:: screenshot_4.png
+.. image:: images/screenshot_4.png
   :width: 90 %
   :align: center
 
@@ -124,7 +124,7 @@ http://127.0.0.1:5001/portal
 
 для входа используйте логин **manager** и пароль **testadmin**
 
-.. image:: screenshot_5.png
+.. image:: images/screenshot_5.png
   :width: 90 %
   :align: center
 

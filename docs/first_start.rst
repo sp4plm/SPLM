@@ -10,7 +10,7 @@
 
 Выполним настройки портала на примере тестовых данных, расположенных в папке **"test_data"**.
 
-.. image:: screenshot_6.png
+.. image:: images/screenshot_6.png
   :width: 90 %
   :align: center
 
@@ -19,25 +19,25 @@
 
 Загрузите отнтологию через раздел **"Онтологии"**.
 
-.. image:: screenshot_7.png
+.. image:: images/screenshot_7.png
   :width: 60 %
   :align: center
   
 Загружаем файл "pizza_onto.ttl".
 
-.. image:: screenshot_8.png
+.. image:: images/screenshot_8.png
   :width: 40 %
   :align: center
 
 В итоге должно получится так:
 
-.. image:: screenshot_9.png
+.. image:: images/screenshot_9.png
   :width: 90 %
   :align: center
 
 После загрузки онтологии ее можно посмотреть кликнув кнопку с изображением цепочки.
 
-.. image:: screenshot_10.png
+.. image:: images/screenshot_10.png
   :width: 90 %
   :align: center
 
@@ -61,7 +61,7 @@ https://blazegraph.com
 
 Настройте подключение к TripleStore через **"Конфигуратор"** -> **"Хранилище"**.
 
-.. image:: screenshot_11.png
+.. image:: images/screenshot_11.png
   :width: 70 %
   :align: center
 
@@ -73,7 +73,7 @@ https://blazegraph.com
 
 для **Blazegraph** тип **blazegraph**
 
-.. image:: screenshot_12.png
+.. image:: images/screenshot_12.png
   :width: 50 %
   :align: center
 
@@ -82,19 +82,19 @@ https://blazegraph.com
 
 Загрузите картинки через раздел **"Управление файлами"**.
 
-.. image:: screenshot_13.png
+.. image:: images/screenshot_13.png
   :width: 70 %
   :align: center
 
 Создайте папку с именем "images".
 
-.. image:: screenshot_14.png
+.. image:: images/screenshot_14.png
   :width: 30 %
   :align: center
 
 Выберите созданную папку, кликнув по ней мышью и загрузите в нее файлы с картинками. Должно получится так:
 
-.. image:: screenshot_15.png
+.. image:: images/screenshot_15.png
   :width: 70 %
   :align: center
   
@@ -105,7 +105,7 @@ https://blazegraph.com
 
 Добавляем роли **"user"** и **admin**. Последняя будет использована для загрузки данных. Должно получиться так:
 
-.. image:: screenshot_16.png
+.. image:: images/screenshot_16.png
   :width: 70 %
   :align: center
 
@@ -120,13 +120,13 @@ https://blazegraph.com
 
 Добавляем пользователей и назначаем им ранее созданные роли:
 
-.. image:: screenshot_17.png
+.. image:: images/screenshot_17.png
   :width: 40 %
   :align: center
 
 В итоге дожно получиться так:
 
-.. image:: screenshot_18.png
+.. image:: images/screenshot_18.png
   :width: 70 %
   :align: center
 
@@ -137,26 +137,26 @@ https://blazegraph.com
 
 В этом разделе можно настроить разные меню
 
-.. image:: screenshot_19.png
+.. image:: images/screenshot_19.png
   :width: 70 %
   :align: center
 
 Настроим блок верхней навигации, выбрав кнопку с шестеренкой:
 
-.. image:: screenshot_20.png
+.. image:: images/screenshot_20.png
   :width: 70 %
   :align: center
 
 Далее, по кнопке **Выбрать** будет доступен перечень ссылок, которые были сформированы на основании описаний модулей в соответствующих им файлах **"dublin.ttl"**.
 Выбираем пункт **"Стартовая страница"**. Далее **"Назначить"**.
 
-.. image:: screenshot_21.png
+.. image:: images/screenshot_21.png
   :width: 40 %
   :align: center
 
 Должно получится так:
 
-.. image:: screenshot_22.png
+.. image:: images/screenshot_22.png
   :width: 70 %
   :align: center
 
@@ -164,13 +164,13 @@ https://blazegraph.com
 
 Далее, по аналогии, настраиваем блок **"Разделы портала"**.
 
-.. image:: screenshot_23.png
+.. image:: images/screenshot_23.png
   :width: 70 %
   :align: center
 
 Должно получиться так:
 
-.. image:: screenshot_24.png
+.. image:: images/screenshot_24.png
   :width: 70 %
   :align: center
 
@@ -178,7 +178,7 @@ https://blazegraph.com
 
 В этом блоке важно добавить раздел
 
-.. image:: screenshot_24a.png
+.. image:: images/screenshot_24a.png
   :width: 70 %
   :align: center
 
@@ -188,7 +188,7 @@ https://blazegraph.com
 
 Результат должен получиться таким:
 
-.. image:: screenshot_25.png
+.. image:: images/screenshot_25.png
   :width: 70 %
   :align: center
 
@@ -207,13 +207,13 @@ https://blazegraph.com
 
 Нажимаем кнопку **"Загрузить фвйлы"**, а потом **"Опубликовать"**.
 
-.. image:: screenshot_26.png
+.. image:: images/screenshot_26.png
   :width: 70 %
   :align: center
 
 По окончании публикации данных должно появиться сообщение о завершении процесса:
 
-.. image:: screenshot_27.png
+.. image:: images/screenshot_27.png
   :width: 40 %
   :align: center
 
@@ -225,7 +225,7 @@ https://blazegraph.com
 
 Если все выполнено правильно, то должна появится следующая страничка.
 
-.. image:: screenshot_28.png
+.. image:: images/screenshot_28.png
   :width: 90 %
   :align: center
 
