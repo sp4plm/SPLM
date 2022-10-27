@@ -91,6 +91,12 @@ def index():
     return app_api.render_page(AdminConf.get_root_tpl(), **tmpl_vars)
 
 
+@mod.route('/version_info')
+def __portal_version():
+    _v = AdminUtils.get_build_version()
+    return _v
+
+
 @mod.route('/modes', methods=['GET'])
 @requires_auth
 def __modes_management():

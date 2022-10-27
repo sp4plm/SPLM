@@ -56,8 +56,12 @@ if os.path.exists(_installer_source):
 # запускаем процесс конфигурации базы данных
 """ запускаем инициализацию """
 config_flag = False
-config_flag = _portal_configurator.configure_db(_app_dir)
-__2_log('Installer. Configure database result %s' % str(config_flag))
+try:
+    config_flag = _portal_configurator.configure_db(_app_dir)
+    __2_log('Installer. Configure database result %s' % str(config_flag))
+except Exception as ex:
+    __2_log('Installer. Configure database result %s' % str(ex))
+    raise ex
 
 # write
 if config_flag:

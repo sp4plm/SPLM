@@ -9,6 +9,7 @@ $(function(){
             if(answ){
                 _$box.find('#results-informer').html(answ);
             }
+            _$box.find('button').button('enable');
         }, 'html');
     }
 
@@ -20,6 +21,7 @@ $(function(){
             if(answ){
                 _$box.find('#results-informer').html(answ);
             }
+            _$box.find('button').button('enable');
         }, 'html');
     }
 
@@ -28,6 +30,7 @@ $(function(){
         // this - button in first cell of edit row
         $btn = $(this);
         _act = $btn.attr('act');
+        $btn.button('disable');
         switch(_act) {
             case "run":
                 runInstallation();

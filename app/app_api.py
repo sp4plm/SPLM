@@ -398,3 +398,10 @@ def get_useDBGMode():
             return session.get(debug_key) if debug_key in session else 0
 
     return 0
+
+
+def get_portal_version():
+    _v = ''
+    admin_api = get_mod_api('admin_mgt')
+    _v = admin_api.get_portal_version()
+    return _v

@@ -155,7 +155,8 @@ class Ontology():
 
         if self.onto_file:
             g = Graph()
-            g.parse(self.onto_file, format='ttl')
+            if os.path.exists(self.onto_file):
+                g.parse(self.onto_file, format='ttl')
 
             for class_name in g.subjects(RDF.type, OWL.Class):
                 for class_label in g.objects(class_name, RDFS.label):

@@ -57,7 +57,8 @@ def sparqt_template(file, template = '', blueprint_mod_name = MOD_NAME, module_n
 		if request.form['template']:
 			if (template == request.form['template']) or (not template and request.form['template'] not in Query(module_name).get_templates_names_sparqt(file)):
 				# согласно новой концепции сохранять редактируемый файл требуется в директорию общего конфига
-				Query(module_name).edit_template_sparqt(file, request.form['template'], [request.form['cmt'], request.form['vars'], request.form['txt']])
+				if request.form['txt']:
+					Query(module_name).edit_template_sparqt(file, request.form['template'], [request.form['cmt'], request.form['vars'], request.form['txt']])
 			else:
 				Query(module_name).logger.error("Can't save sparqt template \"" + request.form['template'] + "\" in file \"" + file + "\"")
 
@@ -72,7 +73,7 @@ def sparqt_template(file, template = '', blueprint_mod_name = MOD_NAME, module_n
 	else:
 		cmt, var, txt = Query(module_name).get_template_sparqt(file, template)
 		_can_remove = False
-		_can_remove = Query(module_name).can_remove(file)
+		_can_remove = Query(module_name).can_remove_template(file, template)
 		return app_api.render_page('/query_mgt/edit.html', file = file, template = template, cmt = cmt, vars = var, txt = txt,
 								   module = blueprint_mod_name, can_delete=_can_remove)
 

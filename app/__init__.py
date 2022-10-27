@@ -86,6 +86,7 @@ app.add_template_global(PortalNavi.get_user_custom_navi, name='ucustom_navi')
 app.add_template_global(app_api.get_portal_labels, name='portal_labels')
 # app.add_template_global(PortalSettings.get_jquery_info, name='portal_jquery')
 # app.add_template_global(PortalSettings.get_js_libs_info, name='portal_js_libs')
+app.add_template_global(app_api.get_portal_version(), name='portal_ver')
 
 # обработка запроса корня портала
 from app.views import mod as app_views

@@ -20,7 +20,7 @@
   <http://purl.org/dc/elements/1.1/rights> "GNU"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://purl.org/dc/elements/1.1/type> <http://purl.org/dc/dcmitype/Software> ;
   <http://purl.org/dc/elements/1.1/format> "text/html, application"^^<http://www.w3.org/2001/XMLSchema#string> ;
-  <http://splm.portal.web/osplm#versionInfo> "$Id: 0.0.1 1 2022-03-28 01:03:00Z $"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#versionInfo> "$Id: 0.0.2 1 2022-10-26 15:48:00Z $"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://splm.portal.web/osplm#type> "webservice"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://splm.portal.web/osplm#hasWebPrefix> "/portaldatamgt"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://splm.portal.web/osplm#httpEnabled> xsd:true .

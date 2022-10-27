@@ -57,8 +57,36 @@ class Manager:
                 mod_row['title'] = self._parse_rdflib_gen(_inf0.objects(subject=_t, predicate=rdflib.DC.title))
                 mod_row['description'] = self._parse_rdflib_gen(_inf0.objects(subject=_t, predicate=rdflib.DC.description))
                 mod_row['label'] = self._parse_rdflib_gen(_inf0.objects(subject=_t, predicate=rdflib.RDFS.label))
+                mod_row['lic'] = self._parse_rdflib_gen(_inf0.objects(subject=_t, predicate=rdflib.DC.rights))
+                _mod_v = self._parse_rdflib_gen(_inf0.objects(subject=_t, predicate=OSPLM.versionInfo))
+                _vers = self.__parse_mod_version(_mod_v)
+                mod_row['version'] = _vers['number']
                 _reg.append(mod_row)
         return _reg
+
+    def __parse_mod_version(self, _v_str):
+        _vers = None
+        # example: $Id: 0.0.0 0 0000-00-00 00:00:00Z $
+        _norm = str(_v_str)
+        _norm = _norm.strip('$')
+        _norm = _norm[4:].strip()
+        _t = _norm.split(' ')
+        _len_t = len(_t)
+        _vers = {}
+        _vers['number'] = _t[0]
+        _vers['inumber'] = '0'
+        _vers['date'] = '0000-00-00'
+        _vers['time'] = '00:00:00Z'
+        if 1 < _len_t:
+            if 10 == len(_t[1]) and '-' == _t[1][4] and '-' == _t[1][7]:
+                _vers['date'] = _t[1]
+            else:
+                _vers['inumber'] = _t[1]
+        if 2 < _len_t:
+            _vers['date'] = _t[2]
+        if 3 < _len_t:
+            _vers['time'] = _t[3]
+        return _vers
 
     def load_modules_http_handlers(self):
         mods_list = self._current_app.config['modules_list']

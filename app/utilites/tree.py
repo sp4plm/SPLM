@@ -145,10 +145,11 @@ def get_attrs(tree, parent_id, parent_order = ""):
 def create_tree(structure, node):
     G = nx.DiGraph()
     G.add_edges_from(structure)
-
-    tree = nx.tree_data(G, node, {'children': 'children' , 'id': 'id'})
-
-    return get_attrs(tree['children'], tree['id'])
+    try:
+        tree = nx.tree_data(G, node, {'children': 'children' , 'id': 'id'})
+        return get_attrs(tree['children'], tree['id'])
+    except:
+        return {}
 
 
 def get_tree(href):

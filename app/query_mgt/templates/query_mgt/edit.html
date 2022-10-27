@@ -62,7 +62,7 @@
 
 		<input type="submit" value="Сохранить" name="save" formaction="{{url_for(module + '.sparqt_template', file = file, template = template)}}">
 		{% if can_delete %}
-		<input type="submit" value="Удалить шаблон" name="delete" formaction="{{url_for(module + '.sparqt_template', file = file, template = template)}}">
+		<input type="submit" value="Удалить изменения" name="delete" formaction="{{url_for(module + '.sparqt_template', file = file, template = template)}}">
 		{% endif %}
 		<br/>
 	</form>
