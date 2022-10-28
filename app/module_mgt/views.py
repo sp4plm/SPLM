@@ -127,17 +127,19 @@ def __get_list():
     _source_lst = mod_manager.get_modules_register()
 
     if search_flag and '' != filters:
-        print('try find by filters', filters)
+        # print('try find by filters', filters)
         _source_lst = _mod_utils.search_tbl_rows(_source_lst, filters)
 
     rows = []
     for _item in _source_lst:
-        row = {'Toolbar': '', 'Label': '', 'Name': '', 'Description':'', 'IsDefault':''}
+        row = {'Toolbar': '', 'Label': '', 'Name': '', 'Description':'', 'IsDefault':'', 'License': '', 'Version':''}
         _href = url_for(mod.name +'.__view_module_info', name=_item['name'])
         _a = '<a style="color:#3366BB; text-decoration:underline;" href="%s">%s</a>' % (_href, _item['name'])
         row['Name'] = _a  # _item['name']
         row['Label'] = str(_item['title'])
         row['Description'] = str(_item['description'])
+        row['License'] = str(_item['lic'])
+        row['Version'] = str(_item['version'])
         if not _item['name'].startswith('mod_'):
             row['IsDefault'] = 'Да'
         rows.append(row)

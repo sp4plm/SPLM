@@ -143,3 +143,8 @@ class ModApi(AdminConf):
             print(_msg)
             raise Exception(_msg)
         return _util
+
+    def get_portal_version(self):
+        _v = ''
+        _v = AdminUtils.get_build_version()
+        return _v

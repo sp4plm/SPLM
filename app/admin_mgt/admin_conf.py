@@ -19,6 +19,7 @@ class AdminConf:
 
     ADMIN_NAVI_BLOCK_CODE = 'admin_sections'
     PORTAL_NAVI_BLOCK_CODE = 'navi_blocks'
+    BUILD_FILE_NAME="build_v"
 
     @staticmethod
     def get_root_tpl():

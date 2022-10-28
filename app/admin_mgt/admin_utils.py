@@ -51,6 +51,17 @@ class AdminUtils(AdminConf):
     #     return lst
 
     @staticmethod
+    def get_build_version():
+        _app_pth = AdminUtils.__get_app_path()
+        _build_file = os.path.join(_app_pth, AdminConf.BUILD_FILE_NAME)
+        _v = 'splm-00000000'
+        if os.path.exists(_build_file):
+            with open(_build_file, 'r', encoding='utf-8') as _fp:
+                _v = _fp.read().strip("\n\r")
+        return _v
+
+
+    @staticmethod
     def _get_navi_path():
         pth = ''
         pth = AdminConf.get_mod_path(os.path.join('default', 'navi'))

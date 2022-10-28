@@ -155,7 +155,8 @@ class Ontology():
 
         if self.onto_file:
             g = Graph()
-            g.parse(self.onto_file, format='ttl')
+            if os.path.exists(self.onto_file):
+                g.parse(self.onto_file, format='ttl')
 
             for class_name in g.subjects(RDF.type, OWL.Class):
                 for class_label in g.objects(class_name, RDFS.label):
@@ -181,11 +182,17 @@ class Ontology():
         parent = ""
 
         onto_file = self.getFileOntoByPrefix(onto)
-        graph = Graph().parse(onto_file, format='ttl')
+        graph = Graph()
+        if os.path.exists(onto_file):
+            graph = graph.parse(onto_file, format='ttl')
 
 
         QUERY = "SELECT ?parent WHERE { %s:%s rdfs:subClassOf ?parent . filter (isIRI(?parent)) }" % (onto, class_name)
-        parent_result = compile_query_result( json.loads( graph.query(QUERY).serialize(format="json").decode("utf-8") )  )
+        parent_result = []
+        try:
+            parent_result = compile_query_result( json.loads( graph.query(QUERY).serialize(format="json").decode("utf-8") )  )
+        except:
+            pass
 
         if parent_result:
             parent = self.getClassName(parent_result[0]["parent"])
@@ -197,7 +204,9 @@ class Ontology():
     def getGraph(self, onto):
         """ Возвращает объект rdflib.graph онтологии по префиксу """
         onto_file = self.getFileOntoByPrefix(onto)
-        graph = Graph().parse(onto_file, format='ttl')
+        graph = Graph()
+        if os.path.exists(onto_file):
+            graph = graph.parse(onto_file, format='ttl')
 
         return graph
 

@@ -271,15 +271,20 @@ class PortalNavigation(NavigationFiles):
 
     def get_portal_index_urls(self):
         _urls = []
-        _endpoints = self._mod_manager.get_start_endpoints()
-        from flask import url_for
-        if _endpoints:
-            for _endpoint in _endpoints:
-                try:
-                    _url = url_for(_endpoint)
-                    _urls.append(_url)
-                except Exception as ex:
-                    print(self._debug_name + '.get_portal_index_url.Exception: ' + str(ex))
+        _cfg_enabled = self.get_portal_index_url()  #  выбираем по dublin.ttl
+        # если вернулся корень, значит выбираем из всех имеющихся
+        if '/' == _cfg_enabled:
+            _endpoints = self._mod_manager.get_start_endpoints()
+            from flask import url_for
+            if _endpoints:
+                for _endpoint in _endpoints:
+                    try:
+                        _url = url_for(_endpoint)
+                        _urls.append(_url)
+                    except Exception as ex:
+                        print(self._debug_name + '.get_portal_index_url.Exception: ' + str(ex))
+        else:
+            _urls.append(_cfg_enabled)
         return _urls
 
     def get_portal_index_tpl_name(self):

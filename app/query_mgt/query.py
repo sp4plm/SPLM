@@ -9,7 +9,6 @@ from app.utilites.utilites import Utilites
 
 from app.drivers.store_driver import StoreDriver
 
-
 module = "query_mgt"
 
 class Query:
@@ -244,12 +243,40 @@ class Query:
             _flg = True
         return _flg
 
+    def can_remove_template(self, file, template):
+        """
+        Метод проверяет можно ли удалять шаблон - то есть изначальный шаблон был отредактирован пользователем
+        :param file:
+        :return:
+        """
+        _flg = False
+        _pth = self.get_full_path_sparqt(file)
+        _conf_path = self.__get_app_conf_dir()
+        if _pth.startswith(_conf_path):
+            # получаем базовый путь файла
+            base_path = os.path.join(self.SPARQT_DIR, file + self.format_json)
+            base_templates = {}
+
+            with open(base_path, "r", encoding="utf-8") as f:
+                base_templates = multiline.load(f, multiline=True)
+
+            if template in base_templates:
+                base_tmpl = {}
+                _obj = self.get_file_object_sparqt(file)
+                if template in _obj:
+                    if _obj[template] == base_templates[template]:
+                        return False
+
+            _flg = True
+        return _flg
+
     def get_file_object_sparqt(self, file):
         """
         Метод возвращает содержимое sparqt файла
         :param file: string
         :return: templates
         """
+        templates = {}
         if not file:
             return {}
 
@@ -369,5 +396,15 @@ class Query:
         :param template: string,
         """
         templates = self.get_file_object_sparqt(file)
-        templates.pop(template)
+
+        # удаляем изменения - получаем базовый шаблон
+        base_path = os.path.join(self.SPARQT_DIR, file + self.format_json)
+        base_templates = {}
+
+        with open(base_path, "r", encoding="utf-8") as f:
+            base_templates = multiline.load(f, multiline=True)
+
+        if template in base_templates:
+            templates[template] = base_templates[template]
+
         self.edit_file_object_sparqt(file, templates)

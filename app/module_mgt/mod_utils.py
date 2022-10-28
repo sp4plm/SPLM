@@ -40,16 +40,28 @@ class ModUtils():
         _cols = []
         # _cols.append({"label": "", "index": "Toolbar", "name": "Toolbar", "width": 40, "sortable": False, "search": False})
         # _cols.append({"label": "Активная", "index": "Enabled", "name": "Enabled", "width": 40, "sortable": False, "search": False, 'align':'center'})
-        _cols.append({"label": "Имя", "index": "Name", "name": "Name", "width": 90, "search": True, "stype": 'text',
+        _cols.append({"label": "Имя", "index": "Name", "name": "Name", "width": 60,
+              "search": True, "stype": 'text',
               "searchoptions": {"sopt": ['cn', 'nc', 'eq', 'ne', 'bw', 'bn', 'ew', 'en']}
             })
-        _cols.append({"label": "Наименование", "index": "Label", "name": "Label", "width": 90, "search": True, "stype": 'text',
+        _cols.append({"label": "Наименование", "index": "Label", "name": "Label", "width": 75,
+              "search": True, "stype": 'text',
               "searchoptions": {"sopt": ['cn', 'nc', 'eq', 'ne', 'bw', 'bn', 'ew', 'en']}
             })
-        _cols.append({"label": "Описание", "index": "Description", "name": "Description", "width": 200, "search": True, "stype": 'text',
+        _cols.append({"label": "Описание", "index": "Description", "name": "Description", "width": 155,
+              "search": True, "stype": 'text',
               "searchoptions": {"sopt": ['cn', 'nc', 'eq', 'ne', 'bw', 'bn', 'ew', 'en']}
             })
-        _cols.append({"label": "Встроенный", "index": "IsDefault", "name": "IsDefault", "width": 40, "sortable": True, "search": False, 'align':'center'})
+        _cols.append({"label": "Лицензия", "index": "License", "name": "License", "width": 45,
+              "search": True, "stype": 'text', 'align':'center',
+              "searchoptions": {"sopt": ['cn', 'nc', 'eq', 'ne', 'bw', 'bn', 'ew', 'en']}
+            })
+        _cols.append({"label": "Версия", "index": "Version", "name": "Version", "width": 45,
+              "search": True, "stype": 'text', 'align':'center',
+              "searchoptions": {"sopt": ['cn', 'nc', 'eq', 'ne', 'bw', 'bn', 'ew', 'en']}
+            })
+        _cols.append({"label": "Встроенный", "index": "IsDefault", "name": "IsDefault", "width": 40,
+                      "sortable": True, "search": False, 'align':'center'})
         return _cols
 
     @staticmethod
@@ -83,7 +95,8 @@ class ModUtils():
         field = rule['field']
         oper = rule['op']
         val = rule['data']
-        _fld_map = {'Name': 'name', 'Label': 'title', 'Description': 'description', 'IsDefault': 'name'}
+        _fld_map = {'Name': 'name', 'Label': 'title', 'Description': 'description', 'IsDefault': 'name',
+                    'License': 'lic', 'Version':'version'}
         _check_val = ''
         _orig_fld = _fld_map[field] if field in _fld_map else ''
         if '' == _orig_fld:

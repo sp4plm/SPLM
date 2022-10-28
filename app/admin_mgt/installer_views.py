@@ -6,6 +6,7 @@ import subprocess
 
 from flask import Blueprint, request, flash, g, session, redirect, url_for
 
+from ..utilites.code_helper import CodeHelper
 from ..utilites.extend_processes import ExtendProcesses
 
 from .admin_utils import os # import embeded pythons
@@ -34,25 +35,35 @@ def run_installer():
         root_path = os.path.dirname(__file__)
         script = os.path.join(root_path, 'installer_process.py')
         data = None
+
+        check_errors = 'installer_errors.track'
+        # CodeHelper.add_file(check_errors)
+
         data = ExtendProcesses.run(script, [])
         output, errors = data.communicate()
         # print('OUTPUT: =========>', output)
         # print('ERRORS: =========>', errors)
-        # html += '<h2>Process:</h1>'
+        # html += '<h2>Process:</h2>'
         # html += '<br />'
         # html += str(data)
         # html += '<hr />'
-        # html += '<h3>OUTPUT:</h2>'
+        # html += '<h3>OUTPUT:</h3>'
         # html += '<br />'
         # html += str(output)
         # html += '<hr />'
-        # html += '<h3>ERRORS:</h2>'
+        # html += '<h3>ERRORS:</h3>'
         # html += '<br />'
         # html += str(errors)
         # html += '<hr />'
-        html += '<p>'
-        html += 'Первичное конфигурирование успешно произведено!'
-        html += '</p>'
+        if errors:
+            html = '<h3>Ошибки при инсталляции:</h3>'
+            html += '<br />'
+            html += '<pre>' + str(errors) + '</pre>'
+            html += '<hr />'
+        else:
+            html += '<p>'
+            html += 'Первичное конфигурирование успешно произведено!'
+            html += '</p>'
     return html
 
 
