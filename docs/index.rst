@@ -1,4 +1,4 @@
-Welcome to SPLM's documentation!
+Документация на SPLM
 ======================================
 
 Contents:
@@ -9,6 +9,7 @@ Contents:
    main
    installation
    first_start
+   setup_startpage
    modules
    api
 
