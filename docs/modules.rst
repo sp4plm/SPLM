@@ -49,6 +49,7 @@ API
 
 
 .. function:: get_base_model()
+
     Функция ``get_base_model()`` Возвращает класс ``NodeObject``, который является для всех классов моделей родительским.
 
 Функция ``get_embedded_user()``
