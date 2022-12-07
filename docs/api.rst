@@ -42,3 +42,10 @@ API документация
     if g.user:
         if g.user.has_role('role'):
 
+
+app.admin_mgt.mod_api.py
+-----------------------
+.. automodule:: app.admin_mgt.mod_api
+    :members:
+    :undoc-members:
+    :show-inheritance:
