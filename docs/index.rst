@@ -12,6 +12,7 @@ Contents:
    setup_startpage
    modules
    api
+   test
 
 Indices and tables
 ==================
