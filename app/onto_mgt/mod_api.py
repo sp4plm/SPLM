@@ -16,15 +16,12 @@ class ModApi(OntoConf):
 
     @staticmethod
     def get_all_prefixes(onto = ""):
-        """ onto - префикс онтологии """
-        """ Возвращает словарь префиксов онтологии onto {prefix : uri} ; """
-        """ Если onto = "", то возвращает словарь префиксов всех онтологий {prefix : uri} """
+        """ Возвращает словарь префиксов онтологии onto в формате {prefix : uri}. onto - префикс онтологии. Если onto = "", то возвращает словарь префиксов всех онтологий в формате {prefix : uri}. """
         return Ontology().getAllPrefixes(onto)
 
     @staticmethod
     def get_classes(onto):
-        """ onto - префикс онтологии """
-        """ Возвращает словарь классов онтологии {uri : label} """
+        """ Возвращает словарь классов онтологии {uri : label}, где onto - префикс онтологии."""
         return Ontology().getClasses(onto)
 
     @staticmethod
@@ -34,13 +31,11 @@ class ModApi(OntoConf):
     
     @staticmethod
     def get_parent(onto, child):
-        """ onto - префикс онтологии, child - название класса без baseUri """
-        """ Возвращает родителя класса child для онтологии onto"""
+        """ Возвращает родителя класса child для онтологии onto; onto - префикс онтологии, child - название класса без baseUri. """
         return Ontology().getParent(onto, child)
     
     @staticmethod
     def get_graph(onto):
-        """ onto - префикс онтологии """
-        """ Возвращает объект rdflib.graph онтологии onto"""
+        """ Возвращает объект rdflib.graph онтологии onto; onto - префикс онтологии. """
         return Ontology().getGraph(onto)
     
