@@ -35,6 +35,10 @@ language = 'ru'
 
 pygments_style = 'sphinx'
 
+source_suffix = '.rst'
+
+exclude_patterns = ['_build']
+
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
