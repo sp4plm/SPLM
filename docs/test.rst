@@ -101,11 +101,3 @@ error c причиной невыполнения запроса.
 
 
 
-*Описание класса ModApi (это для примера)*
-~~~~~~~~~~~~~~~~~~~~~~
-
- .. autoclass:: app.onto_mgt.mod_api.ModApi
-    :members:
-    :show-inheritance:
-    :noindex:
-
