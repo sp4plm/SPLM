@@ -26,7 +26,9 @@
 def get_config_util():
     """
     Функция возвращает класс для унифицированной работы с файлами конфигов (ini)
+
     :return: класс SomeConfig
+
     """
     from app.utilites.some_config import SomeConfig
     return SomeConfig
@@ -35,7 +37,9 @@ def get_config_util():
 def get_app_config():
     """
     Функция возвращает инструмент для получения данных о настройках приложения.
+
     :return: экземляр класса SomeConfig
+
     """
     admin_api = get_mod_api('admin_mgt')
     cfg = get_config_util()(admin_api.get_config_path())
