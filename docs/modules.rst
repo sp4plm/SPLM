@@ -8,7 +8,7 @@
 ------------
 
 Модуль admin_mgt
-`````````````
+`````````````````
 
 Описание
 """"""""""""
@@ -38,7 +38,7 @@
 Предоставляет интерфейс по работе с модулями портала.
 
 API
-""""""""""""
+"""""""
 
 Модуль предоставляет внешний программный интерфейс для получения определенной информации по работе портала.
 Доступ к API можно получить с помощью функции ``get_mod_api()`` API (``app_api``) приложения, передав в
@@ -48,53 +48,57 @@ API
     admin_mod_api = app_api.get_mod_api('admin_mgt')
 
 
-.. function:: get_base_model()
-
-    Функция возвращает класс ``NodeObject``, который является для всех классов моделей
-    родительским.
-
-.. function:: get_embedded_user()
-
-    Функция возвращает класс ``EmbeddedUser``. Класс встроенного пользователя.
-
-.. function:: get_root_tpl()
-
-    Функция возвращает путь до базового шаблона приложения, относительно директории модуля.
-    Данный путь используется для наследования html шаблонов приложения.
-
-.. function:: get_config_path()
-
-    Функция ``get_config_path()`` возвращает путь до директории с файлами конфигурации портала.
-
-.. function:: set_portal_theme()
-
-    Функция устанавливает тему портала по идентификатору темы.
-
-.. function:: get_portal_mode_util()
-
-    Функция возврашает утиллиту для управления режимами портала.
-
-.. function:: get_portal_version()
-
-    Функция возвращает идентификатор версии портала.
+.. automodule:: app.admin_mgt.mod_api
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 
 Модуль files_mgt
-`````````````
+`````````````````
 
-Модуль предоставляет функционал файлового менеджера для загружаемых файлов портала
+Модуль предоставляет функционал файлового менеджера для загружаемых файлов портала.
+
+API
+"""""""
+
+Доступ к API можно получить с помощью функции ``get_mod_api()`` API (``app_api``) приложения, передав в
+качестве аргумента имя модуля “files_mgt”:
+::
+
+    admin_mod_api = app_api.get_mod_api('files_mgt')
+
+.. automodule:: app.files_mgt.mod_api
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 
 Модуль kv_editor
-`````````````
+````````````````
 
 Модуль предоставляет форму редактирования данных представленных в виде ключ-значение.
 
 Модуль используется для редактирования файлов ... через интерфейс ...
 
+API
+"""""""
+
+Доступ к API можно получить с помощью функции ``get_mod_api()`` API (``app_api``) приложения, передав в
+качестве аргумента имя модуля “kv_editor”:
+::
+
+    admin_mod_api = app_api.get_mod_api('kv_editor')
+
+.. automodule:: app.kv_editor.mod_api
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 
 Модуль query_mgt
-`````````````
+`````````````````
 
 Модуль предоставляет функциональность для работы с триплстором через SPARQL запросы.
 
@@ -142,20 +146,40 @@ error c причиной невыполнения запроса.
 
 Если запрос к базе вернул пустой запрос, то модуль возвращает пустой объект типа ``Python.List = []``
 
+API
+"""""""
+
+Через API модуля доступно редактирования sparqt шаблонов:
+::
+
+    admin_mod_api = app_api.get_mod_api('query_mgt')
+
+.. automodule:: app.query_mgt.mod_api
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 
 Модуль onto_mgt
-`````````````
+````````````````
 
 Модуль предоставляет функциональность для работы с онтологиями.
 
 Модуль позволяет загрузить/заменить/скачать/удалить онтологии на портале. Для каждой онтологии сохраняется
 ее префикс, определенный через baseURI. Для загруженных файлов онтологий реализована навигация по онтологии.
 
-Модуль предоставляет API для обращения к нему из других модулей. Пример обращения к модулю onto_mgt::
+API
+"""""""
 
-	from app import app_api
+Модуль предоставляет API для обращения к нему из других модулей. Пример обращения к модулю onto_mgt:
+::
+
     onto_api = app_api.get_mod_api('onto_mgt')
+
+.. automodule:: app.onto_mgt.mod_api
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 Список поддерживаемых обращений к модулю:
 
@@ -174,7 +198,7 @@ error c причиной невыполнения запроса.
 
 
 Модуль themes_mgt
-`````````````
+``````````````````
 
 Преднастроенные темы портала находятся в директории внутри модуля - ``themes_mgt/themes_list``.
 
@@ -220,15 +244,135 @@ zip-архив создавать не нужно. Достаточно папк
 
 
 Модуль user_mgt
-`````````````
+````````````````
 
 Модуль предоставляет функционал управления пользователями и ролями.
 
+API
+"""""""
+
+Доступ к API можно получить с помощью функции ``get_mod_api()`` API (``app_api``) приложения, передав в
+качестве аргумента имя модуля “user_mgt”:
+::
+
+    admin_mod_api = app_api.get_mod_api('user_mgt')
+
+.. automodule:: app.user_mgt.mod_api
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Модуль utilites
-`````````````
+````````````````
 
 В этом модуле собраны вспомогательные функции, которые часто используются для обработки данных.
+
+Вызов утилит выполняется следующим образом:
+::
+
+    from app.utilites.axiom_reader import getClassAxioms
+
+.. autofunction:: app.utilites.axiom_reader.getClassAxioms
+
+::
+
+    from app.utilites.code_helper import CodeHelper
+
+.. automodule:: app.utilites.code_helper
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites.conf_driver_ini import ConfigDriverIni
+
+.. automodule:: app.utilites.conf_driver_ini
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites.data_serializer import DataSerializer
+
+.. automodule:: app.utilites.data_serializer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites.data_upload_manager import DataUploadManager
+
+.. automodule:: app.utilites.data_upload_manager
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites.extend_processes import ExtendProcesses
+
+.. automodule:: app.utilites.extend_processes
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites.html_tag_searcher import HtmlTagSearcher
+
+.. automodule:: app.utilites.html_tag_searcher
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites.jqgrid_helper import JQGridHelper
+
+.. automodule:: app.utilites.jqgrid_helper
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites.portal_navi import PortalNavi
+
+.. automodule:: app.utilites.portal_navi
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites.some_config import SomeConfig
+
+.. automodule:: app.utilites.some_config
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites import tree
+
+.. automodule:: app.utilites.tree
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites.utilites import Utilites
+
+.. automodule:: app.utilites.utilites
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 
 Модуль wiki
@@ -252,31 +396,46 @@ zip-архив создавать не нужно. Достаточно папк
 
 
 Модули расширения функциональности (Open Source)
-------------
+-------------------------------------------------
 
 Модуль mod_analysis
-`````````````
+`````````````````````
 
 Модуль предоставляет функциональность для построения отчетов. В качестве библиотеки для
 графического представления использована open source библиотека ``plotly``.
 
 Модуль mod_auth_ldap
-`````````````
+``````````````````````
 
 Модуль предоставляет функциональность авторизации по протоколу LDAP.
 
+API
+"""""""
+
+Доступ к API можно получить с помощью функции ``get_mod_api()`` API (``app_api``)
+приложения, передав в качестве аргумента имя модуля “mod_auth_ldap”:
+::
+
+    admin_mod_api = app_api.get_mod_api('mod_auth_ldap')
+
+.. automodule:: app.mod_auth_ldap.mod_api
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+qweqwe autofunction:: app.mod_auth_ldap.mod_api.ModApi.login
 
 Модули расширения функциональности (Proprietary)
-------------
+--------------------------------------------------
 
 Модуль mod_bimserver
-`````````````
+``````````````````````
 
 Модуль позволяет включить интерфейс BimServer в интерфейс портала.
 
 
 Модуль mod_data_quality
-`````````````
+````````````````````````
 
 Модуль предоставляет функциональность для работы с машиночитаемыми треобваниями. Разработка машиночитаемых
 требований должна вестись на SHACL. Модуль имеет интерфейс для редактирования SHACL-правил и интерфейс для
@@ -290,7 +449,7 @@ zip-архив создавать не нужно. Достаточно папк
 
 
 Модуль mod_textcompare
-`````````````
+```````````````````````
 
 Модуль интеллектуального сравнения текстов требований. Модуль позволяет сравнивать тексты двумя
 по двум вариантам.
@@ -326,7 +485,7 @@ zip-архив создавать не нужно. Достаточно папк
 
 
 Модуль mod_controlling
-`````````````
+```````````````````````
 Модуль контроллинга предназначен для построения на предприятии эффективной системы показателей,
 дающих объективную оценку хода выполнения процесса или проекта.
 Модуль контроллинга рассчитывает текущий рейтинг проекта / процесса и хранит историю изменений рейтинга.

@@ -14,6 +14,14 @@ class ModApi(AdminConf):
 
     @staticmethod
     def get_base_model():
+        """
+        Функция возвращает класс ``NodeObject``, который является для всех классов моделей
+        родительским.
+        
+        :return: NodeObject
+        :rtype:
+        """
+
         # очень странное поведение:
         # если раскоментировать последующие строки - проект незапустится не смотря на импорт
         # возникает ошибка reference before assigned
@@ -28,7 +36,9 @@ class ModApi(AdminConf):
     def get_embedded_user():
         """
         Функция возвращает класс встроенного пользователя
-        :return:
+
+        :return: EmbeddedUser
+        :rtype:
         """
         return EmbeddedUser
 
@@ -36,7 +46,9 @@ class ModApi(AdminConf):
     def get_link_object():
         """
         Функция возвращает класс для организации связей в базе данных
-        :return:
+
+        :return: link
+        :rtype: str
         """
         return Link
 
@@ -44,12 +56,21 @@ class ModApi(AdminConf):
     def get_app_root_tpl():
         """
         Тестовый метод для заглушки корневого шаблона приложения
-        :return: string
+
+        :return: _test_base.html
+        :rtype:
         """
         return '_test_base.html'
 
     @staticmethod
     def get_root_tpl():
+        """
+        Функция возвращает путь до базового шаблона приложения, относительно директории модуля.
+        Данный путь используется для наследования html шаблонов приложения.
+
+        :return: pth
+        :rtype: str
+        """
         pth = ''
         # pth += AdminConf.MOD_NAME
         # pth += os.path.sep
@@ -60,6 +81,13 @@ class ModApi(AdminConf):
 
     @staticmethod
     def get_config_path():
+        """
+        Функция возвращает путь до директории с файлами конфигурации портала.
+
+        :return: path
+        :rtype: str
+        """
+
         pth = ''
         # if os.path.exists(AdminConf.CONFIGS_PATH) and os.listdir(AdminConf.CONFIGS_PATH):
         #     pth = AdminConf.CONFIGS_PATH
@@ -69,6 +97,13 @@ class ModApi(AdminConf):
 
     @staticmethod
     def set_portal_theme(theme_id):
+        """
+        Функция устанавливает тему портала по идентификатору темы.
+
+        :return: flag
+        :rtype: bool
+        """
+
         flg = False
         # get_app_config().get('main.Interface.Theme')
         _full_key = 'main.Interface.Theme'
@@ -135,6 +170,12 @@ class ModApi(AdminConf):
         return tpl
 
     def get_portal_mode_util(self):
+        """
+        Функция возврашает утиллиту для управления режимами портала.
+
+        :return:
+        :rtype:
+        """
         from app.admin_mgt.portal_mode_util import PortalModeUtil
         try:
             _util = PortalModeUtil()
@@ -145,6 +186,13 @@ class ModApi(AdminConf):
         return _util
 
     def get_portal_version(self):
+        """
+        Функция возвращает идентификатор версии портала.
+
+        :return: version
+        :rtype: str
+        """
+
         _v = ''
         _v = AdminUtils.get_build_version()
         return _v

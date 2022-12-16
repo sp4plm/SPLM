@@ -8,6 +8,15 @@ class ModApi(ModConf):
     _debug_name = 'KVEditorModApi'
 
     def render_page(self, base, _vars=None):
+        """
+        Функция формирует страницу портала по шаблону
+
+        :param base:
+        :param _vars:
+        :return: page
+        :rtype: html
+        """
+
         _tpl_name = ''
         _tpl_vars = {}
         _file_name = 'new_config_1'
@@ -46,6 +55,15 @@ class ModApi(ModConf):
         return _pth
 
     def can_remove_file(self, mod_name, _file_pth):
+        """
+        Функция проверяет наличие файла
+
+        :param str mod_name:
+        :param str _file_pth:
+        :return: флаг
+        :rtype: bool
+        """
+
         flg = False
         from app import app_api
         _app_conf_pth = app_api.get_app_cfg_path()
@@ -71,6 +89,15 @@ class ModApi(ModConf):
         return flg
 
     def remove_file(self, mod_name, _file_pth):
+        """
+        Функция удаляет указанный в параметре файл
+
+        :param str mod_name: имя удаляемого файла
+        :param str _file_pth: полный путь к удаляемому файлу
+        :return: флаг
+        :rtype: bool
+        """
+
         flg = False
         if self.can_remove_file(mod_name, _file_pth):
             from app import app_api
@@ -89,6 +116,15 @@ class ModApi(ModConf):
         return flg
 
     def dict2ini(self, file_path, data: dict):
+        """
+        Функция .....
+
+        :param str file_path:
+        :param dict data:
+        :return:
+        :rtype:
+        """
+
         flg = False
         # if os.path.exists(file_path) and os.path.isfile(file_path):
         file_path = self.__get_conf_save_path(file_path)
@@ -130,6 +166,14 @@ class ModApi(ModConf):
         return ini
 
     def ini2dict(self, file_path, curent_file=False):
+        """
+        Функция .....
+
+        :param str file_path: полный путь до файла
+        :param bool current_file: флаг
+        :return:
+        :rtype:
+        """
         data = None
         if os.path.exists(file_path) and os.path.isfile(file_path):
             if not curent_file:
@@ -223,8 +267,10 @@ class ModApi(ModConf):
     @staticmethod
     def get_app_path():
         """
-        Метод вычисляет путь директории приложения - это отсчетная точка для модулей
-        :return: None
+        Функция вычисляет путь директории приложения - это отсчетная точка для модулей
+
+        :return: app_root_dir
+        :rtype: str
         """
         from app import app_api
         return app_api.get_app_root_dir()

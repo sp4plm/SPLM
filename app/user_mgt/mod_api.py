@@ -7,7 +7,12 @@ class ModApi:
 
     @staticmethod
     def get_roles():
-        """"""
+        """
+        Функция возвращает роли .....
+
+        :returm: список
+        :rtype: list
+        """
         lst = []
         _data = Role.query.all()
         if _data:
