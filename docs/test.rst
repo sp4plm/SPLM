@@ -57,12 +57,6 @@ error c причиной невыполнения запроса.
 
 
 
-
-
-
-
-
-
 Мой модуль onto_mgt
 ``````````````````````````
 
@@ -78,19 +72,10 @@ error c причиной невыполнения запроса.
 
 Список поддерживаемых обращений к модулю:
 
-.. autofunction:: app.onto_mgt.mod_api.ModApi.get_prefixes
-
-.. autofunction:: app.onto_mgt.mod_api.ModApi.get_all_prefixes
-
-.. autofunction:: app.onto_mgt.mod_api.ModApi.get_classes
-
-.. autofunction:: app.onto_mgt.mod_api.ModApi.get_ontos
-
-.. autofunction:: app.onto_mgt.mod_api.ModApi.get_parent
-
-.. autofunction:: app.onto_mgt.mod_api.ModApi.get_graph
-
-
+.. automodule:: app.onto_mgt.mod_api
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 
 
