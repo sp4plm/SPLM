@@ -193,12 +193,12 @@ class Manager:
         lst = []
         _inf0 = self._current_app.config['modules_ttl']
         if 0 < len(_inf0):
-            # osplm:hasAccessRight
+            # osplm:isAvailableFor
             OSPLM = self._resolve_graph_ns(_inf0, 'osplm')
             _q = """
             PREFIX osplm: <%s>
             SELECT ?m ?r WHERE {
-                ?u osplm:hasAccessRight ?r .
+                ?u osplm:isAvailableFor ?r .
                 ?m osplm:hasURL ?u .
             }
             """ % self._get_app_uri()
@@ -210,7 +210,7 @@ class Manager:
             #     lst.append([_mod, str(_t['r'])])
             # print(self._debug_name + '.get_described_roles: lst', lst)
             lst = []
-            mods_roles = _inf0.subject_objects(predicate=OSPLM.hasAccessRight)
+            mods_roles = _inf0.subject_objects(predicate=OSPLM.isAvailableFor)
             lst = [it[1] for it in mods_roles]
             pass
         return lst
@@ -506,7 +506,7 @@ class Manager:
             _url['label'] = self._parse_rdflib_gen(self._work_g.objects(subject=url, predicate=rdflib.namespace.RDFS.label))
             if not isinstance(_url['label'], str):
                 _url['label'] = str(_url['label'])
-            _roles = self._work_g.objects(subject=url, predicate=OSPLM.hasAccessRight)
+            _roles = self._work_g.objects(subject=url, predicate=OSPLM.isAvailableFor)
             if _roles:
                 for _role in _roles:
                     code = _role

@@ -31,5 +31,5 @@
     osplm:hasHTMLtemplate "index.html"^^<http://www.w3.org/2001/XMLSchema#string> ;
     osplm:shallBeShownInMenu <http://www.w3.org/2001/XMLSchema#true> ;
     rdfs:label "Управление данными портала"^^<http://www.w3.org/2001/XMLSchema#string> ;
-    osplm:hasAccessRight "data_administrator"^^<http://www.w3.org/2001/XMLSchema#string> ;
-    osplm:hasAccessRight "data_operator"^^<http://www.w3.org/2001/XMLSchema#string> .
+    osplm:isAvailableFor "data_administrator"^^<http://www.w3.org/2001/XMLSchema#string> ;
+    osplm:isAvailableFor "data_operator"^^<http://www.w3.org/2001/XMLSchema#string> .
