@@ -26,7 +26,6 @@ author = 'sp4plm'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 templates_path = ['_templates']
-exclude_patterns = []
 
 language = 'ru'
 

@@ -388,8 +388,8 @@ API
 по ее использованию размещена под формой редактирования WIKI-странички.
 
 Полное описание синтаксиса дано по ссылкам:
-	a) https://github.com/sandino/Markdown-Cheatsheet/blob/master/README.md
-	б) https://gist.github.com/Jekins/2bf2d0638163f1294637
+	1) https://github.com/sandino/Markdown-Cheatsheet/blob/master/README.md
+	2) https://gist.github.com/Jekins/2bf2d0638163f1294637
 
 Для отображения wiki-страницы в интерфесе SPLM необходимо добавить ее url в административном
 меню "Навигация".
