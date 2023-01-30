@@ -268,7 +268,7 @@ API
 
 В этом модуле собраны вспомогательные функции, которые часто используются для обработки данных.
 
-Вызов утилит выполняется следующим образом123:
+Вызов утилит выполняется следующим образом:
 ::
 
     from app.utilites.axiom_reader import getClassAxioms
@@ -296,6 +296,14 @@ API
 
 ::
 
+    from app.utilites.code_helper import CodeHelper
+
+.. automodule:: app.utilites.code_helper
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
 
     from app.utilites.data_serializer import DataSerializer
 
