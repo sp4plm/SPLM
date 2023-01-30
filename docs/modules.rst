@@ -41,7 +41,7 @@ API
 """""""
 
 Модуль предоставляет внешний программный интерфейс для получения определенной информации по работе портала.
-Доступ к API можно получить с помощью функции ``get_mod_api()`` API (``app_api``) приложения, передав в
+Доступ к API можно получить с помощью функции ``get_mod_api()`` API (``app_api``) приложения, передав1 в
 качестве аргумента имя модуля “admin_mgt”:
 ::
 
@@ -49,6 +49,7 @@ API
 
 
 .. automodule:: app.admin_mgt.mod_api
+    :imported-members:
     :members:
     :undoc-members:
     :show-inheritance:
@@ -294,6 +295,7 @@ API
     :show-inheritance:
 
 ::
+
     from app.utilites.conf_driver_ini import ConfigDriverIni
 
 .. automodule:: app.utilites.conf_driver_ini
