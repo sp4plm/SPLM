@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import pickle
 
+
 class DataSerializer:
     _class_file = __file__
     _debug_name = 'DataSerializer'
