@@ -1,6 +1,12 @@
 Документация на SPLM
 ======================================
 
+..  automodule:: app.admin_mgt.mod_api
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
 Contents:
 
 .. toctree::

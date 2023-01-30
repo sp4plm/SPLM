@@ -50,7 +50,6 @@ API
 
 ..  automodule:: app.admin_mgt.mod_api
     :members:
-    :imported-members:
     :undoc-members:
     :show-inheritance:
 
@@ -283,7 +282,6 @@ API
 
 .. automodule:: app.utilites.code_helper
     :members:
-    :imported-members:
     :undoc-members:
     :show-inheritance:
 
