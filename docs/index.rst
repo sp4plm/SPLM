@@ -1,7 +1,7 @@
 Документация на SPLM
 ======================================
 
-456
+123
 
 
 ..  automodule:: app.admin_mgt.mod_api
@@ -13,7 +13,7 @@
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
    main
    installation
