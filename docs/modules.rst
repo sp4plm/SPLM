@@ -50,6 +50,7 @@ API
 
 ..  automodule:: app.admin_mgt.mod_api
     :members:
+    :imported-members:
     :undoc-members:
     :show-inheritance:
 
@@ -252,7 +253,7 @@ zip-архив создавать не нужно. Достаточно папк
 API
 """""""
 
-Доступ к API можно получить с помощью функции ``get_mod_api()`` API (``app_api``) приложения, передав2 в
+Доступ к API можно получить с помощью функции ``get_mod_api()`` API (``app_api``) приложения, передав в
 качестве аргумента имя модуля “user_mgt”:
 ::
 
@@ -282,6 +283,7 @@ API
 
 .. automodule:: app.utilites.code_helper
     :members:
+    :imported-members:
     :undoc-members:
     :show-inheritance:
 
