@@ -4,11 +4,8 @@
 import sys
 import os
 
-print(os.getcwd())
-print(os.path.dirname(os.getcwd()))
-
 project_root = os.path.dirname(os.getcwd())
-sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, project_root)
 
 
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.autosectionlabel', 'sphinx.ext.coverage', 'sphinx.ext.napoleon']
