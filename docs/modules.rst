@@ -268,20 +268,14 @@ API
 
 В этом модуле собраны вспомогательные функции, которые часто используются для обработки данных.
 
-Вызов утилит выполняется следующим образом123
+Вызов утилит выполняется следующим образом:
+::
 
     from app.utilites.axiom_reader import getClassAxioms
 
 .. autofunction:: app.utilites.axiom_reader.getClassAxioms
 
-
-    from app.utilites.conf_driver_ini import ConfigDriverIni
-
-.. automodule:: app.utilites.conf_driver_ini
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+::
 
     from app.utilites.code_helper import CodeHelper
 
@@ -290,8 +284,92 @@ API
     :undoc-members:
     :show-inheritance:
 
+::
+
+    from app.utilites.conf_driver_ini import ConfigDriverIni
+
+.. automodule:: app.utilites.conf_driver_ini
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites.data_serializer import DataSerializer
 
 .. automodule:: app.utilites.data_serializer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites.data_upload_manager import DataUploadManager
+
+.. automodule:: app.utilites.data_upload_manager
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites.extend_processes import ExtendProcesses
+
+.. automodule:: app.utilites.extend_processes
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites.html_tag_searcher import HtmlTagSearcher
+
+.. automodule:: app.utilites.html_tag_searcher
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites.jqgrid_helper import JQGridHelper
+
+.. automodule:: app.utilites.jqgrid_helper
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites.portal_navi import PortalNavi
+
+.. automodule:: app.utilites.portal_navi
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites.some_config import SomeConfig
+
+.. automodule:: app.utilites.some_config
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites import tree
+
+.. automodule:: app.utilites.tree
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
+
+    from app.utilites.utilites import Utilites
+
+.. automodule:: app.utilites.utilites
     :members:
     :undoc-members:
     :show-inheritance:
@@ -345,7 +423,7 @@ API
     :undoc-members:
     :show-inheritance:
 
-.. autofunction:: app.mod_auth_ldap.mod_api.ModApi.login
+qweqwe autofunction:: app.mod_auth_ldap.mod_api.ModApi.login
 
 
 

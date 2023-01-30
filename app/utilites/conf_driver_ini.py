@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from os import path as opath
 import configparser
 
