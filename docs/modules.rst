@@ -41,15 +41,17 @@ API
 """""""
 
 Модуль предоставляет внешний программный интерфейс для получения определенной информации по работе портала.
-Доступ к API можно получить с помощью функции ``get_mod_api()`` API (``app_api``) приложения, передав в
+Доступ к API можно получить с помощью функции ``get_mod_api()`` API (``app_api``) приложения, передав123 в
 качестве аргумента имя модуля “admin_mgt”:
 ::
 
     admin_mod_api = app_api.get_mod_api('admin_mgt')
 
 
-.. automodule:: app.admin_mgt.mod_api
+..  automodule:: app.admin_mgt.mod_api
     :members:
+    :undoc-members:
+    :show-inheritance:
 
 
 
