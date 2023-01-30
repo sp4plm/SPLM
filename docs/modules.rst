@@ -425,7 +425,7 @@ API
     :undoc-members:
     :show-inheritance:
 
-qweqwe autofunction:: app.mod_auth_ldap.mod_api.ModApi.login
+.. autofunction:: app.mod_auth_ldap.mod_api.ModApi.login
 
 
 
