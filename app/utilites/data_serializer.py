@@ -2,40 +2,40 @@
 import os
 
 
-class DataSerializer:
+class CodeHelper:
     _class_file = __file__
     _debug_name = 'CodeHelper'
 
     @staticmethod
     def write_to_file(file_path, istr='', mod='a'):
-        if DataSerializer.check_file(file_path):
-            DataSerializer.__write_to_file(file_path, mod, istr)
+        if CodeHelper.check_file(file_path):
+            CodeHelper.__write_to_file(file_path, mod, istr)
             return True
         return False
 
     @staticmethod
     def remove_file(file_path):
-        if DataSerializer.check_file(file_path):
+        if CodeHelper.check_file(file_path):
             os.unlink(file_path)
-            return not DataSerializer.check_file(file_path)
+            return not CodeHelper.check_file(file_path)
         return False
 
     @staticmethod
     def add_file(file_path):
-        DataSerializer.__write_to_file(file_path)
-        return not DataSerializer.check_file(file_path)
+        CodeHelper.__write_to_file(file_path)
+        return not CodeHelper.check_file(file_path)
 
     @staticmethod
     def read_file(file_path, mod='r'):
         txt = ''
-        if DataSerializer.check_file(file_path):
-            txt = DataSerializer.__read_from_file(file_path, mod)
+        if CodeHelper.check_file(file_path):
+            txt = CodeHelper.__read_from_file(file_path, mod)
         return txt
 
     @staticmethod
     def get_file(file_path, mod='r'):
         fp = None
-        if DataSerializer.check_file(file_path):
+        if CodeHelper.check_file(file_path):
             fp = open(file_path, mod, encoding="utf-8")
         return fp
 
@@ -53,26 +53,26 @@ class DataSerializer:
 
     @staticmethod
     def check_dir(dir_path):
-        return DataSerializer.check_fs_item(dir_path) and os.path.isdir(dir_path)
+        return CodeHelper.check_fs_item(dir_path) and os.path.isdir(dir_path)
 
     @staticmethod
     def is_empty_dir(dir_path):
-        if not DataSerializer.check_dir(dir_path):
+        if not CodeHelper.check_dir(dir_path):
             raise Exception('Directory "{}" does not exists!'.format(dir_path))
-        flist = DataSerializer.get_dir_content(dir_path)
+        flist = CodeHelper.get_dir_content(dir_path)
         return (0 == len(flist))
 
     @staticmethod
     def get_dir_content(dir_path):
         content = []
-        if DataSerializer.check_dir(dir_path):
+        if CodeHelper.check_dir(dir_path):
             _t = os.scandir(dir_path)
             content = [fi.name for fi in _t]
         return content
 
     @staticmethod
     def check_file(file_path):
-        return DataSerializer.check_fs_item(file_path) and os.path.isfile(file_path)
+        return CodeHelper.check_fs_item(file_path) and os.path.isfile(file_path)
 
     @staticmethod
     def check_fs_item(item_path):
@@ -108,11 +108,10 @@ class DataSerializer:
                 return _vals[_kv]
             else:
                 return ''
-
         _i = 0
         for _k in _keys:
             _t[_k] = _get_val(_i)
-            _i += 1
+            _i +=1
 
         return _t
 
@@ -197,8 +196,8 @@ class DataSerializer:
         with zipfile.ZipFile(packed_file, "r") as zfh:
             crc_test = zfh.testzip()
             if crc_test is not None:
-                return flg  # плохой файл
-            info = zfh.infolist()  # список файлов в архиве
+                return flg # плохой файл
+            info = zfh.infolist() # список файлов в архиве
             zfh.extractall(target_dir)
             _t = os.path.join(target_dir, info[0].filename)
             flg = os.path.exists(_t)
