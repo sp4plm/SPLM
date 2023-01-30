@@ -4,13 +4,12 @@
 import sys
 import os
 
-project_root = os.path.dirname(os.getcwd())
-sys.path.insert(0, project_root)
+#project_root = os.path.dirname(os.getcwd())
+#sys.path.insert(0, project_root)
 
-need_sphinx = '5.3.0'
+sys.path.insert(0, os.path.abspath('../'))
 
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.autosectionlabel', 'sphinx.ext.coverage', 'sphinx.ext.napoleon']
-
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -38,7 +37,7 @@ pygments_style = 'sphinx'
 
 source_suffix = '.rst'
 
-exclude_patterns = ['_build']
+exclude_patterns = []
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
