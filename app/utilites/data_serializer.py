@@ -2,40 +2,40 @@
 import os
 
 
-class CodeHelper:
+class DataSerializer:
     _class_file = __file__
-    _debug_name = 'CodeHelper'
+    _debug_name = 'DataSerializer'
 
     @staticmethod
     def write_to_file(file_path, istr='', mod='a'):
-        if CodeHelper.check_file(file_path):
-            CodeHelper.__write_to_file(file_path, mod, istr)
+        if DataSerializer.check_file(file_path):
+            DataSerializer.__write_to_file(file_path, mod, istr)
             return True
         return False
 
     @staticmethod
     def remove_file(file_path):
-        if CodeHelper.check_file(file_path):
+        if DataSerializer.check_file(file_path):
             os.unlink(file_path)
-            return not CodeHelper.check_file(file_path)
+            return not DataSerializer.check_file(file_path)
         return False
 
     @staticmethod
     def add_file(file_path):
-        CodeHelper.__write_to_file(file_path)
-        return not CodeHelper.check_file(file_path)
+        DataSerializer.__write_to_file(file_path)
+        return not DataSerializer.check_file(file_path)
 
     @staticmethod
     def read_file(file_path, mod='r'):
         txt = ''
-        if CodeHelper.check_file(file_path):
-            txt = CodeHelper.__read_from_file(file_path, mod)
+        if DataSerializer.check_file(file_path):
+            txt = DataSerializer.__read_from_file(file_path, mod)
         return txt
 
     @staticmethod
     def get_file(file_path, mod='r'):
         fp = None
-        if CodeHelper.check_file(file_path):
+        if DataSerializer.check_file(file_path):
             fp = open(file_path, mod, encoding="utf-8")
         return fp
 
@@ -53,26 +53,26 @@ class CodeHelper:
 
     @staticmethod
     def check_dir(dir_path):
-        return CodeHelper.check_fs_item(dir_path) and os.path.isdir(dir_path)
+        return DataSerializer.check_fs_item(dir_path) and os.path.isdir(dir_path)
 
     @staticmethod
     def is_empty_dir(dir_path):
-        if not CodeHelper.check_dir(dir_path):
+        if not DataSerializer.check_dir(dir_path):
             raise Exception('Directory "{}" does not exists!'.format(dir_path))
-        flist = CodeHelper.get_dir_content(dir_path)
+        flist = DataSerializer.get_dir_content(dir_path)
         return (0 == len(flist))
 
     @staticmethod
     def get_dir_content(dir_path):
         content = []
-        if CodeHelper.check_dir(dir_path):
+        if DataSerializer.check_dir(dir_path):
             _t = os.scandir(dir_path)
             content = [fi.name for fi in _t]
         return content
 
     @staticmethod
     def check_file(file_path):
-        return CodeHelper.check_fs_item(file_path) and os.path.isfile(file_path)
+        return DataSerializer.check_fs_item(file_path) and os.path.isfile(file_path)
 
     @staticmethod
     def check_fs_item(item_path):
@@ -116,12 +116,11 @@ class CodeHelper:
         return _t
 
     @staticmethod
-    def translit_rus_string(ru_str):
+    def translit_rus_string(ru_strr):
         """
         матрица составлена согласно:
-        https://ru.wikipedia.org/wiki/%D0%A2%D1%80%D0%B0%D0%BD%D1%81%D0%BB%D0%B8%D1%82%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D1%8F_%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D0%B0%D0%BB%D1%84%D0%B0%D0%B2%D0%B8%D1%82%D0%B0_%D0%BB%D0%B0%D1%82%D0%B8%D0%BD%D0%B8%D1%86%D0%B5%D0%B9
 
-        :param str ru_str:
+        :param str ru_strr:
         :return:
         :rtype:
         """
@@ -137,9 +136,9 @@ class CodeHelper:
                    't', 'u', 'f', 'kh', 'ts', 'ch', 'sh', 'shch', 'ie', 'y', '', 'e', 'iu', 'ia'
                    ]
         # теперь перебираем строку - ищем в руском символ берем индекс и по индексу подставляем значение из латинского
-        str_len = len(ru_str)
+        str_len = len(ru_strr)
         for ix in range(0, str_len):
-            char = ru_str[ix]
+            char = ru_strr[ix]
             if char in rusAlph:
                 idx = rusAlph.index(char)
                 res += engAlph[idx]
