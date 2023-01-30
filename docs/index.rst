@@ -1,7 +1,21 @@
 Документация на SPLM
 ======================================
 
-..  automodule:: app.admin_mgt.mod_api
+..  automodule:: admin_mgt.mod_api
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+123
+
+
+..  automodule:: app.admin_mgt
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+..  automodule:: app.app_api
     :members:
     :undoc-members:
     :show-inheritance:
