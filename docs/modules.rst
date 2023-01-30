@@ -268,12 +268,22 @@ API
 
 В этом модуле собраны вспомогательные функции, которые часто используются для обработки данных.
 
-Вызов утилит выполняется следующим образом:
+Вызов утилит выполняется следующим образом321:
 ::
 
     from app.utilites.axiom_reader import getClassAxioms
 
 .. autofunction:: app.utilites.axiom_reader.getClassAxioms
+
+::
+
+
+    from app.utilites.conf_driver_ini import ConfigDriverIni
+
+.. automodule:: app.utilites.conf_driver_ini
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
 ::
 
@@ -286,14 +296,6 @@ API
 
 ::
 
-    from app.utilites.conf_driver_ini import ConfigDriverIni
-
-.. automodule:: app.utilites.conf_driver_ini
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-::
 
     from app.utilites.data_serializer import DataSerializer
 
