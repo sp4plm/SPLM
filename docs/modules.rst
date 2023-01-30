@@ -286,6 +286,14 @@ API
 
 ::
 
+    from app.utilites.code_helperr import CodeHelperr
+
+.. automodule:: app.utilites.code_helperr
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+::
     from app.utilites.conf_driver_ini import ConfigDriverIni
 
 .. automodule:: app.utilites.conf_driver_ini
