@@ -8,6 +8,10 @@ class DataSerializer:
 
     @staticmethod
     def restore(self, file_name):
+        """
+        Привет всем!
+        :param file_name: в формате объекта RDF URI Reference <class 'rdflib.term.URIRef'>
+        """
         fdata = None
         with open(file_name, 'rb') as fp:
             fdata = pickle.load(fp)
