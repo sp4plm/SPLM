@@ -530,4 +530,119 @@ API
   :width: 100 %
   :align: center
 
-Файл с онтологией размещен в корне проекта.
+Файл с онтологией размещен в корне проекта. Ниже представлен листинг онтологии:
+
+.. code-block:: python
+
+    # baseURI: http://splm.portal.web/osplm
+    # imports: http://purl.org/dc/elements/1.1/
+    # imports: http://purl.org/dc/terms/
+    # prefix: osplm
+
+    @prefix dc: <http://purl.org/dc/elements/1.1/> .
+    @prefix osplm: <http://splm.portal.web/osplm#> .
+    @prefix owl: <http://www.w3.org/2002/07/owl#> .
+    @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+    @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+    @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+    <http://splm.portal.web/osplm>
+      a owl:Ontology ;
+      dc:creator "Столяров Олег Николаевич" ;
+      dc:date "2018-10-23" ;
+      dc:rights "In accordance with SP4PLM license / соответствует лицензии на платформу SP4PLM" ;
+      dc:title "Онтология платформы SP4PLM" ;
+      owl:imports dc: ;
+      owl:imports <http://purl.org/dc/terms/> ;
+      owl:versionInfo "Created with TopBraid Composer" ;
+    .
+    osplm:Function
+      a owl:Class ;
+      rdfs:label "Function of SP4PLM"@en ;
+      rdfs:label "Функция в SP4PLM"@ru ;
+      rdfs:subClassOf owl:Thing ;
+      rdfs:comment "Предназначен для описания функции, запуск которой разрешен для пользователей с указанной ролью. Если по одному URL разные пользовательские роли должны иметь разный функционал, то список таких функций должен быть перечислен в этом классе."@ru ;
+    .
+    osplm:Module
+      a owl:Class ;
+      rdfs:label "Module"@en ;
+      rdfs:label "Модуль"@ru ;
+      rdfs:subClassOf owl:Thing ;
+      rdfs:comment "Содержит экземпляр модуля, который регистрируются на платформе SP4PLM."@ru ;
+    .
+    osplm:URL
+      a owl:Class ;
+      rdfs:label "URL that used in module"@en ;
+      rdfs:label "URL которая используется в модуле"@ru ;
+      rdfs:subClassOf owl:Thing ;
+      rdfs:comment "URL модуля, по которому доступен какой-либо из его функционал."@ru ;
+    .
+    osplm:forAdminPurpose
+      a owl:DatatypeProperty ;
+      rdfs:domain osplm:URL ;
+      rdfs:label "доступен только для администратора"@ru ;
+      rdfs:label "shall be used for admin purpose"@en ;
+      rdfs:range xsd:boolean ;
+      rdfs:comment "Если объект xsd:true, то данный URL доступен только для администратора портала."@ru ;
+    .
+    osplm:hasDescription
+      a owl:DatatypeProperty ;
+      rdfs:domain osplm:Function ;
+      rdfs:label "has description"@en ;
+      rdfs:label "имеет описание"@ru ;
+      rdfs:range xsd:string ;
+    .
+    osplm:hasFunction
+      a owl:ObjectProperty ;
+      rdfs:domain osplm:Module ;
+      rdfs:label "has function"@en ;
+      rdfs:label "имеет функцию"@ru ;
+      rdfs:range osplm:Function ;
+    .
+    osplm:hasHTMLtemplate
+      a owl:DatatypeProperty ;
+      rdfs:domain osplm:URL ;
+      rdfs:label "has HTML template"@en ;
+      rdfs:label "имеет HTML шаблон"@ru ;
+      rdfs:range xsd:string ;
+      rdfs:comment ""@ru ;
+    .
+    osplm:hasPathForSPARQLquery
+      a owl:DatatypeProperty ;
+      rdfs:domain osplm:Module ;
+      rdfs:label "has path for SPARQL query"@en ;
+      rdfs:label "имеет путь к месту хранения SPARQL запросов"@ru ;
+      rdfs:range xsd:string ;
+      rdfs:comment "если модуль имеет свои SPARQL запросы, то здесь указывается относительный путь к месту их размещения."@ru ;
+    .
+    osplm:hasURL
+      a owl:ObjectProperty ;
+      rdfs:domain osplm:Module ;
+      rdfs:label "has URL"@en ;
+      rdfs:label "имеет URL"@ru ;
+      rdfs:range osplm:URL ;
+    .
+    osplm:isAvailableFor
+      a owl:ObjectProperty ;
+      rdfs:domain osplm:URL,
+                  osplm:Function ;
+      rdfs:label "is available for"@en ;
+      rdfs:label "доступна для"@ru ;
+      rdfs:range xsd:string ;
+      rdfs:comment "Если объектом является экземпляр класса Function, то проверка прав ролей на выполнение этих функций должны быть реализована разработчиком модуля самостоятельно. Если объектом является экземпляр класса URL, то проверка прав осуществляется платформой SP4PLM. При этом во view.py после соответствующего URL должен быть указан декоратор @_auth_decorator."@ru ;
+    .
+    osplm:shallBeShownInMenu
+      a owl:DatatypeProperty ;
+      rdfs:domain osplm:URL ;
+      rdfs:label "shall be shown in menu"@en ;
+      rdfs:label "должно отражаться в пользовательском меню"@ru ;
+      rdfs:range xsd:boolean ;
+      rdfs:comment "Если объектом является xsd:true, то в административном интерфейсе данный URL появляется в качестве подсказки."@ru ;
+    .
+    osplm:value
+      a owl:DatatypeProperty ;
+      rdfs:domain osplm:URL ;
+      rdfs:label "value"@en ;
+      rdfs:label "значение"@ru ;
+      rdfs:range xsd:string ;
+    .

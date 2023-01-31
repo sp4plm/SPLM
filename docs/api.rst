@@ -41,6 +41,3 @@ API документация
 
     if g.user:
         if g.user.has_role('role'):
-
-
-
