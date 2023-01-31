@@ -1,8 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import sys
 import os
+
+on_rtd = os.environ.get('READTHEDOCS') == 'True'
+if on_rtd:
+    html_theme = 'default'
+else:
+    html_theme = 'nature'
 
 project_root = os.path.dirname(os.getcwd())
 sys.path.insert(0, project_root)
@@ -38,7 +43,7 @@ source_suffix = '.rst'
 
 exclude_patterns = []
 
-html_theme = 'sphinx_rtd_theme'
+# html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 
