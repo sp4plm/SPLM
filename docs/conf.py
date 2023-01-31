@@ -19,7 +19,7 @@ extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.autosecti
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'splm'
-copyright = '2022, sp4plm'
+copyright = '2021, sp4plm'
 author = 'sp4plm'
 
 # -- General configuration ---------------------------------------------------
