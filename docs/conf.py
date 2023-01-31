@@ -3,7 +3,7 @@
 import sys
 import os
 
-pth = os.path.abspath("../app")
+pth = os.path.join(os.path.abspath(".."), "app")
 
 project_root = os.path.dirname(os.getcwd())
 sys.path.insert(0, pth)
@@ -12,7 +12,7 @@ sys.path.insert(0, pth)
 
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx.ext.autosectionlabel', 'sphinx.ext.coverage', 'sphinx.ext.napoleon']
 
-autodoc_mock_imports = ['flask', 'pickle', 'configparser', 'rdflib', 'requests', 'subprocess', 'os', 'sys', 'app']
+# autodoc_mock_imports = ['flask', 'pickle', 'configparser', 'rdflib', 'requests', 'subprocess', 'os', 'sys', 'app']
 
 
 # Configuration file for the Sphinx documentation builder.
