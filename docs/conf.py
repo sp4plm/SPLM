@@ -1,12 +1,15 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import sys
 import os
 
-pth = os.path.join(os.path.abspath(".."), "app")
+# pth = os.path.join(os.path.abspath(".."), "app")
+
+# print(pth)
 
 project_root = os.path.dirname(os.getcwd())
-sys.path.insert(0, pth)
+sys.path.insert(0, project_root)
 
 
 

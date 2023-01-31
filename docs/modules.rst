@@ -289,7 +289,7 @@ API
 
     from app.utilites.conf_driver_ini import ConfigDriverIni
 
-.. automodule:: app.utilites.conf_driver_ini
+.. automodule:: conf_driver_ini
     :members:
     :undoc-members:
     :show-inheritance:
@@ -298,7 +298,7 @@ API
 
     from app.utilites.data_serializer import DataSerializer
 
-.. automodule:: app.utilites.data_serializer
+.. automodule:: data_serializer
     :members:
     :undoc-members:
     :show-inheritance:
