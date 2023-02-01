@@ -289,7 +289,7 @@ API user_mgt
 
     from app.utilites.conf_driver_ini import ConfigDriverIni
 
-.. automodule:: conf_driver_ini
+.. automodule:: app.utilites.conf_driver_ini
     :members:
     :undoc-members:
     :show-inheritance:
@@ -298,7 +298,7 @@ API user_mgt
 
     from app.utilites.data_serializer import DataSerializer
 
-.. automodule:: data_serializer
+.. automodule:: app.utilites.data_serializer
     :members:
     :undoc-members:
     :show-inheritance:
