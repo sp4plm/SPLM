@@ -362,7 +362,7 @@ def print_onto():
                                 ?term a ?term_cls .
                                 Optional {?term rdfs:label ?term_lbl . }
                                 Optional { ?term rdfs:comment ?term_comm . }
-§                                }
+                                }
                            """
 
         data_cls = {}
