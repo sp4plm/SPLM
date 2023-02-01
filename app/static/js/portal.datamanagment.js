@@ -163,6 +163,7 @@ if(typeof void null!=typeof jQuery){
             }
             tb += '<span class="ui-corner-all toolbar-btn" action="remove"><span class="ui-icon ui-icon-trash"></span></span>';
             tb += '<span class="ui-corner-all toolbar-btn" action="link_navigation"><span class="ui-icon ui-icon-link"></span></span>';
+            tb += '<span class="ui-corner-all toolbar-btn" action="print_onto"><span class="ui-icon ui-icon-print"></span></span>';
             return tb;
         }
         
@@ -914,6 +915,12 @@ if(typeof void null!=typeof jQuery){
                 case 'link_navigation':
                     if(type==='f'){
                         document.location.href = "/onto/nav_ontology?onto=" + row.Name;
+                    }
+                    break;
+
+                case 'print_onto':
+                    if(type==='f'){
+                        document.location.href = "/onto/ontologies/print_onto?prefix=" + row.prefix;
                     }
                     break;
             }

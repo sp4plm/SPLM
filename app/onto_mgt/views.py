@@ -5,9 +5,6 @@ from math import ceil
 
 from flask import Blueprint, request, redirect, url_for, session
 from app import app, app_api
-# from app.portaldata_mgt.data_publish_process import USE_NAMED_GRAPHS
-
-# onto_mod_api = app_api.get_mod_api('onto_mgt')
 
 MOD_NAME = 'onto'
 
@@ -62,6 +59,12 @@ from app.query_mgt.query import Query
 
 _auth_decorator = app_api.get_auth_decorator()
 
+USE_NAMED_GRAPHS = False
+app_cfg = app_api.get_app_config()
+try:
+    USE_NAMED_GRAPHS = CodeHelper.conf_bool(app_cfg.get('data_storages.Main.use_named_graphs'))
+except:
+    pass
 
 def js_code_tree(tree):
 	if tree:
@@ -342,7 +345,7 @@ def ontologies():
 
 
 
-@mod.route( '/ontologies/print_onto' )
+@mod.route('/ontologies/print_onto')
 @_auth_decorator
 def print_onto():
     '''
@@ -352,7 +355,6 @@ def print_onto():
 
     if 'prefix' in argms.keys():
 
-        # G = onto_mod_api.get_graph(argms['prefix'])
         G = Ontology().getGraph(argms['prefix'])
 
         query_cls_string = """select ?term ?term_lbl ?term_cls ?term_comm ?term_dfnt {

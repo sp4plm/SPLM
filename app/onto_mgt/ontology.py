@@ -5,9 +5,6 @@ import re
 from rdflib import Graph, RDF, OWL, RDFS
 
 from app.onto_mgt.files_managment import FilesManagment
-from app.utilites.code_helper import CodeHelper
-
-from app.onto_mgt.views import *
 
 from app.app_api import compile_query_result
 
