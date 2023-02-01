@@ -51,3 +51,8 @@
 	<br>
 		{% if subclasses %}<h3>Подклассы:</h3>{{ subclasses | safe }}{% endif %}
 {% endblock %}
+
+{% block scripts %}
+    {{super()}}
+    <script src="{{url_for('data_navigation.static', filename='js/datanavigation.js')}}" type="text/javascript"></script>
+{% endblock %}

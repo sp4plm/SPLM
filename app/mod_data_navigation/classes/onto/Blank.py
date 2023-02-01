@@ -5,7 +5,8 @@ Created on 4 sept. 2021 г.
 '''
 
 import pandas as pd
-from flask import render_template
+from app import app_api
+
 
 class Blank:
     def __init__(self, current_class, argm):
@@ -20,6 +21,6 @@ class Blank:
         Возвращает шаблон HTML страницы, сформированный в соответствии с полученными в URL аргументами
         '''
 
-        return render_template("/Blank.html", title="TEST",
+        return app_api.render_page("data_navigation/Blank.html", title="Blank",
                             class_name = self.current_class,
                             error=self.argm)

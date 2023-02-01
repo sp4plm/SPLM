@@ -105,7 +105,7 @@ class Document:
             if len(df2) > 0:
                 instances = df2.to_html(escape=False, index=False)
 
-            templ = render_template("/Document.html", title="TEST", class_name=class_lbl,
+            templ = render_template("data_navigation/Document.html", title="TEST", class_name=class_lbl,
                                                                             parent=parent,
                                                                             subclasses=subclasses,
                                                                             instances = instances,

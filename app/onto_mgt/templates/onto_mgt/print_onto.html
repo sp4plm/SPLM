@@ -1,5 +1,3 @@
-<h2 style="text-align:center;">{{ name }}</h2>
-
 <style>
 	table {
 		width: 100%;
@@ -26,19 +24,23 @@
 
 
 {% block page_main_content %}
-<table>
-	{% for key, val in data.items() %}
-	<tr>
-		<th colspan="2">Элемент: {{ key }}</th>
-	</tr>
-	{% for row in val %}
-	<tr>
-		<td>{{ row[0] }}</td>
-		<td>{{ row[1] }}</td>
-	</tr>
-	{% endfor %}
-	{% endfor %}
-</table>
+
+{% for type_key, type_val in data.items() %}
+	<h2 style="text-align:center;">{{ type_key }}</h2>
+	<table>
+		{% for key, val in type_val.items() %}
+		<tr>
+			<th colspan="2">Элемент: {{ key }}</th>
+		</tr>
+		{% for row in val %}
+		<tr>
+			<td>{{ row[0] }}</td>
+			<td>{{ row[1] }}</td>
+		</tr>
+		{% endfor %}
+		{% endfor %}
+	</table>
+{% endfor %}
 
 {% endblock %}
 

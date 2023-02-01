@@ -42,3 +42,8 @@
 	<h2 class="content-header">{{ class_name }}</h2>
 	<h3>Error: {{ error }}</h3>
 {% endblock %}
+
+{% block scripts %}
+    {{super()}}
+    <script src="{{url_for('data_navigation.static', filename='js/datanavigation.js')}}" type="text/javascript"></script>
+{% endblock %}
