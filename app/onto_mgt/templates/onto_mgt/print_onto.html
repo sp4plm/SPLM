@@ -1,4 +1,38 @@
-<style>
+{% extends app_root_tpl() %}
+
+{% block styles %}
+    {{super()}}
+	<style type="text/css">
+	    .scroll-ul-list {
+			max-height: 450px;
+			overflow-y: scroll !important;
+		}
+		.scroll-well {
+			max-width: 500px;
+			overflow-x: scroll !important;
+			padding: 5px;
+		}
+		.xicon-pos {
+			margin-top: 10px;
+		}
+		.sdbarHR {
+			align "center";
+			width: 80%;
+			border-top: 1px solid #31313145;
+		}
+		.sdbarTitle {
+			padding: 10px 0px 10px 0px;
+			text-align: center;
+			font-size: 18px;
+			font-weight: 500;
+		}
+		.sdbarT {
+			padding: 5px 0px 5px 0px;
+			font-weight: 400;
+		}
+		.sdbarR {
+			padding: 5px 0px 5px 5px;
+		}
 	table {
 		width: 100%;
 		border:0px;
@@ -21,12 +55,13 @@
 		padding:10px;
 		}
 </style>
+{% endblock %}
 
 
 {% block page_main_content %}
 
 {% for type_key, type_val in data.items() %}
-	<h2 style="text-align:center;">{{ type_key }}</h2>
+	<span class="header-section-toggler xicon-open xicon-pos">&nbsp;</span><h2 class="content-header" style="text-align:center;">{{ type_key }}</h2>
 	<table>
 		{% for key, val in type_val.items() %}
 		<tr>
@@ -44,3 +79,7 @@
 
 {% endblock %}
 
+{% block scripts %}
+	{{super()}}
+	<script src="{{url_for('onto.static', filename='js/widget.js')}}" type="text/javascript"></script>
+{% endblock %}
