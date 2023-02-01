@@ -5,9 +5,9 @@ from math import ceil
 
 from flask import Blueprint, request, redirect, url_for, session
 from app import app, app_api
-from app.portaldata_mgt.data_publish_process import USE_NAMED_GRAPHS
+# from app.portaldata_mgt.data_publish_process import USE_NAMED_GRAPHS
 
-onto_mod_api = app_api.get_mod_api('onto_mgt')
+# onto_mod_api = app_api.get_mod_api('onto_mgt')
 
 MOD_NAME = 'onto'
 
@@ -352,14 +352,15 @@ def print_onto():
 
     if 'prefix' in argms.keys():
 
-        G = onto_mod_api.get_graph(argms['prefix'])
+        # G = onto_mod_api.get_graph(argms['prefix'])
+        G = Ontology().getGraph(argms['prefix'])
 
         query_cls_string = """select ?term ?term_lbl ?term_cls ?term_comm ?term_dfnt {
                                 ?term rdfs:subClassOf* owl:Thing .
                                 ?term a ?term_cls .
                                 Optional {?term rdfs:label ?term_lbl . }
                                 Optional { ?term rdfs:comment ?term_comm . }
-                                } limit 10
+§                                }
                            """
 
         data_cls = {}
@@ -373,7 +374,7 @@ def print_onto():
                                 Optional { ?term rdfs:domain ?term_dom . } 
                                 Optional { ?term rdfs:range ?term_rng . } 
                                 Optional { ?term rdfs:comment ?term_comm . }
-                                } limit 10
+                                }
                            """
         data_prd = {}
         for row in G.query(query_prd_string):
