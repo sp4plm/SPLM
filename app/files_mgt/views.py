@@ -42,9 +42,7 @@ if not os.path.exists(__mod_path):
 # теперь добавим симлинку внутри себя
 _files_lnk = os.path.join(_mod_utils.get_web_static_path(), 'files')
 if not os.path.exists(_files_lnk):
-    if platform == "win32":
-        # import win32file
-        # win32file.CreateSymbolicLink(__mod_path, _files_lnk, 1)
+    if "win32" == platform:
         import ctypes
         _kdll = ctypes.windll.LoadLibrary("kernel32.dll")
         _kdll.CreateSymbolicLinkA(__mod_path, _files_lnk, 0)

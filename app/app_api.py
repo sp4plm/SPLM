@@ -4,6 +4,8 @@
 Для удобства импорта API в любую точку приложения целиком или по частям
 импорт нужных функциональностей производим в функциях
 """
+import os
+
 
 # import os.path
 # import re
@@ -373,6 +375,11 @@ def render_page(tmpl_name, **tmpl_vars):
     return html
     """
     from flask_themes2 import render_theme_template, get_theme
+    from sys import platform
+    if "win32" == platform:
+        # from flak_themes2/__init__.py return render_template("_themes/%s/%s" % (theme, template_name), **context)
+        #
+        tmpl_name = tmpl_name.replace(os.pathsep, '/')
     return render_theme_template(get_theme(get_current_theme()), tmpl_name, **tmpl_vars)
 
 
