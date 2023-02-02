@@ -24,6 +24,7 @@ class AdminConf:
     @staticmethod
     def get_root_tpl():
         pth = os.path.join(AdminConf.MOD_NAME, 'admin_mgt-base.html')
+        pth = AdminConf.__correct_template_path(pth)
         return pth
 
     @staticmethod
@@ -51,3 +52,20 @@ class AdminConf:
     @staticmethod
     def get_configs_path():
         return AdminConf.get_mod_path(AdminConf.INIT_DIR_NAME + os.path.sep + AdminConf.CONF_DIR_NAME)
+
+    @staticmethod
+    def __correct_template_path(_tmpl):
+        """
+        Функция предназначена для коректировки пути шаблонов
+        :param str _tmpl: относительный путь к html шаблону
+        :return: скорректированный путь
+        :rtype str:
+        """
+        from sys import platform
+        from os import path
+        if "win32" == platform:
+            # так как
+            # from flak_themes2/__init__.py return render_template("_themes/%s/%s" % (theme, template_name), **context)
+            # преобразуем путь к соответствующему шаблону
+            _tmpl = _tmpl.replace(path.sep, path.altsep)
+        return _tmpl
