@@ -3,6 +3,7 @@
 Модуль предназначен для административного интерфейса управления файлами
 """
 import os
+from sys import platform
 import json
 from math import ceil
 
@@ -41,7 +42,11 @@ if not os.path.exists(__mod_path):
 # теперь добавим симлинку внутри себя
 _files_lnk = os.path.join(_mod_utils.get_web_static_path(), 'files')
 if not os.path.exists(_files_lnk):
-    os.symlink(__mod_path, _files_lnk, True)
+    if platform == "win32":
+        import win32file
+        win32file.CreateSymbolicLink(__mod_path, _files_lnk, 1)
+    else:
+        os.symlink(__mod_path, _files_lnk, True)
 
 
 # теперь нужно обработать перенаправление
