@@ -115,6 +115,7 @@ def save_config(conf_name):
 @_auth_decorator
 def get_section_tpl():
     _tpl_name = os.path.join(ModApi.MOD_NAME, 'portal', 'config_section.html')
+    _tpl_name = app_api.correct_template_path(_tpl_name)
     return render_template(_tpl_name)
 
 
@@ -122,6 +123,7 @@ def get_section_tpl():
 @_auth_decorator
 def get_param_tpl():
     _tpl_name = os.path.join(ModApi.MOD_NAME, 'portal', 'config_param.html')
+    _tpl_name = app_api.correct_template_path(_tpl_name)
     return render_template(_tpl_name)
 
 

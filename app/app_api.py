@@ -373,13 +373,7 @@ def render_page(tmpl_name, **tmpl_vars):
     return html
     """
     from flask_themes2 import render_theme_template, get_theme
-    from sys import platform
-    from os import path
-    if "win32" == platform:
-        # так как
-        # from flak_themes2/__init__.py return render_template("_themes/%s/%s" % (theme, template_name), **context)
-        # преобразуем путь к соответствующему шаблону
-        tmpl_name = tmpl_name.replace(path.sep, path.altsep)
+    tmpl_name = correct_template_path(tmpl_name)
     return render_theme_template(get_theme(get_current_theme()), tmpl_name, **tmpl_vars)
 
 
@@ -416,3 +410,19 @@ def get_portal_version():
     admin_api = get_mod_api('admin_mgt')
     _v = admin_api.get_portal_version()
     return _v
+
+def correct_template_path(_tmpl):
+    """
+    Функция предназначена для коректировки пути шаблонов
+    :param str _tmpl: относительный путь к html шаблону
+    :return: скорректированный путь
+    :rtype str:
+    """
+    from sys import platform
+    from os import path
+    if "win32" == platform:
+        # так как
+        # from flak_themes2/__init__.py return render_template("_themes/%s/%s" % (theme, template_name), **context)
+        # преобразуем путь к соответствующему шаблону
+        _tmpl = _tmpl.replace(path.sep, path.altsep)
+    return _tmpl
