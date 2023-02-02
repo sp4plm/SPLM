@@ -376,9 +376,10 @@ def render_page(tmpl_name, **tmpl_vars):
     from sys import platform
     from os import path
     if "win32" == platform:
+        # так как
         # from flak_themes2/__init__.py return render_template("_themes/%s/%s" % (theme, template_name), **context)
-        #
-        tmpl_name = tmpl_name.replace(path.altsep, path.sep)
+        # преобразуем путь к соответствующему шаблону
+        tmpl_name = tmpl_name.replace(path.sep, path.altsep)
     return render_theme_template(get_theme(get_current_theme()), tmpl_name, **tmpl_vars)
 
 
