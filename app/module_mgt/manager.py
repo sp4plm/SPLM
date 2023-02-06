@@ -540,7 +540,11 @@ class Manager:
         mods_path = self._get_mods_path()
         pak_list = os.scandir(mods_path)
         for item in pak_list:
-
+            # windows hack - no directory named "C"
+            _t = str(item.name)
+            # module names must be longer then 2 symbols
+            if 3 > len(_t):
+                continue
             if not item.is_dir():
                 continue
             if 0 !=mod:
