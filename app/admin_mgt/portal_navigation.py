@@ -151,6 +151,7 @@ class PortalNavigation(NavigationFiles):
                 break
         if os.path.exists(_pth):
             _pth = _pth.replace(search_path, '').lstrip(os.path.sep)
+        _pth = app_api.correct_template_path(_pth)
         return _pth
 
     def get_current_item(self, flask_request):

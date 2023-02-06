@@ -142,6 +142,7 @@ def edit_navigation(block, item):
         tmpl_vars['parent_navi_code'] = block
         tmpl_vars['current_navi_code'] = item
         tmpl_vars['_base_tpl'] = os.path.join(AdminConf.MOD_NAME, '')
+        tmpl_vars['_base_tpl'] = app_api.correct_template_path(tmpl_vars['_base_tpl'])
 
     if curr_point:
         curr_point['roles_'] = []
