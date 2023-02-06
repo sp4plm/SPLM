@@ -139,6 +139,7 @@ def edit_navigation(block, item):
             users_api = app_api.get_mod_api('user_mgt')
             tmpl_vars['user_roles'] = users_api.get_roles()
         tmpl_vars['link_selector'] = os.path.join(AdminConf.MOD_NAME, 'link_selector.html')
+        tmpl_vars['link_selector'] = app_api.correct_template_path(tmpl_vars['link_selector'])
         tmpl_vars['parent_navi_code'] = block
         tmpl_vars['current_navi_code'] = item
         tmpl_vars['_base_tpl'] = os.path.join(AdminConf.MOD_NAME, '')
