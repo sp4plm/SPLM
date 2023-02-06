@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os.path
+from sys import platform
 from .mod_conf import ModConf
 
 
@@ -33,6 +34,11 @@ class ModApi(ModConf):
         if '' != work_mod and '' != relative:
             _can_remove = self.can_remove_file(work_mod, relative)
         _tpl_name = self.get_editor_tpl()
+        if "win32" == platform:
+            # так как
+            # from flak_themes2/__init__.py return render_template("_themes/%s/%s" % (theme, template_name), **context)
+            # преобразуем путь к соответствующему шаблону
+            base = base.replace(os.path.sep, os.path.altsep)
         _tpl_vars['to_extend'] = base
         _tpl_vars['js_base_url'] = self.MOD_WEB_ROOT
         _tpl_vars['edit_name'] = _file_name
