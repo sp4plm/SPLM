@@ -64,6 +64,8 @@ def run_installer():
             """
             Проверяем содержимое errors на наличие реальных ошибок: CRITICAL | ERROR | WARNING
             """
+            # приводим  ошибки к строке, так как иногда возвращаются байты
+            errors = str(errors)
             _log_levels = ['CRITICAL ', 'ERROR ', 'WARNING ']
             _has_error = False
             for _si in _log_levels:
