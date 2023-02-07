@@ -3,7 +3,7 @@
         "_CMT_":"Возвращает один экземпляр класса для определения префикса данных",
         "#VARS":{"URI":{"mark":"#{URI}","default":""}},
         "#TXT":"select ?inst ?inst_lbl {
-                ?inst a #{URI} .
+                ?inst a <#{URI}> .
                 ?inst rdfs:label ?inst_lbl .
                 } limit 1"
     },
@@ -11,7 +11,7 @@
         "_CMT_":"Возвращает список экземпляров класса",
         "#VARS":{"URI":{"mark":"#{URI}","default":""}},
         "#TXT":"select ?inst ?inst_lbl {
-                ?inst a #{URI} .
+                ?inst a <#{URI}> .
                 Optional {
                             ?inst rdfs:label ?inst_lbl . }
                 } limit 200"
@@ -63,7 +63,7 @@
         "_CMT_":"Возвращает список экземпляров класса",
         "#VARS":{"URI":{"mark":"#{URI}","default":""}},
         "#TXT":"select ?cls ?cls_lbl (count(distinct ?inst) as ?cnt)  {
-                ?cls rdfs:subClassOf #{URI} .
+                ?cls rdfs:subClassOf <#{URI}> .
                 ?cls rdfs:label ?cls_lbl .
                 Optional {?cls2 rdfs:subClassOf+ ?cls .
                         ?inst a ?cls2 .}
@@ -74,7 +74,7 @@
         "_CMT_":"Возвращает лейбл класса",
         "#VARS":{"URI":{"mark":"#{URI}","default":""}},
         "#TXT":"select ?cls_lbl {
-                 #{URI} rdfs:label ?cls_lbl.
+                 <#{URI}> rdfs:label ?cls_lbl.
                 } limit 1"
     }
 }

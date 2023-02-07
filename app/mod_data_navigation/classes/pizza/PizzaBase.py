@@ -20,7 +20,7 @@ def make_breadcrumbs(prefix, pref_unquote, cls):
             break
 
         query_paretn_lbl = tsc_query('mod_data_navigation.Pizza.class_lbl',
-                                    {'URI': "<" + pref_unquote + cls + ">"})
+                                    {'URI': pref_unquote + cls})
         df_prnt = pd.DataFrame(query_paretn_lbl)
 
         if len(df_prnt):
@@ -46,7 +46,7 @@ class PizzaBase:
                 self.pref_unquote = p[1]
 
         query = tsc_query('mod_data_navigation.Pizza.one_instances',
-                          {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
+                          {'URI': self.pref_unquote + self.argm['class'] })
         if query:
             self.pref_4_data = query[0]['inst'].split("#")[0] + "#"
         else:
@@ -71,7 +71,7 @@ class PizzaBase:
         d = {}
 
         query_class_lbl = tsc_query('mod_data_navigation.PizzaBase.class_lbl',
-                     {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
+                     {'URI':  self.pref_unquote + self.argm['class'] })
         df_cls = pd.DataFrame(query_class_lbl)
 
         if len(df_cls):
@@ -116,7 +116,7 @@ class PizzaBase:
         else:
             # ------------- subclasses --------------------------
             query_subclass = tsc_query('mod_data_navigation.PizzaBase.list_of_subclasses',
-                                       {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
+                                       {'URI':  self.pref_unquote + self.argm['class'] })
             df = pd.DataFrame(query_subclass)
             if len(df) > 0:
                 df.cls = '<a href="' + df.cls.str.replace(self.pref_unquote,'') + \
@@ -128,7 +128,7 @@ class PizzaBase:
 
             # ------------- list of instances --------------------------
             query_list_inst = tsc_query('mod_data_navigation.PizzaBase.list_of_instances',
-                                        {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
+                                        {'URI':  self.pref_unquote + self.argm['class'] })
             df2 = pd.DataFrame(query_list_inst)
 
             if len(df2) > 0:

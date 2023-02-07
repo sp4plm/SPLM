@@ -33,7 +33,9 @@ def make_breadcrumbs(prefix, pref_unquote, cls):
             break
 
         query_paretn_lbl = tsc_query('mod_data_navigation.Pizza.class_lbl',
-                                    {'URI': "<" + pref_unquote + cls + ">"})
+                                    {'URI': pref_unquote + cls })
+
+        print('query_paretn_lbl=',query_paretn_lbl )
         df_prnt = pd.DataFrame(query_paretn_lbl)
 
         if len(df_prnt):
