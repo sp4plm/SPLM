@@ -15,6 +15,8 @@ if not os.path.exists(data_folder):
 
 class Jobs:
 
+	""" Класс позволяет работать с периодическими заданиями на базе Flask """
+
 	def __init__(self, daemon):
 		# инструмент с помощью которого выполняются команды
 		self.daemon = daemon
@@ -28,6 +30,11 @@ class Jobs:
 
 
 	def get_job_data(self):
+		"""
+		Метод возвращает все доступные задания
+		:return: объект с заданиями
+		:rtype: dict
+		"""
 		if not os.path.exists(self._file):
 			with open(self._file, 'w', encoding="utf-8") as _fp:
 				_fp.write('{}')
@@ -36,6 +43,10 @@ class Jobs:
 
 
 	def edit_job_data(self, data):
+		"""
+		Метод изменяет журнал заданий
+		:param dict data: объект с заданиями
+		"""
 		with open(self._file, "w", encoding="utf-8") as f:
 			json_text = json.dumps(data, indent='\t', ensure_ascii=False)
 			json_text = json_text.replace('\\n', '\n').replace('\\r', '')
@@ -44,11 +55,20 @@ class Jobs:
 
 
 	def get_job_object(self, _id):
+		"""
+		Метод возвращает задание c идентификатором _id
+		:param str _id: идентификатор задания
+		:return: объект задания
+		"""
 		data = self.get_job_data()
 		return data[_id] if _id in data else {}
 
 
 	def delete_job_object(self, _id):
+		"""
+		Метод удаляет задание c идентификатором _id
+		:param str _id: идентификатор задания
+		"""
 		data = self.get_job_data()
 		if _id in data:
 			data.pop(_id)
@@ -57,6 +77,11 @@ class Jobs:
 
 
 	def edit_job_object(self, _id, values={}):
+		"""
+		Метод изменяет задание c идентификатором _id
+		:param str _id: идентификатор задания
+		:param dict values: новое задание
+		"""
 		data = self.get_job_data()
 		if _id not in data:
 			data[_id] = {}

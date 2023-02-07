@@ -31,6 +31,11 @@ from .decorators import requires_auth
 
 @mod.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+    Функция реализует механизм авторизации пользователя на портале
+    :return: html страницу авторизации или перенаправляет на главную страницу портала
+    :rtype str:
+    """
     # print(request.environ)
     tmpl_vars = {}
     tmpl_vars['title'] = 'Авторизация'
@@ -134,6 +139,10 @@ def login():
 
 @mod.route('/logout', methods=['GET'])
 def logout():
+    """
+    Функция реализует механизм деавторизации пользователя на портале
+    :return: перенаправление на страницу авторизации
+    """
     logout_user()
     # redirect to portal main page page from settings
     _url = '/'
@@ -148,6 +157,11 @@ def logout():
 
 @mod.route('/welcome', methods=['GET'])
 def welcome():
+    """
+    Функция отвечает за формирование приветственной страницы ненастроенного портала
+    :return: html код страницы
+    :rtype str:
+    """
     tmpl_vars = {}
     tmpl_vars['title'] = 'Приветственная страница портала'
     tmpl_vars['page_title'] = 'Добро пожаловать на портал'
@@ -165,6 +179,10 @@ def welcome():
 @mod.route('/uacclog/export/excel/', methods=['GET'])
 @requires_auth
 def __export_users_log():
+    """
+    Функция возвращает содержимое лога авторизации пользователей в виде файла (функция flask -> send_file)
+    :return: файл или перенаправление на страницу ошибки 404
+    """
     errorMsg = 'Не удалось скачать лог авторизации пользователей!'
     _auth_logger = AdminUtils.get_auth_logger()
     # _auth_logger = Utils.get_auth_logger()

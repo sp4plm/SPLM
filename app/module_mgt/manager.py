@@ -415,15 +415,18 @@ class Manager:
                 _t = list(_r)
                 break  # only first
             if _t:
-                _mod = ''
-                _met = ''
-                _mod = str(_t[0]).replace(str(OSPLM), '').strip()
-                _met = str(_t[1])
-                # модуль является папкой и может не являться загруженным модулем Blueprint!
-                _http = self.get_mod_blueprint(_mod)
-                if _http is not None:
-                    _mod = _http.name
-                _url = _mod + '.' + _met
+                if 2 == len(str(_t[1]).split('.')):
+                    _url = str(_t[1])
+                else:
+                    _mod = ''
+                    _met = ''
+                    _mod = str(_t[0]).replace(str(OSPLM), '').strip()
+                    _met = str(_t[1])
+                    # модуль является папкой и может не являться загруженным модулем Blueprint!
+                    _http = self.get_mod_blueprint(_mod)
+                    if _http is not None:
+                        _mod = _http.name
+                    _url = _mod + '.' + _met
         # print(self._debug_name + '.get_start_urls->END')
         return _url
 

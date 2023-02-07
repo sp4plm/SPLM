@@ -17,8 +17,6 @@ _auth_decorator = app_api.get_auth_decorator()
 @mod.route('/')
 @_auth_decorator
 def portal_root_view():
-    # _mod_manager = app_api.get_mod_manager()
-    # _start_url = _mod_manager.get_start_url()
     _start_url = PortalNavi.get_start_url()
     if '/' != _start_url:
         return redirect(_start_url)

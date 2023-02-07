@@ -2,6 +2,9 @@
 import os
 
 class AdminConf:
+    """
+    Класс описывающий конфигурацию административного модуля портала
+    """
     _class_file = __file__
     _debug_name = 'AdminConf'
 
@@ -23,22 +26,43 @@ class AdminConf:
 
     @staticmethod
     def get_root_tpl():
+        """
+        Метод возвращает путь к базовому шаблону административного модуля в директории шаблонов модуля
+        :return: путь к базовому шаблону модуля
+        :rtype str:
+        """
         pth = os.path.join(AdminConf.MOD_NAME, 'admin_mgt-base.html')
         pth = AdminConf.__correct_template_path(pth)
         return pth
 
     @staticmethod
     def get_web_tpl_path():
+        """
+        Метод возвращает абсолютный путь до templates директории модуля
+        :return: абсолютный путь
+        :rtype str:
+        """
         pth = AdminConf.get_mod_path('templates')
         return pth
 
     @staticmethod
     def get_web_static_path():
+        """
+        Метод возвращает абсолютный путь до static директории модуля
+        :return: абсолютный путь
+        :rtype str:
+        """
         pth = AdminConf.get_mod_path('static')
         return pth
 
     @staticmethod
     def get_mod_path(relative):
+        """
+        Метод возвращает абсолютный путь для переданного относительного relative
+        :param str relative: относительный путь (внутри модуля)
+        :return: абсолютный путь
+        :rtype str:
+        """
         relative = relative.lstrip(os.path.sep)
         pth = os.path.join(AdminConf.SELF_PATH, relative)
         _k = 'data'
@@ -51,6 +75,11 @@ class AdminConf:
 
     @staticmethod
     def get_configs_path():
+        """
+        Метод возвращает путь до директории с конфигурационными файлами
+        :return: путь к директории
+        :rtype str:
+        """
         return AdminConf.get_mod_path(AdminConf.INIT_DIR_NAME + os.path.sep + AdminConf.CONF_DIR_NAME)
 
     @staticmethod

@@ -8,7 +8,7 @@ from app import app, app_api
 
 MOD_NAME = 'wiki'
 url_prefix = '/' + MOD_NAME
-mod = Blueprint(MOD_NAME, __name__, url_prefix='/', template_folder="templates")
+mod = Blueprint(MOD_NAME, __name__, url_prefix='/', template_folder=os.path.join(os.path.dirname(__file__),'templates'), static_folder=os.path.join(os.path.dirname(__file__),'static'), static_url_path='wiki')
 
 from app.admin_mgt.mod_api import ModApi
 
@@ -32,7 +32,6 @@ _auth_decorator = app_api.get_auth_decorator()
 def wiki():
 	'''
 	Метод возвращает список доступных wiki страниц
-	:return:
 	'''
 	return app_api.render_page('pages.html', pages = get_list_pages())
 
@@ -43,8 +42,8 @@ def wiki():
 def page(page_id = ""):
 	'''
 	Единный метод crud модели для page
-	:param page_id:
-	:return:
+	:param str page_id: идентификатор страницы
+	:return: html-страница
 	'''
 	if request.method == 'GET':
 		if request.args.get("do") == "edit":
@@ -73,13 +72,13 @@ def page(page_id = ""):
 def show_page(page_id = ""):
 	'''
 	Метод отдает wiki страницу на просмотр
-	:param page_id:
-	:return:
+	:param str page_id: идентификатор страницы
+	:return: html-страница
 	'''
 	if request.method == 'GET':
 		page = get_page_data(page_id)
 		title = page['title'] if 'title' in page else ""
-		compile_text = compile_wiki(page['text'], title)
+		compile_text = compile_wiki(page['text'])
 		is_toc = bool(int(page['is_navigation']))
 		toc = create_toc(compile_text) if is_toc else ""
 
@@ -87,11 +86,12 @@ def show_page(page_id = ""):
 
 
 
-def compile_wiki(text, title):
+def compile_wiki(text):
 	'''
 	Метод компилирует wiki код в html
-	:param text:
-	:return:
+	:param str text: основной текст
+	:return: compile_text
+	:rtype: str
 	'''
 
 	# компилируем ссылки
@@ -100,11 +100,11 @@ def compile_wiki(text, title):
 	# 	text = re.sub(url, urlparse(url).path, text)
 
 	compile_text = markdown2.markdown(text)
-	compile_text = "<h1>" + title + "</h1>" + compile_text
 	return compile_text
 
 
 def create_toc(text):
+	""" метод создает table of content """
 	_headers = re.findall(r'<h[2-6]>(.+)</h\d>', text)
 
 	toc = '<ul class="page_toc">' + ''.join(['<li><a href="' + '#' + '">' + name + '</a></li>' for name in _headers]) + '</ul>'

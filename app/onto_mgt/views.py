@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+
+# Модуль для управления онтологиями
+
 import os
 import json
-from math import ceil
 
+from math import ceil
 from flask import Blueprint, request, redirect, url_for, session
 from app import app, app_api
 
@@ -34,14 +37,13 @@ from app.onto_mgt.files_managment import FilesManagment
 
 from shutil import rmtree, copyfile
 
-from app.utilites.some_config import SomeConfig
 from flask import send_file
 
 import re
 
 from app.onto_mgt.ontology import Ontology
 
-from app.app_api import compile_query, compile_query_result, tsc_query
+from app.app_api import compile_query, compile_query_result
 
 from urllib.parse import quote, unquote
 
@@ -49,15 +51,12 @@ from rdflib import Graph, URIRef
 
 import networkx as nx
 
-import traceback, sys
-
 from app.utilites.axiom_reader import getClassAxioms
 
 from app.utilites.data_serializer import DataSerializer
 
-from app.query_mgt.query import Query
-
 _auth_decorator = app_api.get_auth_decorator()
+
 
 USE_NAMED_GRAPHS = False
 app_cfg = app_api.get_app_config()
@@ -66,7 +65,11 @@ try:
 except:
     pass
 
+
 def js_code_tree(tree):
+	"""
+	Метод строит дерево в html и добавляет ссылки для узлов
+	"""
 	if tree:
 		parent_id = json.loads(tree)[0]['id']
 
@@ -98,7 +101,6 @@ def js_code_tree(tree):
 					}
 					url += "&uri=" + encodeURIComponent(node.uri)
 					location.href = url
-
 			    }
 			);
 
@@ -114,6 +116,9 @@ def js_code_tree(tree):
 
 
 def get_className(ontology_class):
+	"""
+	Метод отдает класс онтологии
+	"""
 	prefixes = {"http://www.w3.org/2002/07/owl" : "owl"}
 	try:
 		ontology, ontology_class = ontology_class.split("#")
@@ -127,10 +132,16 @@ def get_className(ontology_class):
 
 # 2 функции по рендеру таблицы ОТНОШЕНИЯ
 def create_table(table):
+    """
+    Метод строит html таблицу
+    """
     return '<table class="simple-tbl report-data create_table_publics"><tbody>' + ''.join(["<tr>" + ''.join(row) + "</tr>" for row in table]) + '</tbody></table>'
 
 
 def compileTableRow(value, is_header, column, colors_class = "", total = False, base_width = ""):
+    """
+    Метод возвращает ряд для html таблицы. С его результатом работает метод create_table
+    """
     base_width = 'width:' + (base_width if base_width else '40%') + ';'
     colors_class = colors_class if colors_class else "table_text_color_397927"
 
@@ -153,8 +164,10 @@ def compileTableRow(value, is_header, column, colors_class = "", total = False, 
 
 
 # Создание дерева
-
 def load_graph(gr):
+	"""
+	Метод получает данные из графа
+	"""
 	path = []
 
 	qrslt = gr.query('SELECT ?s ?o { ?s ^rdfs:subClassOf ?o . filter (isIRI(?s) && isIRI(?o))} order by ?s')
@@ -165,11 +178,13 @@ def load_graph(gr):
 	return path
 
 def create_graph_by_node(node, g):
+	""" Метод создает граф для дерева """
 
 	ontology_file_format = "ttl"
 
 	# Циклическая функция сбора подчиненных узлов
 	def get_children(n):
+		""" Метод возвращает всех детей узла """
 		i = ''
 		child = []
 		for k in G.successors(n):
@@ -198,18 +213,16 @@ def Defrag(URL):
         return ""
 
 
-
 @mod.route('/nav_ontology')
 @_auth_decorator
 def nav_ontology():
-    """ Метод отвечает за навигацию по файлу онтологии и возвращает информацию об отношениях, аксиомах и экземплярах класса"""
+    """ Метод отвечает за навигацию по файлу онтологии и возвращает информацию об отношениях, аксиомах и экземплярах класса """
     owl_Thing = "http://www.w3.org/2002/07/owl#Thing"
 
     _onto = unquote(request.args.get('onto') if request.args.get('onto') else "")
     uri = unquote(request.args.get('uri') if request.args.get('uri') else "")
     if not uri:
         uri = owl_Thing
-
 
     df = FilesManagment()
     onto_path = df.get_dir_realpath("ontos")
@@ -235,6 +248,7 @@ def nav_ontology():
     relations_code = "query_mgt.navigation.subject_nav_onto"
     RELATIONS = compile_query_result( json.loads( graph.query(compile_query(relations_code, {"URI" : uri})).serialize(format="json").decode("utf-8") )  )
 
+
     firstPKey = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
     secondPKey = 'http://www.w3.org/2000/01/rdf-schema#label'
 
@@ -259,7 +273,6 @@ def nav_ontology():
     total_subject_P_O = {}
     for p_item in subject_P:
         total_subject_P_O[p_item] = [key for key in subject_P_O if subject_P_O[key] == p_item]
-
 
     table_cols_names = ["Свойство", "Значение", "Язык"]
     table_cols_names = [compileTableRow(table_cols_names[i], True, i + 1) for i in range(0, len(table_cols_names))]
@@ -291,14 +304,14 @@ def nav_ontology():
 
     instances_html = "<div>" + "<ul>" + instances_html + "<ul>" + "</div>"
 
-    return app_api.render_page("/onto_mgt/nav_ontology.html", relations = relations_html, axioms = axioms_html, instances = instances_html, js = js_code_tree(TREE), class_name = get_className(uri))
 
+    return app_api.render_page("/onto_mgt/nav_ontology.html", relations = relations_html, axioms = axioms_html, instances = instances_html, js = js_code_tree(TREE), class_name = get_className(uri))
 
 
 @mod.route('/ontologies')
 @_auth_decorator
 def ontologies():
-	""" Метод отдает структуру таблицы онтологий и рисует ее"""
+	""" Метод отдает структуру таблицы онтологий и рисует ее """
 	_base_url = '/' + MOD_NAME
 
 	# Таблица онтологий
@@ -341,8 +354,8 @@ def ontologies():
 	cfg_ontos['colModel'] = cols_ontos
 	cfg_ontos['url'] = url_for("onto.get_files")
 
-	return app_api.render_page("/onto_mgt/ontos.html", tbl = json.dumps(cfg_ontos))
 
+	return app_api.render_page("/onto_mgt/ontos.html", tbl = json.dumps(cfg_ontos))
 
 
 @mod.route('/ontologies/print_onto')
@@ -389,8 +402,7 @@ def print_onto():
     else:
         data = {'Ошибка! Префикс онтологии не указан.':{"":""}}
 
-    return app_api.render_page( '/onto_mgt/print_onto.html', data=data )
-
+    return app_api.render_page('/onto_mgt/print_onto.html', data=data )
 
 
 @mod.route('/getFiles/ontos', methods=['GET', 'POST'])
@@ -398,7 +410,6 @@ def print_onto():
 def get_files():
     """ Метод получает информацию о загруженных онтологиях"""
     dir_name = "ontos"
-
 
     answer = {'rows': [], 'page': 1, 'records': 20, 'total': 1}
     page = 1 # get the requested page
@@ -434,7 +445,6 @@ def get_files():
     offset = 0 if 1==page else (page-1)*limit
 
     file_list = []
-    
 
     df = FilesManagment()
     file_list = df.get_dir_source(dir_name)
@@ -465,13 +475,11 @@ def get_files():
     return json.dumps(answer)
 
 
-
 @mod.route('/loadFiles/ontos', methods=['GET', 'POST'])
 @_auth_decorator
 def upload_files():
     """ загружаем файлы в определенную директорию """
     dir_name = "ontos"
-
 
     answer = {'Msg': '', 'Data': None, 'State': 404}
     args = {"method": "POST"}
@@ -482,7 +490,6 @@ def upload_files():
             file = None # type: werkzeug.datastructures.FileStorage
             errors = []
 
-        
             _existed = []
             _upload_dir = 'temp_upload_' + str(datetime.now())
             _tmp_path = os.path.dirname(os.path.abspath(__file__))
@@ -493,7 +500,6 @@ def upload_files():
                 flg = False
                 cnt = 0
                 data = []
-
 
                 for file in request.files.getlist('File[]'):
                     flg = False
@@ -568,7 +574,6 @@ def upload_files():
                         if flg:
                             cnt += 1
                             data.append(secure_name)
-                            
 
                 if 0 < cnt:
                     answer['State'] = 200
@@ -590,13 +595,11 @@ def upload_files():
     return json.dumps(answer)
 
 
-
 @mod.route('/removeFile/ontos', methods=['GET', 'POST'])
 @_auth_decorator
 def remove_file():
     """ сохраняем изменения связанные с файлом """
     dir_name = "ontos"
-
 
     answer = {'Msg': '', 'Data': None, 'State': 404}
     answer['State'] = 500
@@ -642,7 +645,6 @@ def remove_file():
                             answer['Msg'] = ''
                             answer['Data'] = {'file': name}
 
-
             # удаляем конфигурацию из navigation_graphs
             meta.remove_file(name, NAVIGATION_GRAPH_PATH)
 
@@ -651,13 +653,11 @@ def remove_file():
     return json.dumps(answer)
 
 
-
 @mod.route('/removeSelection/ontos', methods=['POST'])
 @_auth_decorator
 def remove_selection():
     """ сохраняем изменения связанные с файлом """
     dir_name = "ontos"
-
 
     answer = {'Msg': '', 'Data': None, 'State': 404}
     answer['State'] = 500
@@ -710,7 +710,6 @@ def remove_selection():
     return json.dumps(answer)
 
 
-
 @mod.route('/downloadFile/ontos', methods=['GET', 'POST'])
 @_auth_decorator
 def download_file():
@@ -741,13 +740,11 @@ def download_file():
     return app_api.render_page("errors/404.html", message=errorMsg)
 
 
-
 @mod.route('/accept_newfile/ontos', methods=['POST'])
 @_auth_decorator
 def accept_new_file():
     """ Метод принимает новый файл в случае совпадения имен"""
     dir_name = "ontos"
-
 
     answer = {'Msg': '', 'Data': None, 'State': 404}
     recive_data = reqform_2_dict(request.form)
@@ -787,8 +784,9 @@ def accept_new_file():
 @mod.route('/reject_newfile/ontos', methods=['POST'])
 @_auth_decorator
 def reject_new_file():
-    """ Метод игнорирует новый файл в случае совпадения имен"""
+    """ Метод игнорирует новый файл в случае совпадения имен """
     dir_name = "ontos"
+
 
     answer = {'Msg': '', 'Data': None, 'State': 404}
     recive_data = reqform_2_dict(request.form)
@@ -814,8 +812,8 @@ def reject_new_file():
     return json.dumps(answer)
 
 
-
 def is_empty_upload_temp(_check_path):
+    """ Метод проверяет содержимое директории """
     if CodeHelper.check_dir(_check_path):
         file_map = 'set_map'
         files = CodeHelper.get_dir_content(_check_path)
@@ -831,7 +829,6 @@ def is_empty_upload_temp(_check_path):
                 return False # файл но не файл карты
         return True
     CodeHelper.is_empty_dir(_check_path) # запускаем исключение
-
 
 
 def reqform_2_dict(reqform):
@@ -864,8 +861,8 @@ def reqform_2_dict(reqform):
     return _normalized
 
 
-
 def map_file_descr_property(col):
+    """ Описание свойств """
     prop = ''
     cols = {'toolbar': '', 'id': 'name', 'name': 'name', 'Name': 'name', 'prefix' : 'name',
             'loaddate': 'mdate', 'usemap': 'map', 'loadresult': 'result'}
@@ -877,7 +874,6 @@ def map_file_descr_property(col):
     if col in cols:
         prop = cols[col]
     return prop
-
 
 """
 # operations
@@ -939,7 +935,6 @@ def is_respond_to_rules(item, rules, group_op):
     return flg
 
 
-
 def apply_jqgrid_filters(source_list, filters):
     """ прменение поиска по файлам """
     result_list = []
@@ -952,6 +947,7 @@ def apply_jqgrid_filters(source_list, filters):
     return result_list
 
 
+
 def save_uploaded_file(http_file, file_name=''):
     flg = True
     if http_file:
@@ -960,6 +956,7 @@ def save_uploaded_file(http_file, file_name=''):
             http_file.save(work_file)
             flg = True
     return flg
+
 
 
 def normalize_file_name(file_name):
@@ -972,5 +969,3 @@ def normalize_file_name(file_name):
 def translit_rus_string(ru_str):
     res = CodeHelper.translit_rus_string(ru_str)
     return res
-
-

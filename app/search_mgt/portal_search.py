@@ -507,6 +507,8 @@ class PortalSearch:
             _result = tsc_query(_query_code, _query_vars)
             if not _result and isinstance(_result, dict):
                 _result = []
+            if not isinstance(_result, list):
+                _result = []
         except Exception as ex:
             _result = []
         return _result

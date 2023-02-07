@@ -19,7 +19,7 @@
 
 
 {% block page_main_content %}
-	<form method="post" >
+	<form id="edit-form" method="post">
 		<h1>Шаблон</h1>
 		<br/>
 
@@ -64,12 +64,14 @@
 		{% if can_delete %}
 		<input type="submit" value="Удалить изменения" name="delete" formaction="{{url_for(module + '.sparqt_template', file = file, template = template)}}">
 		{% endif %}
+		<input type="button" value="Проверить запрос" name="check">
 		<br/>
 	</form>
 
 	<form method="get">
 		<input type="submit" value="К списку шаблонов" formaction="{{url_for(module + '.sparqt_file', file = file)}}">
 	</form>
+	<img id="loader-img" src="/static/img/loader1.gif" style="position: absolute; top: 50%; left: 50%; width: 48px; height: 48px; float: left; clear: none; z-index: 1000; display: none;">
 {% endblock %}
 
 
@@ -85,6 +87,32 @@
 		  lineNumbers: true
 		});
 		editor.setSize(null, 450);
+
+
+		$(document).ready(function() {
+			$('[name="check"]').on('click', function(event) {
+				$("#loader-img").show()
+			    $.ajax({
+				    url: '{{ajax_url}}',
+				    method: 'post',
+				    dataType: 'json',
+				    data : {'vars' : $('[name="vars"]').val(), 'txt' : editor.getValue()},
+				    success: function(xhr, status, success){
+				    	$("#loader-img").hide()
+				    	alert("Ошибок в запросе не обнаружено!");
+				    },
+				    error: function(xhr, status, error){
+				    	$("#loader-img").hide()
+				    	alert("Обнаружены ошибки в синтаксисе. Проверьте запрос!");
+				    }
+				});
+			});
+		});
+
+
+
+
+
 
     </script>
 {% endblock %}

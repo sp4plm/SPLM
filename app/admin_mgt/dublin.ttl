@@ -41,13 +41,13 @@
   osplm:hasHTMLtemplate "admin_navigation.html"^^<http://www.w3.org/2001/XMLSchema#string> .
 
 <http://splm.portal.web/osplm#admin_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_adminmgt_5> .
-<http://splm.portal.web/osplm/data#url_adminmgt_5> osplm:value "/portal/management/login"^^<http://www.w3.org/2001/XMLSchema#string> ;
+<http://splm.portal.web/osplm/data#url_adminmgt_5> osplm:value "/portal/login"^^<http://www.w3.org/2001/XMLSchema#string> ;
   osplm:shallBeShownInMenu <http://www.w3.org/2001/XMLSchema#true> ;
   rdfs:label "Авторизация"^^<http://www.w3.org/2001/XMLSchema#string> ;
   osplm:hasHTMLtemplate "login.html"^^<http://www.w3.org/2001/XMLSchema#string> .
 
 <http://splm.portal.web/osplm#admin_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_adminmgt_6> .
-<http://splm.portal.web/osplm/data#url_adminmgt_6> osplm:value "/portal/management/logout"^^<http://www.w3.org/2001/XMLSchema#string> ;
+<http://splm.portal.web/osplm/data#url_adminmgt_6> osplm:value "/portal/logout"^^<http://www.w3.org/2001/XMLSchema#string> ;
   osplm:shallBeShownInMenu <http://www.w3.org/2001/XMLSchema#true> ;
   rdfs:label "Выход"^^<http://www.w3.org/2001/XMLSchema#string> .
 

@@ -3,7 +3,6 @@ import multiline
 
 def _help():
 	result = ""
-	result += markdown2.markdown("## Справка для wiki - основные команды")
 
 	_help = """
 	# H1
@@ -38,7 +37,6 @@ Alt-H1
 Alt-H2
 ------
 """
-	result += markdown2.markdown("----")
 	result += markdown2.markdown("## Заголовки") + markdown2.markdown(_help) + markdown2.markdown(_help1) 
 
 	_help = """

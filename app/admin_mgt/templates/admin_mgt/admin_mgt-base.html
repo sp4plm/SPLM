@@ -73,3 +73,8 @@
     <script src="{{url_for('static', filename='js/main.js')}}" type="text/javascript"></script>
     <script src="{{url_for('admin_mgt.static', filename='js/portal_manager.js')}}" type="text/javascript"></script>
 {% endblock page_scripts %}
+
+{% block footer %}
+    {{super()}}
+    {% if portal_ver %}| Версия платформы: {{portal_ver|safe}}{% endif %}
+{% endblock %}

@@ -22,13 +22,7 @@ ENUMERATION = []
 
 
 def get_data():
-    """
-    Функция ....
-
-    :return:
-    :rtype:
-    """
-
+    """ метод возвращает данные из app/data/navi """
     data_navi = []
     if g.user:
         data_navi = PortalNavi.get_navi_map(g.user)
@@ -62,14 +56,7 @@ def get_data():
 
 
 def get_element_by_id(elem_id):
-    """
-    Функция ....
-
-    :param str elem_id:
-    :return:
-    :rtype:
-    """
-
+    """ метод возвращает объект из навигации по ID """
     for element in get_data():
         if element["id"] == elem_id:
             return element
@@ -77,14 +64,7 @@ def get_element_by_id(elem_id):
 
 
 def get_parent_id(elem_id):
-    """
-    Функция ....
-
-    :param str elem_id:
-    :return:
-    :rtype:
-    """
-
+    """ метод возвращает родительский объект из навигации по ID """
     for element in get_data():
         if element["id"] == elem_id:
             if element["parid"] == 0:
@@ -93,14 +73,7 @@ def get_parent_id(elem_id):
                 return get_parent_id(element["parid"])
 
 def get_id_by_href(href):
-    """
-    Функция ....
-
-    :param str href:
-    :return:
-    :rtype:
-    """
-
+    """ метод возвращает ID по url """
     for element in get_data():
         if element['href'] == href:
             return element["id"]
@@ -109,14 +82,7 @@ def get_id_by_href(href):
 
 # result = [parent, child]
 def get_structure(parent_id):
-    """
-    Функция ....
-
-    :param str parent_id:
-    :return:
-    :rtype:
-    """
-
+    """ метод возвращает всех детей родителя с parent_id в специальном формате для networkx """
     for element in get_data():
         LABELS[element['id']] = element['label']
         HREFS[element['id']] = element['href']
@@ -135,16 +101,7 @@ def get_structure(parent_id):
 
 
 def get_children(parent_id, data, result):
-    """
-    Функция ....
-
-    :param str parent_id:
-    :param list data:
-    :param str result:
-    :return:
-    :rtype:
-    """
-
+    """ метод рекурсивно возвращает всех детей родителя с parent_id """
     for element in data:
         if element['parid'] == parent_id:
             result.append([parent_id, element['id']])
@@ -154,16 +111,7 @@ def get_children(parent_id, data, result):
 
 
 def get_attrs(tree, parent_id, parent_order = ""):
-    """
-    Функция ....
-
-    :param tree:
-    :param str parent_id:
-    :param str parent_order:
-    :return:
-    :rtype:
-    """
-
+    """ метод добавляет атрибуты order, name, prefix и сортировку для дерева tree """
     current_order = 1
 
     srtid = {leaf['id'] : int(SORTED[leaf['id']]) for leaf in tree}
@@ -202,15 +150,7 @@ def get_attrs(tree, parent_id, parent_order = ""):
 
 
 def create_tree(structure, node):
-    """
-    Функция ....
-
-    :param structure:
-    :param node:
-    :return:
-    :rtype:
-    """
-
+    """ метод создает дерево """
     G = nx.DiGraph()
     G.add_edges_from(structure)
     try:
@@ -221,30 +161,17 @@ def create_tree(structure, node):
 
 
 def get_tree(href):
-    """
-    Функция ....
-
-    :param str href:
-    :return:
-    :rtype:
-    """
-
+    """ основной метод позволяющий получить дерево по URL """
     parent_id = get_parent_id(get_id_by_href(href))
     try:
         parent_id = int(parent_id)
         return json.dumps(create_tree(get_structure(parent_id), parent_id), ensure_ascii=False)
     except Exception as e:
-        return {}
+        return "{}"
 
 
 def get_sidebar_navi(href):
-    """
-    Функция ....
-
-    :param str href:
-    :return:
-    :rtype:
-    """
+    """ метод позволяющий получить дерево для сайдбара по URL """
 
     #  Вывод бокового меню без учета смежных с корнем (href) узлов
 
@@ -265,14 +192,7 @@ def get_sidebar_navi(href):
 
 
 def create_tree_description(tree):
-    """
-    Функция ....
-
-    :param tree:
-    :return:
-    :rtype:
-    """
-
+    """ метод добавляющий html c деревом на страницу """
     html = ""
     for leaf in tree:
         html += '<h3 class="content-header">{name}</h3><div class="well">{desc}</div>'.format(name = leaf['name'], desc = "")
@@ -283,14 +203,7 @@ def create_tree_description(tree):
 
 
 def create_bread_crumbs(href):
-    """
-    Функция ....
-
-    :param str href:
-    :return:
-    :rtype:
-    """
-
+    """ метод добавляющий html c "хлебными крошками" на страницу """
     bread_crumbs = []
 
     element = get_element_by_id(get_id_by_href(href))
@@ -305,14 +218,7 @@ def create_bread_crumbs(href):
 
 
 def js_code_tree(tree):
-    """
-    Функция ....
-
-    :param tree:
-    :return:
-    :rtype:
-    """
-
+    """ метод добавляющий js для jstree на страницу """
     if tree:
         js = '''<script type="text/javascript">
         $(function() {$('#tree3').tree({
@@ -331,15 +237,7 @@ def js_code_tree(tree):
 
 
 def get_order(tree, elem_id):
-    """
-    Функция ....
-
-    :param tree:
-    :param elem_id:
-    :return:
-    :rtype:
-    """
-
+    """ метод определяющий порядок элементов в дереве """
     for leaf in tree:
         if leaf['id'] == elem_id:
             return leaf['order']
@@ -351,13 +249,7 @@ def get_order(tree, elem_id):
         
 
 def get_enumeration_ids():
-    """
-    Функция ....
-
-    :return:
-    :rtype:
-    """
-
+    """ метод определяющий нужна ли нумерация в дереве """
     ENUMERATION_IDS = []
     for element in get_data():
         if element['code'] in ENUMERATION:
@@ -366,12 +258,7 @@ def get_enumeration_ids():
 
 
 def get_parents_for_query_ids():
-    """
-    Функция ....
-
-    :return:
-    :rtype:
-    """
+    """ метод определяющий есть ли конкретный родитель в дереве """
     PARENTS_FOR_QUERY_IDS = []
     for element in get_data():
         if element['code'] in PARENTS_FOR_QUERY:
@@ -380,14 +267,7 @@ def get_parents_for_query_ids():
 
 
 def get_info_by_href(href):
-    """
-    Функция ....
-
-    :param href:
-    :return:
-    :rtype:
-    """
-
+    """ метод возвращает информацию узла по URL """
     elem_id = get_id_by_href(href)
     parent_id = get_parent_id(elem_id)
 
@@ -401,14 +281,7 @@ def get_info_by_href(href):
 
 
 def get_tree_path(elem_id, tree):
-    """
-    Функция ....
-
-    :param elem_id:
-    :param tree:
-    :return:
-    :rtype: str
-    """
+    """ метод возвращает путь до узла в дереве """
     for leaf in tree:
         if leaf['id'] == elem_id:
             return leaf['name']
@@ -421,16 +294,8 @@ def get_tree_path(elem_id, tree):
 
 
 def build_theme_path(href, r_full_path):
-    """
-    Функция выполняет unquote и экранирует символы
-
-    :param fref:
-    :param str r_full_path:
-    :return:
-    :rtype:
-    """
-
-    #
+    """ метод строит html путь до узла в дереве """
+    # выполняем unquote и экранируем символы
     if r_full_path.endswith("?"):
         r_full_path = r_full_path[:-1]
     r_full_path = unquote(r_full_path).replace("?", "\?")
@@ -447,13 +312,7 @@ def build_theme_path(href, r_full_path):
 
 
 def get_query(parent_id):
-    """
-    Функция ___
-
-    :param parent_id:
-    :return:
-    :rtype:
-    """
+    """ метод возвращает данные для дерева по QUERY_CODE """
     try:
         # определяем дефолтный префикс
         if 'prefix' in request.args:
@@ -468,6 +327,8 @@ def get_query(parent_id):
                 ontology = p[1]
 
         themes = tsc_query(QUERY_CODE, {"PREF" : ontology})
+        if not isinstance(themes, list):
+            themes = []
 
         param_key = "TZTheme"
         

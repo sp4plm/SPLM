@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 
-from flask import Blueprint, request, redirect, url_for
+from flask import Blueprint, request, redirect, url_for, jsonify
 from app import app, app_api
 from flask_login import login_required
 
@@ -9,9 +9,12 @@ from app.admin_mgt.mod_api import ModApi
 
 from app.query_mgt.query import Query
 
+import random
+import string
+
 MOD_NAME = 'query'
 
-mod = Blueprint(MOD_NAME, __name__, url_prefix='/portal/manager', template_folder="templates", static_folder="static")
+mod = Blueprint(MOD_NAME, __name__, url_prefix='/query', template_folder="templates", static_folder="static")
 
 mod.add_app_template_global(app_api.get_app_root_tpl, name='app_root_tpl')
 mod.add_app_template_global(ModApi.get_root_tpl, name='admin_root_tpl')
@@ -23,6 +26,14 @@ _auth_decorator = app_api.get_auth_decorator()
 @mod.route('/')
 @_auth_decorator
 def sparqt_manager(blueprint_mod_name = MOD_NAME, module_name = module_name):
+	"""
+	Отображает список файлов sparqt
+
+	:param Blueprint blueprint_mod_name: экземпляр класса Blueprint для текущего модуля,
+	:param str module_name: название модуля.
+
+	:return: html-страница
+	"""
 	return app_api.render_page('/query_mgt/files.html', files = Query(module_name).get_list_sparqt(), module = blueprint_mod_name)
 
 
@@ -30,6 +41,15 @@ def sparqt_manager(blueprint_mod_name = MOD_NAME, module_name = module_name):
 @mod.route('/file/', methods=["GET", "POST"])
 @_auth_decorator
 def sparqt_file(file = '', blueprint_mod_name = MOD_NAME, module_name = module_name):
+	"""
+	Отображает список шаблонов в текущем sparqt-файле
+
+	:param str file: название текущего sparqt-файла без расширения,
+	:param Blueprint blueprint_mod_name: экземпляр класса Blueprint для текущего модуля,
+	:param str module_name: название модуля.
+
+	:return: html-страница
+	"""
 	if request.method == 'GET':
 		_can_remove = False
 		_can_remove = Query(module_name).can_remove(file)
@@ -53,6 +73,16 @@ def sparqt_file(file = '', blueprint_mod_name = MOD_NAME, module_name = module_n
 @mod.route('/<file>/template/', methods=["GET", "POST"])
 @_auth_decorator
 def sparqt_template(file, template = '', blueprint_mod_name = MOD_NAME, module_name = module_name):
+	"""
+	Редактор шаблона в sparqt-файле
+
+	:param str file: название текущего sparqt-файла без расширения,
+	:param str template: название текущего шаблона в sparqt-файле,
+	:param Blueprint blueprint_mod_name: экземпляр класса Blueprint для текущего модуля,
+	:param str module_name: название модуля.
+
+	:return: html-страница
+	"""
 	if 'save' in request.form:
 		if request.form['template']:
 			if (template == request.form['template']) or (not template and request.form['template'] not in Query(module_name).get_templates_names_sparqt(file)):
@@ -75,25 +105,77 @@ def sparqt_template(file, template = '', blueprint_mod_name = MOD_NAME, module_n
 		_can_remove = False
 		_can_remove = Query(module_name).can_remove_template(file, template)
 		return app_api.render_page('/query_mgt/edit.html', file = file, template = template, cmt = cmt, vars = var, txt = txt,
-								   module = blueprint_mod_name, can_delete=_can_remove)
+								   module = blueprint_mod_name, can_delete=_can_remove, ajax_url=url_for("query.test_query"))
 
+
+
+@mod.route('/test_query', methods=['POST'])
+@_auth_decorator
+def test_query():
+	"""
+	Метод позволяет проверить сохраняемый sparqt запрос на соответствие синтаксису.
+	Запрос отправляется к хранилищу.
+
+	:return: request_code
+	"""
+	onto = "onto"
+	# имитируем подстановку переменных в запрос
+	# где PREF = URI онтологии onto
+	PREF = ""
+	_onto_api = app_api.get_mod_api('onto_mgt')
+	prefixes = _onto_api.get_all_prefixes()
+	if onto in prefixes:
+		PREF = prefixes[onto]
+	params = {"PREF" : PREF}
+	# получаем переменные c ajax
+	_txt = request.values['txt']
+	_vars =  request.values['vars']
+
+	# из переменных собираем запрос, также как в Query()
+	var_s = _vars.split(",")
+	dict_var_s = {}
+	if _vars:
+		for var in var_s:
+			var = var.split("=")
+			dict_var_s[var[0]] = {"mark":"#{" + var[0] + "}","default": var[1]}
+
+	for item in dict_var_s:
+		pattern = dict_var_s[item]['mark']
+		if item in params and params[item] is not None:
+			_txt = _txt.replace(pattern, params[item])
+		elif 'default' in dict_var_s[item] and dict_var_s[item]['default']:
+			_txt = _txt.replace(pattern, dict_var_s[item]['default'])
+		else:
+			_txt = _txt.replace(pattern, '?' + ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15)))
+	_query = _txt
+
+	result = Query().query(_query)
+	if isinstance(result, list):
+		return jsonify({}), 200
+	else:
+		return jsonify({}), 400
 
 
 
 @mod.route('/logs', methods=['GET'])
 @_auth_decorator
 def showlogs():
-    logdir = app_api.get_logs_path()
-    result = ""
-    try:
-        with open( os.path.join(logdir, "Query.log"), "r" ) as f:
-            content = f.read()
-            result = content.replace("\n","<br>")
-            f.close()
-    except:
-        pass
+	"""
+	Метод отображает содержимое Query.log
 
-    return app_api.render_page('/query_mgt/logs.html',result = result)
+	:return: html-страница
+	"""
+	logdir = app_api.get_logs_path()
+	result = ""
+	try:
+		with open( os.path.join(logdir, "Query.log"), "r" ) as f:
+			content = f.read()
+			result = content.replace("\n","<br>")
+			f.close()
+	except:
+		pass
+
+	return app_api.render_page('/query_mgt/logs.html',result = result)
 
 
 
@@ -109,8 +191,8 @@ def create_sparqt_manager(URL, blueprint_mod):
 	"""
 	Метод создает три функции-маршрута для данного модуля: sparqt_manager, sparqt_file, sparqt_template
 
-	URL - наш url по которому будет SPARQTManager
-	blueprint_mod - экземпляр класса blueprint в файле views текущего модуля
+	:param str URL: наш url по которому будет SPARQTManager,
+	:param Blueprint blueprint_mod: экземпляр класса blueprint в файле views текущего модуля.
 	"""
 	url_file = '/' + URL + '_file/'
 	url_template = '/' + URL + '_template/'

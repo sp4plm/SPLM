@@ -15,13 +15,10 @@ class ModApi(AdminConf):
     @staticmethod
     def get_base_model():
         """
-        Функция возвращает класс ``NodeObject``, который является для всех классов моделей
-        родительским.
-        
-        :return: NodeObject
-        :rtype:
+        Метод возвращает базовый класс для моделей
+        :return: класс NodeObject
+        :rtype class:
         """
-
         # очень странное поведение:
         # если раскоментировать последующие строки - проект незапустится не смотря на импорт
         # возникает ошибка reference before assigned
@@ -35,20 +32,18 @@ class ModApi(AdminConf):
     @staticmethod
     def get_embedded_user():
         """
-        Функция возвращает класс встроенного пользователя
-
-        :return: EmbeddedUser
-        :rtype:
+        Метод возвращает класс встроенного пользователя
+        :return: класс EmbeddedUser
+        :rtype class:
         """
         return EmbeddedUser
 
     @staticmethod
     def get_link_object():
         """
-        Функция возвращает класс для организации связей в базе данных
-
-        :return: link
-        :rtype: str
+        Метод возвращает класс для организации связей в базе данных
+        :return: класс Link
+        :rtype class:
         """
         return Link
 
@@ -56,20 +51,17 @@ class ModApi(AdminConf):
     def get_app_root_tpl():
         """
         Тестовый метод для заглушки корневого шаблона приложения
-
-        :return: _test_base.html
-        :rtype:
+        :return: имя файла тестового наблона
+        :rtype str:
         """
         return '_test_base.html'
 
     @staticmethod
     def get_root_tpl():
         """
-        Функция возвращает путь до базового шаблона приложения, относительно директории модуля.
-        Данный путь используется для наследования html шаблонов приложения.
-
-        :return: pth
-        :rtype: str
+        Метод возвращает базовый имя базового шаблона для административного интерфейса
+        :return: имя файла шаблона
+        :rtype str:
         """
         pth = ''
         # pth += AdminConf.MOD_NAME
@@ -82,12 +74,10 @@ class ModApi(AdminConf):
     @staticmethod
     def get_config_path():
         """
-        Функция возвращает путь до директории с файлами конфигурации портала.
-
-        :return: path
-        :rtype: str
+        Метод возвращает абсолютный путь к директории с файлами конфигурации
+        :return: абсолютный путь
+        :rtype str:
         """
-
         pth = ''
         # if os.path.exists(AdminConf.CONFIGS_PATH) and os.listdir(AdminConf.CONFIGS_PATH):
         #     pth = AdminConf.CONFIGS_PATH
@@ -98,12 +88,11 @@ class ModApi(AdminConf):
     @staticmethod
     def set_portal_theme(theme_id):
         """
-        Функция устанавливает тему портала по идентификатору темы.
-
-        :return: flag
-        :rtype: bool
+        Метод устанавливает актуальную тему yf портале по ее идентификатору theme_id
+        :param str theme_id: идентификатор темы для плагина Flask_Themes 2
+        :return: True если тема установлена для портала, False в противном случае
+        :rtype bool:
         """
-
         flg = False
         # get_app_config().get('main.Interface.Theme')
         _full_key = 'main.Interface.Theme'
@@ -126,6 +115,15 @@ class ModApi(AdminConf):
         return flg
 
     def get_ext_func_navi(self, _user):
+        """
+        Метод возвращает список ссылок дополнительной функциональности для пользователя _user.
+        Если пользователю _user назначена роль extended_admin, то добавляется ссылка для скачивания лога авторизации.
+        Если пользователь _user является администратором портала, то добавляется ссылка для перехода в административный
+         интерфейс.
+        :param object _user: экземпляр класса модели пользователя
+        :return: список ссылок
+        :rtype list:
+        """
         _lst = []
         """
         <li><a href="/portal/uacclog/export/excel/">Access log export</a></li>
@@ -163,6 +161,11 @@ class ModApi(AdminConf):
 
     @staticmethod
     def __get_link_tpl():
+        """
+        Вспомогательный private метод возвращающий шаблон элемента навигации
+        :return: шаблон элемента навигации
+        :rtype dict:
+        """
         tpl = {}
         tpl = {"id": 0, "label": "", "rules": "", "href": "", "parid": 0, "srtid": 1,
                "page": [], "icon": "", "thumb": "", "descr": "",
@@ -171,10 +174,9 @@ class ModApi(AdminConf):
 
     def get_portal_mode_util(self):
         """
-        Функция возврашает утиллиту для управления режимами портала.
-
-        :return:
-        :rtype:
+        Метод возвращает утиллиту для работы с режимами портала.
+        :return: утиллита для работы с режимами портала
+        :rtype PortalModeUtil:
         """
         from app.admin_mgt.portal_mode_util import PortalModeUtil
         try:

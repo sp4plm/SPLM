@@ -9,6 +9,9 @@ from app.utilites.utilites import Utilites
 
 from app.drivers.store_driver import StoreDriver
 
+from rdflib import Graph
+from rdflib.plugins.sparql.results.jsonresults import JSONResult
+
 module = "query_mgt"
 
 class Query:
@@ -28,6 +31,12 @@ class Query:
     TEMPLATE_PARAMS = ['_CMT_', '#VARS', '#TXT']
 
     def __init__(self, module_name = module):
+        """
+        Метод инициализирует класс Query. Определяет драйвер для обращения к хранилищу.
+        Инициализирует логгер.
+
+        :param str module_name: название модуля.
+        """
         self.url = ""
         self.http_headers = ""
         self.namespaces = ""
@@ -54,9 +63,9 @@ class Query:
     def initLoggerComponent(self):
         """
         Метод возвращает класс logComponent для инициализации и поддержки функции логирования методов основного класса
+
         :return: logComponent
         """
-        # TODO: Для расширения функциональности логирования статические части вынести в аттрибуты для изменения внешнего логера
         class logComponent:
             @staticmethod
             def getAppLogger(name: str = ''):
@@ -77,19 +86,27 @@ class Query:
     def runQuery(self, _query):
         """
         Метод выполняет post запрос к триплстору
-        :param _query: string
+        :param str _query: текст запроса
+
+        :return response: результат sparql запроса.
+        :rtype: dict
         """
         try:
             response = self.storage_driver._exec_query(_query)
-            # self.logger.info("This is the query string: \n" + _query)
             return json.loads(response)
         except Exception as e:
             self.logger.error("Request error: " + str(e))
-            return []
+            return "Request error: " + str(e)
 
 
     def compileQueryResult(self, answer):
-        """"""
+        """
+        Метод обрабатывает результат запроса, приводя его к более удобному виду
+        :param dict answer: результат sparql запроса
+
+        :return FINAL_RESULT: обработанный результат запроса
+        :rtype: list
+        """
         try:
             FINAL_RESULT = []
             for binding_set in answer['results']['bindings']:
@@ -101,16 +118,19 @@ class Query:
             return FINAL_RESULT
 
         except Exception as e:
-            return []
+            return str(e)
 
 
 
 
     def query(self, _query):
         """
-        Метод подставляет префиксы в запрос и форматирует ответ от триплстора
-        :param _query: string
-        :return: FINAL_RESULT
+        Общий метод работы с запросами.
+        В случае select запроса возвращает обработанный Python.List, в случае construct возвращает rdflib.Graph
+        :param str _query: текст запроса
+
+        :return FINAL_RESULT: результат
+        :rtype: dict
         """
         FINAL_RESULT = []
         if not _query:
@@ -118,13 +138,20 @@ class Query:
 
         try:
             answer = self.runQuery(_query)
+            if isinstance(answer, str):
+                return answer
 
             FINAL_RESULT = answer
             if StoreDriver()._is_select_query(_query):
                 FINAL_RESULT = self.compileQueryResult(answer)
-            
+            if StoreDriver()._is_construct_query(_query):
+                FINAL_RESULT = Graph()
+                js = JSONResult(answer)
+                for i in js:
+                    FINAL_RESULT.add(i[:3])
+
         except Exception as e:
-            return []
+            return str(e)
 
         return FINAL_RESULT
 
@@ -133,8 +160,11 @@ class Query:
     def compileQuery(self, code, params = {}):
         """
         Метод парсит код sparqt, компилирирует текст запроса и возвращает ответ от метода query
-        :param code: string
-        :param params: dict {VARNAME : VALUE}
+        :param str code: код запроса в формате <module>.<file>.<template>
+        :param dict params: параметры для переменных в запросе в формате {VARNAME : VALUE}
+
+        :return _query: текст запроса
+        :rtype: str
         """
         try:
             from app.app_api import get_module_sparqt_dir
@@ -164,9 +194,19 @@ class Query:
 
             return _query
         except Exception as e:
-            return ""
+            return str(e)
 
     def __get_real_qfile(self, file_path):
+        """
+        Метод возвращает путь до sparqt файла.
+        Если файл редактируется впервые, то берется из ядра модуля.
+        Если файл уже редактировался, то берется из cfg для пользователя
+
+        :param file_path code: абсолютный путь до sparqt-файла из ядра модуля
+
+        :return _pth: фактический путь до sparqt-файла
+        :rtype: str
+        """
         _pth = file_path
         _root = self.__get_app_root_dir()
         mod_name = file_path.replace(_root, '').lstrip(os.path.sep).split(os.path.sep)[0]
@@ -199,20 +239,25 @@ class Query:
     def queryByCode(self, code, params={}):
         """
         Метод парсит код sparqt, компилирирует текст запроса и возвращает ответ от метода query
-        :param code: string
-        :param params: dict {VARNAME : VALUE}
+        :param str code: код запроса в формате <module>.<file>.<template>
+        :param dict params: параметры для переменных в запросе в формате {VARNAME : VALUE}
+
+        :return: результат запроса
+        :rtype: list
         """
         try:
             _query = self.compileQuery(code, params)
             return self.query(_query)
         except Exception as e:
-            return []
+            return str(e)
 
     def get_full_path_sparqt(self, file):
         """
         Метод возвращает абсолютный путь файла
-        :param file: string
-        :return: path
+
+        :param str file: название sparqt-файла без расширения.
+        :return _pth: абсолютный путь до sparqt-файла
+        :rtype: str
         """
         _pth = os.path.join(self.SPARQT_DIR, file + self.format_json)
         _pth = self.__get_real_qfile(_pth)
@@ -221,7 +266,9 @@ class Query:
     def get_list_sparqt(self):
         """
         Метод возвращает список названий sparqt файлов без расширений
-        :return: files
+
+        :return files: список sparqt-файлов
+        :rtype: list
         """
         files = []
         for file in os.listdir(self.SPARQT_DIR):
@@ -233,8 +280,10 @@ class Query:
     def can_remove(self, file):
         """
         Метод проверяет можно ли удалять файл - то есть изначальный файл был отредактирован пользователем
-        :param file:
-        :return:
+
+        :param str file: название sparqt-файла без расширения.
+        :return _flg: True/False
+        :rtype: bool
         """
         _flg = False
         _pth = self.get_full_path_sparqt(file)
@@ -246,8 +295,11 @@ class Query:
     def can_remove_template(self, file, template):
         """
         Метод проверяет можно ли удалять шаблон - то есть изначальный шаблон был отредактирован пользователем
-        :param file:
-        :return:
+
+        :param str file: название sparqt-файла без расширения,
+        :param str template: название шаблона в sparqt-файле file.
+        :return _flg: True/False
+        :rtype: bool
         """
         _flg = False
         _pth = self.get_full_path_sparqt(file)
@@ -273,8 +325,10 @@ class Query:
     def get_file_object_sparqt(self, file):
         """
         Метод возвращает содержимое sparqt файла
-        :param file: string
-        :return: templates
+
+        :param str file: название sparqt-файла без расширения.
+        :return templates: объект с шаблонами для текущего sparqt-файла
+        :rtype: dict
         """
         templates = {}
         if not file:
@@ -288,8 +342,10 @@ class Query:
     def edit_file_object_sparqt(self, file, templates):
         """
         Метод редактирует содержимое sparqt файла
-        :param file: string
-        :param templates: string
+
+        :param str file: название sparqt-файла без расширения,
+        :param dict templates: объект с шаблонами для текущего sparqt-файла.
+
         """
         # согласно новой концепции сохранять редактируемый файл требуется в директорию общего конфига
         _conf_path = self.__get_app_conf_dir()  # директория конфигураций приложения
@@ -313,35 +369,42 @@ class Query:
 
     def delete_file_object_sparqt(self, file):
         """
-        Метод удаляет sparqt файл
-        :param file: string
+        Метод удаляет sparqt-файл
+
+        :param str file: название sparqt-файла без расширения.
         """
         if os.path.exists(self.get_full_path_sparqt(file)):
             os.remove(self.get_full_path_sparqt(file))
 
     def get_templates_names_sparqt(self, file):
         """
-        Метод возвращает список ключей в sparqt файле
-        :param file: string
-        :return: list
+        Метод возвращает список названий шаблонов в sparqt-файле
+
+        :param str file: название sparqt-файла без расширения.
+        :return: список шаблонов
+        :rtype: list
         """
         return list(self.get_file_object_sparqt(file).keys())
 
 
     def get_structure_codes_sparqt(self, file):
         """
-        Метод возвращает список кодов запросов для sparqt файла
-        :param file: string
-        :return: list
+        Метод возвращает список кодов запросов для sparqt-файла
+
+        :param str file: название sparqt-файла без расширения.
+        :return: список кодов запросов в формате <module>.<file>.<template>
+        :rtype: list
         """
         return [module + "." + file + "." + key for key in self.get_templates_names_sparqt(file)]
 
     def get_template_sparqt(self, file, template_name):
         """
-        Метод возвращает объект с ключом template_name в sparqt файле
-        :param file: string,
-        :param template_name: string
-        :return: result
+        Метод возвращает содержимое шаблона с ключом template_name в sparqt-файле file в формате Python.List
+
+        :param str file: название sparqt-файла без расширения,
+        :param str template_name: название шаблона.
+        :return result: содержимое шаблона
+        :rtype: list
         """
         if not template_name:
             return ["", "", ""]
@@ -364,10 +427,11 @@ class Query:
 
     def edit_template_sparqt(self, file, template_name, template_params):
         """
-        Метод редактирует объект с ключом template_name в sparqt файле
-        :param file: string,
-        :param template_name: string,
-        :param template_params: string
+        Метод редактирует содержимое шаблона с ключом template_name в sparqt-файле file.
+
+        :param str file: название sparqt-файла без расширения,
+        :param str template_name: название шаблона,
+        :param list template_params: новое содержимое шаблона
         """
         templates = self.get_file_object_sparqt(file)
         templates[template_name] = {self.TEMPLATE_PARAMS[i]: template_params[i] for i in range(0, len(template_params))}
@@ -391,9 +455,10 @@ class Query:
 
     def delete_template_sparqt(self, file, template):
         """
-        Метод удаляет объект с ключом template в sparqt файле
-        :param file: string,
-        :param template: string,
+        Метод удаляет шаблон с ключом template в sparqt-файле file.
+
+        :param str file: название sparqt-файла без расширения,
+        :param str templat: название шаблона.
         """
         templates = self.get_file_object_sparqt(file)
 

@@ -55,15 +55,29 @@ def run_installer():
         # html += '<br />'
         # html += str(errors)
         # html += '<hr />'
+
+        html += '<p>'
+        html += 'Первичное конфигурирование успешно произведено!'
+        html += '</p>'
+
         if errors:
-            html = '<h3>Ошибки при инсталляции:</h3>'
+            """
+            Проверяем содержимое errors на наличие реальных ошибок: CRITICAL | ERROR | WARNING
+            """
+            _log_levels = ['CRITICAL ', 'ERROR ', 'WARNING ']
+            _has_error = False
+            for _si in _log_levels:
+                if -1 < errors.find(_si):
+                    _has_error = True
+                    break
+            if _has_error:
+                html = '<h3>Ошибки при инсталляции:</h3>'
+            else:
+                html += '<hr />'
+                html += '<h5>Для информации:</h5>'
             html += '<br />'
             html += '<pre>' + str(errors) + '</pre>'
             html += '<hr />'
-        else:
-            html += '<p>'
-            html += 'Первичное конфигурирование успешно произведено!'
-            html += '</p>'
     return html
 
 

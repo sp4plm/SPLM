@@ -901,6 +901,7 @@ def get_executable_files():
 @mod.route('/cron')
 @requires_auth
 def cron():
+    """ Отображает список заданий для крона """
     return app_api.render_page('admin_mgt/cron.html', crons = Jobs("cron").get_job_data())
 
 
@@ -908,6 +909,7 @@ def cron():
 @mod.route('/cron_item/', methods=["GET", "POST"])
 @requires_auth
 def cron_item(cron_item = ''):
+    """ Редактор заданий для крона """
     template = 'admin_mgt/cron_item.html'
 
     job = Jobs("cron")
@@ -953,6 +955,7 @@ def cron_item(cron_item = ''):
 
 
 def cron_reload(job):
+    """ Метод перезагружает крон. Происходит активация/деактивация заданий для крона в соответствии с файлом cron.json """
     # Это настройка пути до python для сервера
     python_path = app.venv_exec if hasattr(app, 'venv_exec') else sys.executable
 
@@ -981,6 +984,7 @@ def cron_reload(job):
 
 
 def job_by_script(action):
+    """ Метод запускает питоновский скрипт отдельным процессом """
     log = os.path.join(app.config['APP_DATA_PATH'], "logs", "job_by_script.log")
     with open(log, "w", encoding="utf-8") as f:
         f.write("")
@@ -993,7 +997,7 @@ def job_by_script(action):
 @mod.route('/schedule')
 @requires_auth
 def schedule_main():
-    from app.app_api import tsc_query
+    """ Отображает список периодических заданий """
     return app_api.render_page('admin_mgt/schedule.html', schedules = Jobs("schedule").get_job_data())
 
 
@@ -1002,6 +1006,7 @@ def schedule_main():
 @mod.route('/schedule_item/', methods=["GET", "POST"])
 @requires_auth
 def schedule_item(schedule_item = ''):
+    """ Редактор периодических заданий """
     template = 'admin_mgt/schedule_item.html'
 
     job = Jobs("schedule")

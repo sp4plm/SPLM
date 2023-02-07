@@ -142,9 +142,9 @@ class PortalNavi:
         try:
             _t = _cfg.get('main.Info.mainpage')
             url = _t
-            urls = portal_navi.get_portal_index_urls()
-            if '/' == url and urls and url not in urls:
-                url = urls[0]
+            _url = portal_navi.get_portal_index_url()
+            if '/' == url and _url and '/' != _url:
+                url = _url
         except Exception as ex:
 
             print(PortalNavi._debug_name + '.get_start_url.Exception: ', ex)

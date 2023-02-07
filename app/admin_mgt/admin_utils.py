@@ -13,45 +13,19 @@ from app.module_mgt.manager import Manager
 
 
 class AdminUtils(AdminConf):
+    """
+    Класс вспомогательного функционала для внутренних нужд модуля
+    """
     _class_file = __file__
     _debug_name = 'AdminUtils'
 
-    # @staticmethod
-    # def get_current_sectionin_tpl(flask_request):
-    #     lst = {}
-    #     admin_navi = AdminNavigation()
-    #     lst = admin_navi.get_current_section(flask_request)
-    #     return lst
-
-    # @staticmethod
-    # def get_current_subitem_tpl(flask_request):
-    #     lst = {}
-    #     admin_navi = AdminNavigation()
-    #     lst = admin_navi.get_current_subitem(flask_request)
-    #     return lst
-
-    # @staticmethod
-    # def get_admin_current_section(code):
-    #     lst = []
-    #     current = {}
-    #     admin_navi = AdminNavigation()
-    #     lst = admin_navi.get_sections()
-    #     if lst:
-    #         for blk in lst:
-    #             if blk['code'] == code:
-    #                 current = blk
-    #                 break
-    #     return current
-
-    # @staticmethod
-    # def get_admin_section_navi(code):
-    #     lst = []
-    #     admin_navi = AdminNavigation()
-    #     lst = admin_navi.get_sections_navi(code)
-    #     return lst
-
     @staticmethod
     def get_build_version():
+        """
+        Метод возвращает версию сборки портала
+        :return: версия сборки портала
+        :rtype str:
+        """
         _app_pth = AdminUtils.__get_app_path()
         _build_file = os.path.join(_app_pth, AdminConf.BUILD_FILE_NAME)
         _v = 'splm-00000000'
@@ -63,6 +37,11 @@ class AdminUtils(AdminConf):
 
     @staticmethod
     def _get_navi_path():
+        """
+        Метод возвращает абсолютный путь к директории с файлами навигации
+        :return: путь к директории с файлами навигации
+        :rtype str:
+        """
         pth = ''
         pth = AdminConf.get_mod_path(os.path.join('default', 'navi'))
         if not os.path.exists(pth):
@@ -71,6 +50,12 @@ class AdminUtils(AdminConf):
 
     @staticmethod
     def _get_navi_block_content(code):
+        """
+        Метод возвращает список ссылок для навигационного блока с кодом code.
+        :param str code: код блока навигации
+        :return: список ссылок блока навигации
+        :rtype list:
+        """
         items = []
         file_name = code + '.json'
         # получаем настоящий путь к файлу
@@ -83,6 +68,12 @@ class AdminUtils(AdminConf):
 
     @staticmethod
     def _get_navi_block_info(code):
+        """
+        Метод возвращает информацию о навигационном блоке с кодом code.
+        :param str code: код навигационного блока
+        :return: информация о навигационном блоке
+        :rtype dict:
+        """
         block = {}
         blocks = AdminUtils.get_portal_sections()
         if blocks:
@@ -94,6 +85,13 @@ class AdminUtils(AdminConf):
 
     @staticmethod
     def get_navi_block(code):
+        """
+        Метод возвращает информацию о навигационном блоке с кодом code, дополняя ее список ссылок соответствующих
+         данному блоку, при наличии.
+        :param str code: код навигационного блока
+        :return: информация о навигационном блоке
+        :rtype dict:
+        """
         block = {}
         block = AdminUtils._get_navi_block_info(code)
         if 'code' in block and '' != block['code']:
@@ -102,6 +100,11 @@ class AdminUtils(AdminConf):
 
     @staticmethod
     def get_site_all_navi():
+        """
+        Метод возвращает список всех навигационных блоков портала с учетом вложенности.
+        :return: список из навигационных блоков
+        :rtype list:
+        """
         res = []
         # получаем все блоки навигации для портала
         portal_navis = AdminUtils.get_portal_sections()
@@ -115,6 +118,12 @@ class AdminUtils(AdminConf):
 
     @staticmethod
     def _compile_navi_block(code):
+        """
+        Метод возвращает информацию о навигационном блоке с кодом code с учетом вложенности.
+        :param str code: код навигационного блока
+        :return: информация о навигационном блоке
+        :rtype dict:
+        """
         blk = {}
         blk = AdminUtils.get_navi_block(code)
         if blk['items']:
@@ -126,45 +135,38 @@ class AdminUtils(AdminConf):
                 blk['items'] = _t
         return blk
 
-    # @staticmethod
-    # def get_admin_sections():
-    #     lst = []
-    #     admin_navi = AdminNavigation()
-    #     lst = admin_navi.get_sections()
-    #     return lst
-
     @staticmethod
     def get_portal_sections():
+        """
+        Метод возвращает список навигационных секций портала: Разделы административного интерфейса; Список ссылок
+         пользователя; Разделы портала; Блок верхней навигации.
+        :return: список навигационных секций
+        :rtype list:
+        """
         lst = []
         lst = AdminUtils._get_navi_block_content(AdminConf.PORTAL_NAVI_BLOCK_CODE)
         return lst
 
     @staticmethod
     def get_auth_logger():
+        """
+        Метод возвращает объект для управления логом аторизации пользователей
+        :return: объект управления логом
+        :rtype UsersAuthLogger:
+        """
         _logger = None
-
-        # $accessLog = new
-        # PortalLog(portalApp::getInstance()->getSetting('main.Info.userAccLogName'));
-        # _conf_path = ''
-        # _conf_path = AdminConf.CONFIGS_PATH
-        # if os.path.exists(_conf_path):
-        #     app_cfg = app_api.get_config_util()(_conf_path)
-        # else:
-        #     _path = os.path.join(AdminConf.SELF_PATH, AdminConf.INIT_DIR_NAME, AdminConf.CONF_DIR_NAME)
-        #     app_cfg = app_api.get_config_util()(_path)
         app_cfg = AdminUtils.get_default_config()
-        # relative_logs = app_cfg.get('main.Info.logDir')
-        # logs_dir = os.path.join(app_api.get_app_root_dir(), relative_logs)
-        # if not os.path.exists(logs_dir):
-        #     os.mkdir(logs_dir)
-        # file_name = app_cfg.get('main.Info.userAccLogName') + '.log'
-        # file_path = os.path.join(logs_dir, file_name)
         logs_dir = app_api.get_logs_path()
         _logger = UsersAuthLogger(logs_dir, app_cfg.get('main.Info.userAccLogName'))
         return _logger
 
     @staticmethod
     def get_auth_provider():
+        """
+        Метод возвращает объект отвечающий за авторизацию пользователя на портале на основе настроек портала
+        :return: объект отвечающий за авторизацию на портале
+        :rtype AuthProvider:
+        """
         provider = None
         # из настроек портала получитт драйвер авторизации
         provider = AuthProvider()
@@ -172,6 +174,11 @@ class AdminUtils(AdminConf):
 
     @staticmethod
     def get_portal_config():
+        """
+        Метод возвращает объект для чтения настроек портала
+        :return: объект для чтения настроек портала
+        :rtype object:
+        """
         ocfg = None
         # ocfg = app_api.get_config_util()(AdminConf.CONFIGS_PATH)
         ocfg = AdminUtils.get_default_config()
@@ -179,6 +186,11 @@ class AdminUtils(AdminConf):
 
     @staticmethod
     def get_default_config():
+        """
+        Метод возвращает объект для чтения настроек по-умолчаниею портала
+        :return: объект для чтения настроек портала
+        :rtype object:
+        """
         ocfg = None
         _path = AdminConf.get_mod_path(AdminConf.INIT_DIR_NAME)
         _path = os.path.join(_path, AdminConf.CONF_DIR_NAME)
@@ -187,15 +199,32 @@ class AdminUtils(AdminConf):
 
     @staticmethod
     def get_dbg_now():
+        """
+        Вспомогательный метод возвращающий текущую метку времени в формате Ymd_H-M-S
+        :return: метка времени в формате Ymd_H-M-S
+        :rtype str:
+        """
         return AdminUtils.get_now().strftime("%Y%m%d_%H-%M-%S")
 
     @staticmethod
     def get_now():
+        """
+        Метод возвращает текущую метку времени в формате timestamp - колличество секунд с 1.01.1970
+        ( результат функции - datetime.now() )
+        :return: timestamp - колличество секунд с 1.01.1970
+        :rtype int:
+        """
         from datetime import datetime
         return datetime.now()
 
     @staticmethod
     def read_json_file(file_path):
+        """
+        Метод возвращает содержимое файла file_path в виде словаря
+        :param str file_path: путь к файлу с содержимым в формате JSON
+        :return: результат функции json.loads  или None
+        :rtype object:
+        """
         data = None
         if os.path.exists(file_path):
             file_path = AdminUtils.__get_real_filepath(file_path)
@@ -210,6 +239,12 @@ class AdminUtils(AdminConf):
 
     @staticmethod
     def ini2dict(file_path):
+        """
+        Метод возвращает содержимое файла file_path в виде словаря
+        :param str file_path: путь к файлу формата INI
+        :return: словарь из содержимого файла
+        :rtype dict:
+        """
         data = None
         if os.path.exists(file_path) and os.path.isfile(file_path):
             file_path = AdminUtils.__get_real_filepath(file_path)
@@ -229,6 +264,13 @@ class AdminUtils(AdminConf):
 
     @staticmethod
     def dict2ini(file_path, data: dict):
+        """
+        Метод создает из словаря data файл file_path формата INI
+        :param str file_path: путь к файлу в который требуется сохранить словарь data в формате INI
+        :param dict data: словарь который требуется сохранить в файл file_path
+        :return: возвращает флаг результата: True при успешном сохранении словаря в файл, в противном случае False
+        :rtype bool:
+        """
         flg = False
         if os.path.exists(file_path) and os.path.isfile(file_path):
             file_path = AdminUtils.__get_conf_save_path(file_path)
@@ -245,6 +287,12 @@ class AdminUtils(AdminConf):
 
     @staticmethod
     def __get_conf_save_path(file_path):
+        """
+        Метод определяет путь по которому требуется сохранить изменения файла file_path настроек
+        :param str file_path: предположительный путь к файлу, который требуется сохранить
+        :return: абсолютный путь по которому надо сохранить файл
+        :rtype str:
+        """
         _res_path = file_path
         _root_pth = AdminUtils.__get_app_path()
         _app_conf_pth = _root_pth + os.path.sep + 'cfg'
@@ -264,6 +312,12 @@ class AdminUtils(AdminConf):
 
     @staticmethod
     def _dict2ini_text(dt):
+        """
+        Метод создает из словаря dt содержимое для INI файла, с учетом вложенности
+        :param dict dt: словарь для преобразования в INI
+        :return: многострочный текст в формате файла INI
+        :rtype str:
+        """
         ini = ''
         # первый уровень ключи секций
         for sec, content in dt.items():
@@ -288,6 +342,12 @@ class AdminUtils(AdminConf):
 
     @staticmethod
     def _section_to_dict(section):
+        """
+        Метод создает из section многоуровневый словарь, с учетом использования описания для списков
+        :param dict section: словарь, результат разбора configparser
+        :return: словарь значений секции
+        :rtype dict:
+        """
         d = {}
         for k in section:
             if AdminUtils._option_is_section(k):
@@ -303,16 +363,35 @@ class AdminUtils(AdminConf):
 
     @staticmethod
     def _option_is_section(name):
+        """
+        Метод проверяет является ли переданная строка name именем секции из файла INI
+        :param str name: проверяемая строка
+        :return: возвращает флаг является True или не является False
+        :rtype bool:
+        """
         return -1 < name.find('[') and name.endswith(']')
 
     @staticmethod
     def _parse_section_key(section_key):
+        """
+        Метод разбирает строку search_key, которая предположительно является строкой из INI файла с описанием имени
+        секции.
+        :param str section_key: строка из INI файла с именем секции
+        :return: имя секции
+        :rtype str:
+        """
         ssk = section_key.split('[')
         ssk[1] = ssk[1].rstrip(']')
         return ssk
 
     @staticmethod
     def is_admin_url(search_path):
+        """
+        Метод определяет используется ли url search_path для административного интерфейса или нет.
+        :param str search_path: проверяемый url
+        :return: возвращает флаг является True или не является False
+        :rtype bool:
+        """
         flg = False
         admin_navi = AdminNavigation()
         flg = admin_navi.is_admin_url(search_path)
@@ -320,6 +399,13 @@ class AdminUtils(AdminConf):
 
     @staticmethod
     def can_access_to_url(search_path, access_for):
+        """
+        Метод определяет доступен ли url search_path  для пользователя access_for
+        :param str search_path: относительный url для проверки доступа
+        :param object access_for: объект пользователя для проверки доступа
+        :return: возвращает флаг доступен True или не доступен False
+        :rtype bool:
+        """
         flg = False
         admin_navi = AdminNavigation()
         flg = admin_navi.check_url_access(search_path, access_for)
@@ -327,6 +413,15 @@ class AdminUtils(AdminConf):
 
     @staticmethod
     def __get_real_filepath(req_file):
+        """
+        Метод возвращает реальный путь к указаннаму файлу req_file. Данный метод предназначен для работы с настроечными
+        файлами портала или модулей, поддерживая концепцию: есть первичный файл, содержимое которого может изменить
+        администратор портала, измененная через интерфейс копия сохраняется в cfg директории проекта. Соответственно,
+        данный метод и определяет какой путь брать.
+        :param str req_file: имя файла
+        :return: абсолютный путь файла
+        :rtype str:
+        """
         _root_pth = AdminUtils.__get_app_path()
         # рассматриваем файлы внутри приложения
         if req_file.startswith(_root_pth):
@@ -352,7 +447,8 @@ class AdminUtils(AdminConf):
     def __get_app_path():
         """
         Метод вычисляет путь директории приложения - это отсчетная точка для модулей
-        :return: None
+        :return: абсолютный путь директории приложения(портала)
+        :rtype str:
         """
         _pth_mod = os.path.dirname(AdminUtils._class_file)
         return os.path.dirname(_pth_mod)

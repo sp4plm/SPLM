@@ -26,9 +26,7 @@
 def get_config_util():
     """
     Функция возвращает класс для унифицированной работы с файлами конфигов (ini)
-
     :return: класс SomeConfig
-
     """
     from app.utilites.some_config import SomeConfig
     return SomeConfig
@@ -37,9 +35,7 @@ def get_config_util():
 def get_app_config():
     """
     Функция возвращает инструмент для получения данных о настройках приложения.
-
     :return: экземляр класса SomeConfig
-
     """
     admin_api = get_mod_api('admin_mgt')
     cfg = get_config_util()(admin_api.get_config_path())
@@ -234,6 +230,12 @@ def tsc_query(_q, _params = {}):
     Метод принимает на основной параметр _q, который является, либо кодом запроса
     в формате <module>.<file>.<template>, либо текстовым SPARQL запросом. В случае кода запроса есть дополнительный параметр param,
     переменные для подстановки в запрос.
+    Если select запрос - метод вернет объект типа Python.List
+    Если construct запрос - метод вернет объект типа Rdflib.Graph
+    В случае, если в результате выполнения запроса обнаружена ошибка метод вернет строку с пояснением:
+    - нет подключения к триплстору: Request error: StoreDriverBlazegraph._post_req say: Cant not send post request!
+    - ошибка в sparqt файле: Request error: the JSON object must be str, bytes or bytearray, not bool
+
     :param _q: <module>.<file>.<template>
     :param _params: dict - {VARNAME : VALUE}
     :return: result
@@ -245,9 +247,7 @@ def tsc_query(_q, _params = {}):
     if re.findall(r'^\w+\.\w+\.\w+$', _q):
         result = query_instance.queryByCode(_q, _params)
     else:
-
         result = query_instance.query(_q)
-
     return result
 
 

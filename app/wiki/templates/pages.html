@@ -1,5 +1,11 @@
 {% extends admin_root_tpl() %}
 
+{%- block page_styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{url_for('users.static', filename='css/main.css')}}" />
+{%- endblock page_styles %}
+
+
 {% block title %}
     {% if title %}SPLM: {{ title }}{% else %}Редактор Wiki страниц{% endif %}
 {% endblock %}
@@ -9,14 +15,27 @@
 <div class="scroll-ul-list">
 	<form method="get">
 	<h1>Список страниц</h1>
-	<ul>
+
+	<div id="navi-tool-toolbar" >
+		<input class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" type="submit" value="Создать" formaction="{{url_for('wiki.page', page_id = '')}}">
+	</div>
+	<br/>
+
+	<ul class="editItems-list">
 		{% for page in pages %}
-			<li>
-				<a href="{{url_for('wiki.page', page_id = page.id, do = 'edit')}}">{{page.id}} - {{page.title}}</a>  - (<a href="{{url_for('wiki.show_page', page_id = page.id)}}">просмотр</a>)
+			<li class="edit-item" id="rld-1">
+				<div class="listItem-toolbar">
+					<span class="act-btn ui-state-default ui-corner-all">
+						<a href="{{url_for('wiki.page', page_id = page.id, do = 'edit')}}"><span class="edit-role ui-icon ui-icon-pencil"></span></a>
+					</span>
+					<span class="act-btn ui-state-default ui-corner-all">
+						<a href="{{url_for('wiki.show_page', page_id = page.id)}}"><span class="del-role ui-icon ui-icon-zoomin"></span></a>
+					</span>
+				</div>
+				<span style="font-size: 15px;">{{page.id}} : {{page.title}}</span>
 			</li>
 		{% endfor %}
 	</ul>
-	<input type="submit" value="Создать" formaction="{{url_for('wiki.page', page_id = '')}}">
 	</form>
 </div>
 {% endblock %}

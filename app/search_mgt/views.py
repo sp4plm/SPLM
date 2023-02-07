@@ -31,6 +31,9 @@ if not os.path.exists(MOD_DATA_PATH):
 @mod.route('' , methods=['POST', 'GET'], strict_slashes=False)
 @login_required
 def search():
+    """
+    Метод возвращает результаты поиска по заданным параметрам
+    """
     tmpl_vars = {}
     search_obj = PortalSearch()
     uname = 'anonymous'

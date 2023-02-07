@@ -108,8 +108,13 @@
         </div>
     </div>
     <footer class="footer">
-        {% block footer %}{% endblock %}
-        {% if copyright %}<div class="container"><p class="text-muted">&copy; </p></div>{% endif %}
+        <div class="container">
+            <p class="text-muted">
+        {% block footer %}
+        {% if copyright %}&copy; {{copyright|safe}}{% endif %}
+        {% endblock %}
+            </p>
+        </div>
     </footer>
 {% endblock %}
 

@@ -339,7 +339,8 @@ class AdminNavigation(NavigationFiles):
             # print('search_path', search_path)
             for io in lst:
                 # print("io['href']", io['href'])
-                if search_path.startswith(io['href']):
+                _to_test = io['href'].rstrip('/') + '/' # добавим slash для правильной части пути
+                if search_path.startswith(_to_test):
                     flg = True
                     break
         return flg

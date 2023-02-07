@@ -25,25 +25,6 @@ class Ontology():
         self.onto_file = onto_file
 
 
-
-    def addOntology(self):
-        # /loadFiles/ontos
-        upload_files()
-
-
-    def deleteOntology(self):
-        # /removeFile/ontos
-        remove_file()
-
-
-    def updateOntology(self):
-        # В текущей реализации работы с онтологиями добавить и обновить онтологию
-        # выполняет одна функция с условием проверяющим существование загружаемой онтологии
-        self.addOntology()
-
-
-
-
     def getClassName(self, ontology_class):
         """ Возвращает имя класса без URI : ontology_class """
         try:
