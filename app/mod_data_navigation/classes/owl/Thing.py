@@ -122,7 +122,7 @@ class Thing:
                                        {'URI': "<" + pref4req + self.argm['class'] + ">"})
             df = pd.DataFrame(query_subclass)
             if len(df) > 0:
-                df.cls = '<a href="/datanav/' + df.cls.str.replace(self.pref_unquote,'') + \
+                df.cls = '<a href="/datanav/' + df.cls.str.replace(self.pref_unquote,'', regex=True) + \
                          '?prefix=' + self.argm['prefix'] + '">' + df.cls_lbl + '</a>'
                 df.drop('cls_lbl', axis=1, inplace=True)
                 df.columns = ['Наименование']
