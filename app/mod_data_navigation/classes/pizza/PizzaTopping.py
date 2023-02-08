@@ -21,7 +21,10 @@ def make_breadcrumbs(prefix, pref_unquote, cls):
 
         query_paretn_lbl = tsc_query('mod_data_navigation.Pizza.class_lbl',
                                     {'URI': pref_unquote + cls })
-        df_prnt = pd.DataFrame(query_paretn_lbl)
+        if not isinstance(query_paretn_lbl,str):
+            df_prnt = pd.DataFrame(query_paretn_lbl)
+        else:
+            df_prnt = ""
 
         if len(df_prnt):
             cls_lbl = df_prnt.cls_lbl[0]
@@ -47,7 +50,8 @@ class PizzaTopping:
         print(self.pref_unquote + self.argm['class'])
         query = tsc_query('mod_data_navigation.PizzaTopping.one_instances',
                           {'URI':  self.pref_unquote + self.argm['class'] })
-        if query:
+
+        if not isinstance(query, str) and len(query) > 0:
             self.pref_4_data = query[0]['inst'].split("#")[0] + "#"
         else:
             self.pref_4_data = ''
@@ -72,9 +76,13 @@ class PizzaTopping:
 
         query_class_lbl = tsc_query('mod_data_navigation.PizzaTopping.class_lbl',
                      {'URI':  self.pref_unquote + self.argm['class']   })
-        df_cls = pd.DataFrame(query_class_lbl)
 
-        if len(df_cls):
+        if not isinstance(query_class_lbl, str):
+            df_cls = pd.DataFrame(query_class_lbl)
+        else:
+            df_cls = pd.DataFrame()
+
+        if not df_cls.empty:
             class_lbl = df_cls.cls_lbl[0]
         else:
             class_lbl = self.argm['class']
@@ -83,7 +91,11 @@ class PizzaTopping:
         if 'uri' in self.argm.keys():
             query_inst = tsc_query('mod_data_navigation.PizzaTopping.instance',
                                    {'PREF': self.pref_unquote, 'URI': self.argm['uri']})
-            df = pd.DataFrame(query_inst)
+
+            if not isinstance(query_inst, str):
+                df = pd.DataFrame(query_inst)
+            else:
+                df = pd.DataFrame()
 
             # INSERT PICTURE ----------------------------------------------------
             myHash = sha1(self.argm['uri'].encode('utf-8')).hexdigest()
@@ -117,8 +129,13 @@ class PizzaTopping:
             # ------------- subclasses --------------------------
             query_subclass = tsc_query('mod_data_navigation.PizzaTopping.list_of_subclasses',
                                        {'URI':  self.pref_unquote + self.argm['class']   })
-            df = pd.DataFrame(query_subclass)
-            if len(df) > 0:
+
+            if not isinstance(query_subclass, str):
+                df = pd.DataFrame(query_subclass)
+            else:
+                df = pd.DataFrame()
+
+            if not df.empty:
                 df.cls = '<a href="' + df.cls.str.replace(self.pref_unquote,'') + \
                          '?prefix=' + self.argm['prefix'] + '">' + df.cls_lbl + '</a>'
                 df.drop('cls_lbl', axis=1, inplace=True)
@@ -129,9 +146,12 @@ class PizzaTopping:
             # ------------- list of instances --------------------------
             query_list_inst = tsc_query('mod_data_navigation.PizzaTopping.list_of_instances',
                                         {'URI':  self.pref_unquote + self.argm['class'] })
-            df2 = pd.DataFrame(query_list_inst)
+            if not isinstance(query_list_inst, str):
+                df2 = pd.DataFrame(query_list_inst)
+            else:
+                df2 = pd.DataFrame()
 
-            if len(df2) > 0:
+            if not df2.empty:
                 # Если у экземпляра нет лейбла, то вместо него вставляем часть URI
                 df2.inst_lbl.replace('', np.nan, inplace=True)
                 df2.inst_lbl.fillna(value=df2.inst.str.replace(self.pref_unquote, ''), inplace=True)

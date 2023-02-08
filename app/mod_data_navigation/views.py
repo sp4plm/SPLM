@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from flask import Blueprint, request, flash, g, session, redirect, url_for
+from flask import Blueprint, request, redirect, url_for
 from rdflib import Graph
 from app.app_api import tsc_query
 from app import app_api
@@ -26,9 +26,8 @@ def getParent(cur_class, argms, list_of_templates):
     if any(argms['prefix'] in sl for sl in onto_mod_api.get_prefixes()):
 
         class_name = onto_mod_api.get_parent(argms['prefix'],cur_class)
-        print('1 class_name=', class_name)
+
         if class_name != '' and class_name not in list_of_templates:
-            print('2 class_name=', class_name)
             new_class = getParent(class_name, argms, list_of_templates)
         else:
             new_class = class_name

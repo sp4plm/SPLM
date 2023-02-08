@@ -35,16 +35,18 @@ def make_breadcrumbs(prefix, pref_unquote, cls):
         query_paretn_lbl = tsc_query('mod_data_navigation.Pizza.class_lbl',
                                     {'URI': pref_unquote + cls })
 
-        print('query_paretn_lbl=',query_paretn_lbl )
-        df_prnt = pd.DataFrame(query_paretn_lbl)
+        if not isinstance(query_paretn_lbl, str):
+            df_prnt = pd.DataFrame(query_paretn_lbl)
 
-        if len(df_prnt):
-            cls_lbl = df_prnt.cls_lbl[0]
+            if len(df_prnt):
+                cls_lbl = df_prnt.cls_lbl[0]
+            else:
+                cls_lbl = cls
+
+            bc.insert(0, {'href': cls + '?' + 'prefix=' + prefix, 'label' : cls_lbl})
+            cls = onto_mod_api.get_parent(prefix, cls)
         else:
-            cls_lbl = cls
-
-        bc.insert(0, {'href': cls + '?' + 'prefix=' + prefix, 'label' : cls_lbl})
-        cls = onto_mod_api.get_parent(prefix, cls)
+            bc.insert(0,query_paretn_lbl)
 
     return bc
 
@@ -62,7 +64,8 @@ class Pizza:
 
         query = tsc_query('mod_data_navigation.Pizza.one_instances',
                           {'URI': self.pref_unquote + self.argm['class']})
-        if query:
+
+        if not isinstance(query, str):
             self.pref_4_data = query[0]['inst'].split("#")[0] + "#"
         else:
             self.pref_4_data = ''
@@ -137,7 +140,11 @@ class Pizza:
 
         query_class_lbl = tsc_query('mod_data_navigation.Pizza.class_lbl',
                      {'URI': self.pref_unquote + self.argm['class']})
-        df_cls = pd.DataFrame(query_class_lbl)
+
+        if not isinstance(query_class_lbl, str):
+            df_cls = pd.DataFrame(query_class_lbl)
+        else:
+            df_cls =pd.DataFrame()
 
         if len(df_cls):
             class_lbl = df_cls.cls_lbl[0]
@@ -148,7 +155,11 @@ class Pizza:
         if 'uri' in self.argm.keys():
             query_inst = tsc_query('mod_data_navigation.Pizza.instance',
                                    {'PREF': self.pref_unquote, 'URI': self.argm['uri']})
-            df = pd.DataFrame(query_inst)
+
+            if not isinstance(query_inst, str):
+                df = pd.DataFrame(query_inst)
+            else:
+                df = pd.DataFrame()
 
             # INSERT PICTURE ----------------------------------------------------
             myHash = sha1(self.argm['uri'].encode('utf-8')).hexdigest()
@@ -194,7 +205,11 @@ class Pizza:
             # ------------- subclasses --------------------------
             query_subclass = tsc_query('mod_data_navigation.Pizza.list_of_subclasses',
                                        {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
-            df = pd.DataFrame(query_subclass)
+
+            if not isinstance(query_subclass, str):
+                df = pd.DataFrame(query_subclass)
+            else:
+                df = pd.DataFrame()
 
             if not df.empty:
                 df.cls = '<a href="' + df.cls.str.replace(self.pref_unquote,'', regex=True) + \
@@ -207,7 +222,11 @@ class Pizza:
             # ------------- list of instances --------------------------
             query_list_inst = tsc_query('mod_data_navigation.Pizza.list_of_instances',
                                         {'URI': "<" + self.pref_unquote + self.argm['class'] + ">"})
-            df2 = pd.DataFrame(query_list_inst)
+
+            if not isinstance(query_list_inst, str):
+                df2 = pd.DataFrame(query_list_inst)
+            else:
+                df2 = pd.DataFrame()
 
             if not df2.empty:
                 # Если у экземпляра нет лейбла, то вместо него вставляем часть URI
@@ -263,22 +282,17 @@ def get_reqs_verification(prefix, ontoclass):
     # Выбираем из всех данных только те, которые имеют отношение к текущему классу
     data = tsc_query('mod_data_navigation.Pizza.get_subgraph',
                       {'URI': pref_unquote + ontoclass})
-    data_graph = Graph()
 
-    with open( os.path.join( MOD_PATH, FILE ), 'r', encoding='utf-8' ) as f:
+    with open( os.path.join( MOD_PATH, FILE ), 'r', encoding='utf-8' ) as file:
         shacl = Graph()
-        shacl.parse( f )
+        shacl.parse( file )
 
-    if data != []:
-        js = JSONResult(data)
+    if isinstance(data, Graph) and len(data) > 0:
 
-        for i in js:
-            data_graph.add(i[:3])
-
-        data_graph2 = copy.deepcopy( data_graph )
+        data_graph = copy.deepcopy( data )
         G = onto_mod_api.get_graph(prefix)
 
-        r = validate(data_graph,
+        r = validate(data,
                      shacl_graph=shacl,
                      ont_graph=G,
                      inference='none',
@@ -315,7 +329,7 @@ def get_reqs_verification(prefix, ontoclass):
         else:
             val = pd.DataFrame([['Нарушений требований не выявлено, либо требования для данного класса отсутствуют']], columns=['Результат'])
 
-        new_triples = data_graph - data_graph2 - G          # Вычисляет только добавленные в SHACL триплеты
+        new_triples = data - data_graph - G          # Вычисляет только добавленные в SHACL триплеты
 
         if len(new_triples) > 0:
             new_triples_f = os.path.join( MOD_PATH, 'new_triples.ttl')
