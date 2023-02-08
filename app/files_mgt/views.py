@@ -45,7 +45,7 @@ if not os.path.exists(_files_lnk):
     if "win32" == platform:
         import ctypes
         _kdll = ctypes.windll.LoadLibrary("kernel32.dll")
-        _kdll.CreateSymbolicLinkA(__mod_path, _files_lnk, 0)
+        _kdll.CreateSymbolicLinkA(_files_lnk, __mod_path, 1)
     else:
         os.symlink(__mod_path, _files_lnk, True)
 
@@ -57,6 +57,8 @@ if not os.path.exists(_files_lnk):
 @_auth_decorator
 def view_ufile(file_path=''):
     _relative = os.path.join('files', file_path.lstrip(os.path.sep))
+    if "win32" == platform:
+        _relative = _relative.replace('\\', '/')
     # print(ModConf.MOD_NAME + '.__view_loaded->_relative:', _relative)
     __go_to = url_for(ModConf.MOD_NAME + '.static', filename=_relative)
     # print(ModConf.MOD_NAME + '.__view_loaded->__go_to:', __go_to)
