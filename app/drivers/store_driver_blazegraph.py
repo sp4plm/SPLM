@@ -194,5 +194,5 @@ class StoreDriverBlazegraph(StoreDriver):
     def _get_query_url(self, select_query=True):
         """ """
         url = ''
-        url = os.path.join(self.get_endpoint(), "sparql")
+        url = self.get_endpoint() + "/sparql"
         return url
