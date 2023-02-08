@@ -7,7 +7,7 @@ from sys import platform
 import json
 from math import ceil
 
-from flask import Blueprint, request, url_for, redirect
+from flask import Blueprint, request, url_for, redirect, send_from_directory
 from .mod_utils import app_api, ModConf, ModUtils
 from .data_files import DataFiles
 from app.utilites.portal_navi import PortalNavi
@@ -56,6 +56,14 @@ if not os.path.exists(_files_lnk):
 @mod.route('/static/files/<path:file_path>', strict_slashes=False)
 @_auth_decorator
 def view_ufile(file_path=''):
+    _2fs_file = file_path.replace('/', os.path.sep)
+    _fs_relative = os.path.join('files', file_path.lstrip(os.path.sep))
+    # в первуюю очередь просматриваем пользовательскую директорию
+    if not os.path.exists(_files_lnk):
+        # print(" no symlink in blueprint static for user data file")
+        _check_file = os.path.join(__mod_path, _2fs_file.lstrip(os.path.sep))
+        if os.path.exists(_check_file):
+            return send_from_directory(__mod_path, file_path)
     _relative = os.path.join('files', file_path.lstrip(os.path.sep))
     if "win32" == platform:
         _relative = _relative.replace('\\', '/')
