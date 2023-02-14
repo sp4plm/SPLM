@@ -10,14 +10,13 @@ class ModApi(QueryConf):
     @staticmethod
     def create_sparqt_manager(__URL, __mod):
         """
-        Создает новые методы для интерфейса редактирования sparqt шаблонов
+        Создает новые методы для интерфейса редактирования sparqt шаблонов.
         Для модуля blueprint : __mod под адресом : <base_mod_uri>/__URL
 
-        :param str __URL: наш url по которому будет SPARQTManager,
-		:param Blueprint __mod: экземпляр класса blueprint в файле views текущего модуля,
-
-		:return: метод реализующий редактор sparqt-файлов для модулей через интерфейс.
-		:rtype: def
+        :param str __URL: наш url по которому будет SPARQTManager
+        :param Blueprint __mod: экземпляр класса blueprint в файле views текущего модуля
+        :return: метод реализующий редактор sparqt-файлов для модулей через интерфейс
+        :rtype: def
         """
         return create_sparqt_manager(__URL, __mod)
 

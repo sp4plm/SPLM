@@ -18,6 +18,7 @@ class Utilites:
     def get_query_data(self):
         """
         Метод возвращает реквизиты для работы с триплстором, которые получает от драйвера текущего хранилища
+
         :return: url, headers
         """
         _driver = self.get_storage_driver()

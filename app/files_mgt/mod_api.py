@@ -10,8 +10,8 @@ class ModApi:
         """
         Функция возвращает ......
 
-        return:
-        rtype:
+        :return:
+        :rtype:
         """
         from .data_files import DataFiles
         return DataFiles

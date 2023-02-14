@@ -10,7 +10,7 @@ class ModApi:
         """
         Функция возвращает роли .....
 
-        :returm: список
+        :return: список
         :rtype: list
         """
         lst = []

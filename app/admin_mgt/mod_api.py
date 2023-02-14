@@ -16,8 +16,9 @@ class ModApi(AdminConf):
     def get_base_model():
         """
         Метод возвращает базовый класс для моделей
+
         :return: класс NodeObject
-        :rtype class:
+        :rtype: class
         """
         # очень странное поведение:
         # если раскоментировать последующие строки - проект незапустится не смотря на импорт
@@ -33,8 +34,9 @@ class ModApi(AdminConf):
     def get_embedded_user():
         """
         Метод возвращает класс встроенного пользователя
+
         :return: класс EmbeddedUser
-        :rtype class:
+        :rtype: class
         """
         return EmbeddedUser
 
@@ -42,8 +44,9 @@ class ModApi(AdminConf):
     def get_link_object():
         """
         Метод возвращает класс для организации связей в базе данных
+
         :return: класс Link
-        :rtype class:
+        :rtype: class
         """
         return Link
 
@@ -51,8 +54,9 @@ class ModApi(AdminConf):
     def get_app_root_tpl():
         """
         Тестовый метод для заглушки корневого шаблона приложения
+
         :return: имя файла тестового наблона
-        :rtype str:
+        :rtype: str
         """
         return '_test_base.html'
 
@@ -60,8 +64,9 @@ class ModApi(AdminConf):
     def get_root_tpl():
         """
         Метод возвращает базовый имя базового шаблона для административного интерфейса
+
         :return: имя файла шаблона
-        :rtype str:
+        :rtype: str
         """
         pth = ''
         # pth += AdminConf.MOD_NAME
@@ -75,8 +80,9 @@ class ModApi(AdminConf):
     def get_config_path():
         """
         Метод возвращает абсолютный путь к директории с файлами конфигурации
+
         :return: абсолютный путь
-        :rtype str:
+        :rtype: str
         """
         pth = ''
         # if os.path.exists(AdminConf.CONFIGS_PATH) and os.listdir(AdminConf.CONFIGS_PATH):
@@ -88,10 +94,11 @@ class ModApi(AdminConf):
     @staticmethod
     def set_portal_theme(theme_id):
         """
-        Метод устанавливает актуальную тему yf портале по ее идентификатору theme_id
+        Метод устанавливает актуальную тему на портале по ее идентификатору theme_id
+
         :param str theme_id: идентификатор темы для плагина Flask_Themes 2
         :return: True если тема установлена для портала, False в противном случае
-        :rtype bool:
+        :rtype: bool
         """
         flg = False
         # get_app_config().get('main.Interface.Theme')
@@ -118,11 +125,11 @@ class ModApi(AdminConf):
         """
         Метод возвращает список ссылок дополнительной функциональности для пользователя _user.
         Если пользователю _user назначена роль extended_admin, то добавляется ссылка для скачивания лога авторизации.
-        Если пользователь _user является администратором портала, то добавляется ссылка для перехода в административный
-         интерфейс.
+        Если пользователь _user является администратором портала, то добавляется ссылка для перехода в административный интерфейс.
+
         :param object _user: экземпляр класса модели пользователя
         :return: список ссылок
-        :rtype list:
+        :rtype: list
         """
         _lst = []
         """
@@ -163,8 +170,9 @@ class ModApi(AdminConf):
     def __get_link_tpl():
         """
         Вспомогательный private метод возвращающий шаблон элемента навигации
+
         :return: шаблон элемента навигации
-        :rtype dict:
+        :rtype: dict
         """
         tpl = {}
         tpl = {"id": 0, "label": "", "rules": "", "href": "", "parid": 0, "srtid": 1,
@@ -175,8 +183,9 @@ class ModApi(AdminConf):
     def get_portal_mode_util(self):
         """
         Метод возвращает утиллиту для работы с режимами портала.
+
         :return: утиллита для работы с режимами портала
-        :rtype PortalModeUtil:
+        :rtype: PortalModeUtil
         """
         from app.admin_mgt.portal_mode_util import PortalModeUtil
         try:
