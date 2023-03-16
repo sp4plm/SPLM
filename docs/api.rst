@@ -52,9 +52,6 @@ API документация
 
 SPLM поддерживает функционал регистрации и обработки событий - EventManager.
 
-..  autoclass:: app.utilites.event_manager.EventManager
-    :members:
-    :show-inheritance:
 
 
 
