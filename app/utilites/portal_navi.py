@@ -6,6 +6,9 @@ from app.admin_mgt.portal_navigation import PortalNavigation
 import re
 from flask import url_for, request
 
+from app.app_api import get_event_manager
+
+
 class PortalNavi:
     _class_file = __file__
     _debug_name = 'PortalNavi'
@@ -87,10 +90,17 @@ class PortalNavi:
 
     @staticmethod
     def get_top_navi(user):
-        """"""
+        # Основной блок
         data = {}
         code = 'navi.Codes.top_navi'
         data = PortalNavi._get_navi_block_links(code, user)
+
+        # Параметры для события "get_top_navi"
+        params = {"navi_data" : data, "request_path" : request.path, "request_args" : request.args}
+        # Вызываем событие get_top_navi
+        data = get_event_manager().raise_event("get_top_navi", params)
+        data = data['navi_data'] if 'navi_data' in data else []
+
         return data
 
     @staticmethod

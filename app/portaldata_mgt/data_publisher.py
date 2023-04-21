@@ -20,6 +20,22 @@ class DataPublisher(DataManager):
         self._log_func = None
         self._on_ts = {}
         self._on_files = {}
+        self._upload_fails = 0
+        self._trigger_fails = 0
+
+    def has_errors(self):
+        _flg = False
+        if not _flg:
+            _flg = 0 < self._upload_fails
+        if not _flg:
+            _flg = 0 < self._trigger_fails
+        return _flg
+
+    def has_trigger_fails(self):
+        return 0 < self._trigger_fails
+
+    def has_upload_fails(self):
+        return 0 < self._upload_fails
 
     def set_success_trigger(self, trigger):
         """"""
@@ -198,6 +214,7 @@ class DataPublisher(DataManager):
                     self._fail_trigger('File not uploaded!', file_path)
         except Exception as ex:
             """ """
+            self._upload_fails += 1
             flg = False
             if callable(self._fail_trigger):
                 self._fail_trigger('Except: ' + ex, file_path)
@@ -217,6 +234,7 @@ class DataPublisher(DataManager):
                 self.to_log('Execute spesial triggers for tiplestore DONE')
             except Exception as ex:
                 self.to_log('Execute spesial triggers for tiplestore FAIL with Exception: ' + str(ex))
+                self._trigger_fails +=1
                 raise ex
 
     def _get_namedgraphs_to_delete(self, graphs):

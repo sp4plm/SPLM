@@ -88,15 +88,25 @@ class Query:
         Метод выполняет post запрос к триплстору
         :param str _query: текст запроса
 
-        :return response: результат sparql запроса.
-        :rtype: dict
+        :return _result: результат sparql запроса/строка с ошибкой
+        :rtype: dict/str
         """
+        _result = None
+        response = None
         try:
             response = self.storage_driver._exec_query(_query)
-            return json.loads(response)
         except Exception as e:
-            self.logger.error("Request error: " + str(e))
-            return "Request error: " + str(e)
+            _result =  "Request error: " + str(e)
+            self.logger.error(_result)
+            return _result
+
+        try:
+            _result = json.loads(response)
+        except Exception as e:
+            _result = "JSON.loads error: " + str(e) + "\n" + "Response: " + str(response)
+            self.logger.error(_result)
+
+        return _result
 
 
     def compileQueryResult(self, answer):

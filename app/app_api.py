@@ -238,7 +238,7 @@ def tsc_query(_q, _params = {}):
 
     :param _q: <module>.<file>.<template>
     :param _params: dict - {VARNAME : VALUE}
-    :return: result
+    :return: list or string or Graph
     '''
     import re
     from app.query_mgt.query import Query
@@ -426,3 +426,16 @@ def correct_template_path(_tmpl):
         # преобразуем путь к соответствующему шаблону
         _tmpl = _tmpl.replace(path.sep, path.altsep)
     return _tmpl
+
+
+def get_event_manager():
+    """
+    Функция возвращает экзмпляр класса EventManager, который существует в единственном экземпляре
+    :return: instance EventManager
+    """
+    from app.utilites.event_manager import EventManager
+    return EventManager()
+
+
+
+

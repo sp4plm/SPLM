@@ -1,0 +1,86 @@
+{% extends app_root_tpl() %}
+{# шаблон интерфейса запросов к TS страницы портала #}
+
+{% block vend_styles %}
+{{super()}}
+    <link href="{{theme_static('vend/jquery.jqGrid-4.13.2/css/ui.jqgrid.min.css')}}" type="text/css" rel="stylesheet" />
+    <link href="{{theme_static('vend/jquery.jqGrid-4.13.2/css/ui.jqgrid-bootstrap.css')}}" type="text/css" rel="stylesheet" />
+{% endblock %}
+
+{% block page_styles %}
+    {{ super() }}
+    <link type="text/css" rel="stylesheet" href="{{url_for('ts_mgt.static', filename='css/query_text_editor.css')}}" />
+    <link type="text/css" rel="stylesheet" href="{{url_for('ts_mgt.static', filename='css/text_edit_vars.css')}}" />
+    <link type="text/css" rel="stylesheet" href="{{url_for('ts_mgt.static', filename='css/ts_interface.css')}}" />
+{% endblock %}
+{% block bread_crumbs %}{% endblock %}
+{% block app_content %}
+<input type="hidden" value="{{base_url}}" id="js-base-url" />
+<span id="page-content-marker" style="display:none;"></span>
+<h1>Интерфейс для работы с запросами для TripleStore</h1>
+<div class="content-section" id="query-editor">
+    <div class="content-section-header"><span class="header-section-toggler xicon-open">&nbsp;</span><h4>Редактор запроса</h4></div>
+    <div class="content-section-content">
+        <div id="ts-toolbar" class="lcolumn">
+            <select id="request-point" style="display:none;">
+                {% if ts_list %}
+                    {% for ts in ts_list %}
+                    <option value="{{ts[1]}}">{{ts[0]}}</option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+        <div id="qte-box" class="lcolumn">
+            <div id="qte-toolbar"></div>
+            <div id="query-text-editor"></div>
+            <div id="qte-statusbar"></div>
+        </div>
+        <div id="vars-box" class="lcolumn">
+            <h5>Переменные</h5>
+            <hr />
+            <div id="vars-list-box">
+
+            </div>
+            <hr style="margin: 2px 0px 2px 0px;" />
+            <div id="vars-toolbar">
+                <button class="action-btn" name="LoadVars" act="load-from-text">Загрузить из запроса</button>
+                <button class="action-btn" name="AddVar" act="add-var">Добавить</button>
+                <button class="action-btn" name="ClearVars" act="clear-vars">Очистить</button>
+            </div>
+        </div>
+        <div id="query-toolbar">
+            <button class="action-btn" act="send-query">Выполнить</button>
+            <button class="action-btn" act="clear-text">Очистить</button>
+        </div>
+    </div>
+</div>
+<div class="content-section" id="query-result">
+    <div class="content-section-header"><span class="header-section-toggler xicon-close"></span><h4>Результат запроса</h4></div>
+    <div class="content-section-content" style="display: none;">
+        <div id="results-toolbar">
+            <div id="loader-status"></div><button class="result-btn" action="download">Скачать</button>
+        </div>
+    </div>
+</div>
+<div class="content-section" id="query-history">
+    <div class="content-section-header"><span class="header-section-toggler xicon-close">&nbsp;</span><h4>История запросов</h4></div>
+    <div class="content-section-content" style="display: none;"></div>
+</div>
+{% endblock %}
+
+{% block vend_scripts %}
+{{super()}}
+    <script src="{{theme_static('vend/jquery.jqGrid-4.13.2/js/jquery.jqgrid.min.js')}}" type="text/javascript"></script>
+    <script src="{{theme_static('vend/jquery.jqGrid-4.13.2/js/i18n/grid.locale-ru.min.js')}}" type="text/javascript"></script>
+    <script src="{{url_for('ts_mgt.static', filename='vend/ace-builds-1.5.0/src-noconflict/ace.js')}}" type="text/javascript" charset="utf-8"></script>
+    <script src="{{url_for('ts_mgt.static', filename='vend/ace-builds-1.5.0/src-noconflict/ext-statusbar.js')}}" type="text/javascript" charset="utf-8"></script>
+    <script src="{{url_for('ts_mgt.static', filename='vend/ace-builds-1.5.0/src-noconflict/ext-language_tools.js')}}" type="text/javascript" charset="utf-8"></script>
+    <script src="{{url_for('ts_mgt.static', filename='vend/ace-builds-1.5.0/src-noconflict/mode-sparql.js')}}" type="text/javascript" charset="utf-8"></script>
+{% endblock %}
+{% block page_scripts %}
+    <script src="{{url_for('ts_mgt.static', filename='js/query_text_editor.js')}}" type="text/javascript" charset="utf-8"></script>
+    <script src="{{url_for('ts_mgt.static', filename='js/text_edit_vars.js')}}" type="text/javascript" charset="utf-8"></script>
+    <script src="{{url_for('ts_mgt.static', filename='js/query_result.js')}}" type="text/javascript" charset="utf-8"></script>
+    <script src="{{url_for('ts_mgt.static', filename='js/query_history.js')}}" type="text/javascript" charset="utf-8"></script>
+    <script src="{{url_for('ts_mgt.static', filename='js/ts_interface.js')}}" type="text/javascript" charset="utf-8"></script>
+{% endblock %}

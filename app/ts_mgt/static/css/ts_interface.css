@@ -1,0 +1,23 @@
+
+.content-section {margin-bottom: 12px;border-top:2px solid #96C;clear:both;}
+
+.content-section-header h4{width:90%;display:inline-block;}
+.header-section-toggler{
+    cursor: pointer;
+    margin-left:4px;
+    margin-right:4px;
+    margin-top: 12px;
+    clear:none;
+}
+
+#ts-toolbar{ margin-bottom: 6px; clear: both; width:98%; border: none; }
+
+#results-toolbar{ margin-bottom: 6px;}
+
+#loader-status{ width: 20px; height:12px; clear:none; float: left;}
+
+#history-toolbar{ margin-bottom: 6px; }
+
+.message-box{font-weight:bold;font-size: 1.5em;padding-bottom:4px;}
+
+#result-error-box {width:98%;margin: 0 auto;border-bottom: 2px solid red;clear:both;color: red;}

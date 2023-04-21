@@ -1,0 +1,60 @@
+.lcolumn { float:left; clear: none; margin: 0px; padding:0px; border: 1px solid #999999; }
+
+#qte-box{
+    width:49%;
+    height: 550px;
+    margin:0px;
+ }
+
+#query-text-editor{
+    height: 480px;
+    margin:0px;
+}
+
+#qte-toolbar {
+    margin: 0;
+    padding: 0;
+    margin-bottom:5px;
+    height: 40px;
+    background-color: rgb(245, 245, 245);
+    color: gray;
+}
+
+#qte-statusbar {
+    margin: 0;
+    padding: 0;
+    height: 20px;
+    background-color: rgb(245, 245, 245);
+    color: gray;
+}
+.ace_status-indicator {
+    color: gray;
+    margin-right: 0;
+    border-left: 1px solid;
+}
+
+#vars-box{
+    height: 550px;
+    width: 450px;
+    margin-left: 10px;
+}
+
+#vars-box h5 {
+ margin-top: 4px;
+ margin-bottom: 4px;
+ text-align:center;
+ width: 98%;
+ margin-left: 1%;
+}
+
+#vars-toolbar {
+    text-align:center;
+    height: 35px;
+    clear:both;
+}
+
+#query-toolbar{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    clear: both;
+}

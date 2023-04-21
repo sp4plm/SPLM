@@ -116,6 +116,10 @@ app.register_blueprint(module_mgt_web)
 from app.themes_mgt.views import mod as themes_mgt_web
 app.register_blueprint(themes_mgt_web)
 
+if app_api.is_app_module_enabled('ts_mgt'):
+    from app.ts_mgt.views import mod as tsModule
+    app.register_blueprint(tsModule)
+
 if app_api.is_app_module_enabled('user_mgt'):
     from app.user_mgt.models.users import User
     from app.user_mgt.models.roles import Role

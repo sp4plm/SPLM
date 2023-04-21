@@ -1,0 +1,38 @@
+# baseURI: http://splm.portal.web/osplm
+# prefix: osplm
+
+@prefix osplm: <http://splm.portal.web/osplm#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix data: <http://splm.portal.web/osplm/data#> .
+
+<http://splm.portal.web/osplm#ts_mgt> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://splm.portal.web/osplm#Module> .
+
+<http://splm.portal.web/osplm#ts_mgt> <http://purl.org/dc/elements/1.1/contributor> "Антон Новиков"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://www.w3.org/2000/01/rdf-schema#label> "TripleStore Query Interface"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/title> "Модуль интерфейс для TripleStore"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/subject> "Interface"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/description> "Модуль тестирование и редактирование запросов к Triplestore портала"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/date> "$Date: 2023-03-27 17:24:00 0300 (Mon, 27 Mar 2023) $"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/creator> "Антон Новиков"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/rights> "GNU"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/type> <http://purl.org/dc/dcmitype/Software> ;
+  <http://purl.org/dc/elements/1.1/format> "text/html, application"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#versionInfo> "$Id: 0.0.1 1 2023-03-27 17:24:00Z $"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#type> "webservice"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#hasWebPrefix> "/ts_mgt"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#httpEnabled> xsd:true .
+
+<http://splm.portal.web/osplm#ts_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_ts_mgt_1> .
+<http://splm.portal.web/osplm/data#url_ts_mgt_1> osplm:value "/ts_mgt/man/"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_ts_mgt_1> osplm:isAvailableFor "data_administrator"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+<http://splm.portal.web/osplm#ts_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_ts_mgt_2> .
+<http://splm.portal.web/osplm/data#url_ts_mgt_2> osplm:value "/ts_mgt/man/interface"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_ts_mgt_2> osplm:hasHTMLtemplate "editor.html"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_ts_mgt_2> osplm:shallBeShownInMenu <http://www.w3.org/2001/XMLSchema#true> .
+<http://splm.portal.web/osplm/data#url_ts_mgt_2> rdfs:label "Интерфейс к хранилищу"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_ts_mgt_2> osplm:isAvailableFor "data_administrator"^^<http://www.w3.org/2001/XMLSchema#string> .

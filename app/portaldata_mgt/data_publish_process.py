@@ -174,6 +174,8 @@ if _fm.get_section_path('res') is not None:
 process_logger.set('upload_files.total', len(for_publish))
 process_protocol.write('Catch {} files for upload to triplestore' . format(len(for_publish)))
 
+__has_publish_errors = False
+
 # for_publish используме как маркер что мы обошли файлы данных
 if for_publish:
     for it in for_publish:
@@ -244,7 +246,14 @@ if _portal_modes_util is not None:
 
 process_protocol.write('Start upload/update process')
 pub_answer = data_publisher.publish()
-process_protocol.write('Upload/update process DONE!')
+__has_publish_errors = data_publisher.has_errors()
+if __has_publish_errors:
+    if data_publisher.has_upload_fails():
+        process_protocol.write('Some file uploads is fail!')
+    if data_publisher.has_trigger_fails():
+        process_protocol.write('Some trigger execution failed!')
+else:
+    process_protocol.write('Upload/update process DONE!')
 
 # теперь выключим режим блокировки
 if _portal_mode is not None:
@@ -261,5 +270,8 @@ if process_logger:
     if process_protocol:
         process_protocol.write('Write process.Done to tracker file: TRUE')
 if publish_result:
-    publish_result.write('Процесс публикации успешно завершен!')
+    if __has_publish_errors:
+        publish_result.write('В процессе публикации произошли ошибки! Требуется ознакомиться с протоколом публикации.')
+    else:
+        publish_result.write('Процесс публикации успешно завершен!')
 # завершение функции публикации

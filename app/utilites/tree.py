@@ -167,6 +167,7 @@ def get_tree(href):
         parent_id = int(parent_id)
         return json.dumps(create_tree(get_structure(parent_id), parent_id), ensure_ascii=False)
     except Exception as e:
+        print(e)
         return "{}"
 
 

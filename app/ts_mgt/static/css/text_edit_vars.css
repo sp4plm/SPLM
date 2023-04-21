@@ -1,0 +1,9 @@
+#vars-list-box{height:445px;overflow:auto;}
+.text-var{}
+.labels-row{}
+.data-row{font-size:1.1em;font-weight: bold;}
+.data-row input{font-size:1em;font-weight: normal;}
+.textvar-name{width:100px;}
+.textvar-value{}
+
+#vars-toolbar .action-btn{}

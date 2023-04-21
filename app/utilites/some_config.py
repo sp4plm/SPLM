@@ -47,6 +47,13 @@ class SomeConfig:
                     last_steps = _parsed_key[_parsed_key.index(step)+1:]
 
                     if not last_steps:
+                        # dump full file content
+                        if 0== _parsed_key.index(step) and step == opath.basename(catch_file).split('.')[0]:
+                            #  мы спросили только файл
+                            val = file_driver.to_dict()
+                            if val is not None:
+                                self._catched_vals[key] = val
+                            pass
                         break # когда оказывается последнее значение ключа - имя файла
                     val = file_driver.get(last_steps)
                     if val is not None:

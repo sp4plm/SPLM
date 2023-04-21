@@ -49,7 +49,8 @@ class StoreDriverBlazegraph(StoreDriver):
             pass
         send_data['headers'] = headers
         auth = {}
-        if not (self._is_select_query(query) or self._is_construct_query(query)) and self.use_auth_admin:
+        # if not (self._is_select_query(query) or self._is_construct_query(query)) and self.use_auth_admin:
+        if self.use_auth_admin:
             cred = self.get_auth_credential()
             auth['uname'] = cred[0]
             auth['usecret'] = cred[1]
