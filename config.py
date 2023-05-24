@@ -17,8 +17,8 @@ ADMINS = frozenset(['youremail@yourdomain.com'])
 # имена переменных окружения нужно читать из файла
 PORTAL_MAN_USER = os.environ.get('SPLMPY_PORTAL_USER') or \
                           'manager'
-PORTAL_MAN_SECRET = os.environ.get('SPLMPY_PORTAL_SECRET') or \
-                          generate_password_hash('testadmin')
+_t = os.environ.get('SPLMPY_PORTAL_SECRET') or 'testadmin'
+PORTAL_MAN_SECRET = generate_password_hash(_t)
 SECRET_KEY = 'This string will be replaced with a proper key in production.'
 
 SQLALCHEMY_DATABASE_URI = os.environ.get('SPLMPY_DATABASE_URL') or \

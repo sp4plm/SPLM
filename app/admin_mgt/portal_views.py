@@ -108,7 +108,7 @@ def login():
                     user = User.query.filter_by(login=form.username.data).first()
                 else:
                     user = None
-        # print(user)
+        # print(mod.name + '.views.login->catched user:', user)
         if user is None or not user.check_password(secret):
                 flash('Неверное имя пользователя или пароль')
                 return redirect(url_for('portal.login'))
