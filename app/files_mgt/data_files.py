@@ -20,7 +20,8 @@ class DataFiles():
         #                                 settings_files_path)
         self._files_root = app_api.get_mod_data_path(self._utils.MOD_NAME)
         if ''!= self._files_root and not os.path.exists(self._files_root):
-            os.mkdir(self._files_root)
+            try: os.mkdir(self._files_root)
+            except: pass
         self._ALLOWED_EXTENSIONS = self._utils.get_allowed_files()
 
     def remove_selected_items(self, items_list, dirname=''):
@@ -112,7 +113,8 @@ class DataFiles():
         file = os.path.join(dirname, name)
         flg = False
         if os.path.exists(file.encode('utf-8')) and os.path.isfile(file.encode('utf-8')):
-            os.remove(file.encode('utf-8'))
+            try: os.remove(file.encode('utf-8'))
+            except: pass
             flg = True
         return flg
 
@@ -170,7 +172,8 @@ class DataFiles():
         if '' != dirname:
             path += os.path.sep + dirname
         if not os.path.exists(path.encode('utf-8')):
-            os.mkdir(path.encode('utf-8'))
+            try: os.mkdir(path.encode('utf-8'))
+            except: pass
         return os.path.exists(path.encode('utf-8'))
 
     def get_relative_path(self, path):
