@@ -34,19 +34,77 @@ class Driver():
         # logining find user
         self._logining_find_user = None
         self._user_cDC = None  # описание сервера к которому смог забиндится пользователь
+        self._errors2log = []
+
+    def set_logs_dir(self, _pth):
+        """
+        Метод для изменения директории файлов логирования
+        так как изначально директория располагается рядом с конфигурацией
+        :param str _pth: путь к директории для хранения логов для данного драйвера
+        :return: None
+        """
+        if _pth and os.path.exists(_pth) and os.path.isdir(_pth):
+            _mod_name = ModUtils().get_mod_name()
+            if _mod_name not in _pth.split(os.path.sep):
+                _pth = os.path.join(_pth, _mod_name)
+                try: os.mkdir(_pth)
+                except: pass
+            self._logs = str(_pth)
+
+    def _get_ulog_name(self, _func_name='login'):
+        _name = self._logon_name + '-' + _func_name
+        _name += '-' + ModUtils().formated_time_mark('%Y%m%d')
+        _name += '.log'
+        return _name
+
+    def _dump_errors(self):
+        pass
+        # проверка создания файла лога с функцией и именем пользователя
+        # создаем файл лога с именем пользователя
+        # если
+        if self._errors2log:
+            if not os.path.exists(self._logs):
+                try: os.mkdir(self._logs)
+                except: pass
+            _log = os.path.join(self._logs, self._get_ulog_name())
+            print(self._logs)
+            _txt = os.linesep.join(self._errors2log)
+            with open(_log, 'w', encoding='utf8') as fp:
+                fp.write(_txt)
+
+    def _clear_logs(self):
+        if os.path.exists(self._logs):
+            _items = os.scandir(self._logs)
+            for _fi in _items:
+                _nfi = _fi.name
+                if _nfi.startswith(self._logon_name + '-'):
+                    os.unlink(os.path.join(self._logs, _nfi))
+
+    def _log_error(self, _message=''):
+        if '' == _message:
+            _message = 'Undefined error!'
+            if self._errors and 'last_error' in self._errors and self._errors['last_error']:
+                _message = self._errors['last_error']
+        _time = ModUtils().formated_time_mark()
+        _line = '[' + _time + '] ' + _message
+        self._errors2log.append(_line)
 
     def login(self, u_name, u_secret):
         flg = False
         self._logining_find_user = None # для инициализации и сброса
+        self._logon_name = u_name
         if not self._check_DCs():
             # write to log - No available servers
             # print(self._debug_name +'.login->No available servers')
+            self._log_error(self._debug_name +'.login->No available servers')
+            self._dump_errors()  # так как выпадаем до конца функции
             return flg
-        self._logon_name = u_name
         DC_conf = self._get_user_DC(u_name, u_secret)
         if not DC_conf:
             # не получили конфигурацию сервера для пользователя
             # print(self._debug_name +'.login->No server configuration for user: ', u_name)
+            self._log_error(self._debug_name +'.login->No server configuration for user: ' + str(u_name))
+            self._dump_errors()  # так как выпадаем до конца функции
             return flg
         # пытаемся соединиться
         self.connect(DC_conf)
@@ -65,6 +123,10 @@ class Driver():
                 if self._conn is not None:
                     if self._conn.bound and not self._conn.closed:
                         self._logining_find_user = self.__cook_connection_user()
+        if not flg:
+            self._dump_errors()
+        else:
+            self._clear_logs()
         return flg
 
     def __check_logining_login(self, _2check):
@@ -180,12 +242,15 @@ class Driver():
                     self._conn.search(base_dn, search_filter, attributes=ldap_attributes)
                     if self._conn.last_error:
                         print(self._debug_name + '.search_ldap_user -> after search self._conn.last_error: ', str(self._conn.last_error))
+                        self._log_error(self._debug_name + '.search_ldap_user -> after search self._conn.last_error: ' + str(self._conn.last_error))
                     if self._conn.entries:
                         search_result = self._conn.entries
                 except Exception as ex:
                     print(self._debug_name +'.search_ldap_user Error: ', ex)
+                    self._log_error(self._debug_name +'.search_ldap_user Exception: ' + str(ex))
                     if self._conn.last_error:
                         print(self._debug_name + '.search_ldap_user -> self._conn.last_error(on Exception): ', str(self._conn.last_error))
+                        self._log_error(self._debug_name + '.search_ldap_user -> self._conn.last_error(on Exception): ' + str(self._conn.last_error))
                 if search_result:
                     user = self.search_result_format(search_result)
         return user
@@ -232,6 +297,8 @@ class Driver():
                 if self._conn.last_error:
                     print(self._debug_name + '.ldap_login -> self._conn.last_error: ', str(self._conn.last_error))
                 flg = False
+        if not flg:
+            self._log_error(self._debug_name + '.ldap_login.resutl -> FAIL!')
         return flg
 
     def format_uname(self, uname, server=None):

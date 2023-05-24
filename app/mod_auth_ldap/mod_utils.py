@@ -3,6 +3,8 @@ import os
 from datetime import datetime
 from shutil import copyfile
 
+from time import time, strftime, localtime
+
 
 class ModUtils():
     _class_file=__file__
@@ -11,7 +13,8 @@ class ModUtils():
     def init(self):
         _t = self.__get_mod_relative_conf_path()
         if not os.path.exists(_t):
-            os.mkdir(_t)
+            try: os.mkdir(_t)
+            except: pass
 
     def get_server_file(self, name):
         _file = ''
@@ -162,10 +165,12 @@ class ModUtils():
         _pth = self.__get_mod_relative_conf_path()
         _pth = os.path.join(_pth, 'cfg')
         if not os.path.exists(_pth):
-            os.mkdir(_pth)
+            try: os.mkdir(_pth)
+            except: pass
         _pth = os.path.join(_pth, 'servers')
         if not os.path.exists(_pth):
-            os.mkdir(_pth)
+            try: os.mkdir(_pth)
+            except: pass
         return _pth
 
     def __get_mod_relative_conf_path(self):
@@ -341,7 +346,8 @@ class ModUtils():
                 #  считаем что все остальное директории
                 _t = os.path.join(_t, _st)
                 if not os.path.exists(_t):
-                    os.mkdir(_t)
+                    try: os.mkdir(_t)
+                    except: pass
             _res_path = os.path.join(_app_conf_pth, *_s)
         return _res_path
 
@@ -353,3 +359,6 @@ class ModUtils():
         """
         from app import app_api
         return app_api.get_app_root_dir()
+
+    def formated_time_mark(self, _tpl='%Y%m%d_%H-%M-%S'):
+        return strftime(_tpl, localtime(time()))
