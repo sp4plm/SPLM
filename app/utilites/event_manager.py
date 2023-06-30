@@ -140,10 +140,10 @@ class EventManager:
 		:rtype: dict
 		"""
 		if not self.check_event_name(event_name):
-			return False
+			return params
 
 		if event_name not in list(self.events.keys()):
-			return False
+			return params
 
 		# где event_start - самое первое событие
 		# где event_complete - самое последнее событие
