@@ -49,7 +49,7 @@ $(function(){
                 // this- is a pointer of button
                 var $btn = $(this),flg=0,url='';
                 flg = $btn.attr('mode');
-                url = '/users/toggleDebugMode/'+((flg=='0')? 1:0);
+                url = _this.baseURL+'/toggleDebugMode/'+((flg=='0')? 1:0);
                 $.get(url,function(){
                     switch(flg){
                         case '0':
@@ -98,7 +98,10 @@ $(function(){
                     _this.init();
                 },'json');
             }
-
+            _$box = $('#page-content-marker').parent();
+            _this.baseURL = _$box.find('#js-base-url').val();
+            _this.chgPassUrl = _this.baseURL+'/changePass/';
+            _this.saveUInfUrl = _this.baseURL+'/save/';
             __construct(cp);
 
         };

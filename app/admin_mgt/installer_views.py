@@ -139,4 +139,9 @@ def installer():
     tmpl_vars['already_c0nfigured'] = _portal_configurator.check_inst_marker()
 
     _tpl_name = os.path.join(AdminConf.MOD_NAME, 'portal', 'installer.html')
+    _base_url = mod.url_prefix
+    _app_url_prefix = app_api.get_app_url_prefix()
+    if _app_url_prefix and not _base_url.startswith(_app_url_prefix):
+        _base_url = _app_url_prefix.rstrip('/') + '/' + _base_url.lstrip('/')
+    tmpl_vars['base_url'] = _base_url
     return app_api.render_page(_tpl_name, **tmpl_vars)

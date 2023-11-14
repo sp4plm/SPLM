@@ -40,10 +40,14 @@ class ModApi(ModConf):
             # преобразуем путь к соответствующему шаблону
             base = base.replace(os.path.sep, os.path.altsep)
         _tpl_vars['to_extend'] = base
-        _tpl_vars['js_base_url'] = self.MOD_WEB_ROOT
         _tpl_vars['edit_name'] = _file_name
         _tpl_vars['can_remove'] = _can_remove
         from app import app_api
+        _base_url = self.MOD_WEB_ROOT
+        _app_url_prefix = app_api.get_app_url_prefix()
+        if _app_url_prefix and not _base_url.startswith(_app_url_prefix):
+            _base_url = _app_url_prefix.rstrip('/') + '/' + _base_url.lstrip('/')
+        _tpl_vars['js_base_url'] = _base_url
         return app_api.render_page(_tpl_name, **_tpl_vars)
 
     def __get_full_file_path(self, mod, relative):
@@ -266,7 +270,8 @@ class ModApi(ModConf):
                 #  считаем что все остальное директории
                 _t = os.path.join(_t, _st)
                 if not os.path.exists(_t):
-                    os.mkdir(_t)
+                    try: os.mkdir(_t)
+                    except: pass
             _res_path = os.path.join(_app_conf_pth, *_s)
         return _res_path
 

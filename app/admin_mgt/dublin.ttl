@@ -60,3 +60,8 @@
 <http://splm.portal.web/osplm/data#url_adminmgt_8> osplm:value "/portal/management/schedule"^^<http://www.w3.org/2001/XMLSchema#string> ;
   rdfs:label "Периодические задания"^^<http://www.w3.org/2001/XMLSchema#string> ;
   osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> .
+
+<http://splm.portal.web/osplm#admin_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_adminmgt_9> .
+<http://splm.portal.web/osplm/data#url_adminmgt_9> osplm:value "/portal"^^<http://www.w3.org/2001/XMLSchema#string> ;
+rdfs:label "Настройки портала"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> .

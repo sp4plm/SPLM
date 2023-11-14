@@ -748,6 +748,7 @@
 
             // инициализируем менеджер событий, для взаимодействия
             _$box = $('.maincontent:first');
+            _this.baseURL = _$box.find('#js-base-url').val();
             try{
                 _this.EvMan = new win._custEvents();
             }catch(err){

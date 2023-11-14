@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
 from datetime import datetime
-from fpdf import FPDF, HTML2FPDF, HTMLMixin
+from fpdf import FPDF, HTML2FPDF, HTMLMixin, FPDF_VERSION
+
 import PyPDF2
 
 
@@ -10,6 +11,7 @@ class DocumentFpdf(FPDF, HTMLMixin):
     _debug_name = 'PrinterDocumentFpdf'
     _fonts_src_name = 'fonts'
     _temps_dir_name = '_tmp'
+    lib_version = float('.'.join([FPDF_VERSION.split('.')[0],FPDF_VERSION.split('.')[1]]))
 
     def __init__(self,
         orientation="portrait",
@@ -30,6 +32,14 @@ class DocumentFpdf(FPDF, HTMLMixin):
         self._watermark = ''
         self._default_font_fam = 'DejaVuSans'  # шрифты поддерживающие кирилический unicode
         self._default_font_size = 12  # pt
+        self._footer_height = 15
+
+
+    @staticmethod
+    def hex2rgb(_hex):
+        _hex = _hex.lstrip('#')
+        _rgb = tuple(int(_hex[i:i+2], 16) for i in (0, 2, 4))
+        return _rgb
 
     def print(self, _to):
         """
@@ -124,7 +134,8 @@ class DocumentFpdf(FPDF, HTMLMixin):
         _root = os.path.dirname(__file__)
         _pth = os.path.join(_root, self._temps_dir_name)
         if not os.path.exists(_pth):
-            os.mkdir(_pth)
+            try: os.mkdir(_pth)
+            except: pass
         return _pth
 
     def header(self):
@@ -155,7 +166,8 @@ class DocumentFpdf(FPDF, HTMLMixin):
     def footer(self):
         self.set_text_color(0)
         # Position cursor at 1.5 cm from bottom:
-        self.set_y(-15)
+        _use_pos = 0 - self._footer_height
+        self.set_y(_use_pos)
         # Setting font: helvetica italic 8
         # self.set_font("helvetica", "I", 8)
         self.set_font('DejaVuSans', '', 8)

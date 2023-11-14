@@ -32,14 +32,17 @@ class FilesManagment():
 
     def _init_data_struct(self):
         if not os.path.exists(MOD_DATA_PATH) or not os.path.isdir(MOD_DATA_PATH):
-            os.mkdir(MOD_DATA_PATH)
+            try: os.mkdir(MOD_DATA_PATH)
+            except: pass
         if not os.path.exists(self._root_dir) or not os.path.isdir(self._root_dir):
-            os.mkdir(self._root_dir)
+            try: os.mkdir(self._root_dir)
+            except: pass
         dir_list = ['ontos']
         for i_dir in dir_list:
             test = os.path.join(self._root_dir, i_dir)
             if not os.path.exists(test) or not os.path.isdir(test):
-                os.mkdir(test)
+                try: os.mkdir(test)
+                except: pass
                 if 'media' == i_dir:
                     # возможно придется положить внутрь файл с указанием источника данных
                     continue # пропускаем так как это просто директория - данные будут лежать в другом месте
@@ -348,6 +351,9 @@ class FilesManagment():
                 if not _is_root_dir and item.is_dir():
                     continue
                 if item.name == self._dir_cfg_file:
+                    continue
+                # пропуск скрытых файлов
+                if item.name.startswith('.'):
                     continue
                 files.append(os.path.join(try_dir, item.name))
         return files

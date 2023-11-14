@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="{{url_for('static', filename='css/portal.jqgrid.css')}}" />
 {%- endblock page_styles %}
 {% block page_main_content %}
+<input type="hidden" value="{{base_url}}" id="js-base-url" />
+<span id="page-content-marker" style="display:none;"></span>
 <table id="portal-users-grid"></table>
 {% endblock %}
 {%- block vend_scripts %}

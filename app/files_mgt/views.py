@@ -38,16 +38,20 @@ send_from_directory
 # инициализация модуля
 __mod_path = app_api.get_mod_data_path(ModConf.MOD_NAME)
 if not os.path.exists(__mod_path):
-    os.mkdir(__mod_path)
+    try: os.mkdir(__mod_path)
+    except: pass
 # теперь добавим симлинку внутри себя
 _files_lnk = os.path.join(_mod_utils.get_web_static_path(), 'files')
 if not os.path.exists(_files_lnk):
     if "win32" == platform:
         import ctypes
-        _kdll = ctypes.windll.LoadLibrary("kernel32.dll")
-        _kdll.CreateSymbolicLinkA(_files_lnk, __mod_path, 1)
+        try:
+            _kdll = ctypes.windll.LoadLibrary("kernel32.dll")
+            _kdll.CreateSymbolicLinkA(_files_lnk, __mod_path, 1)
+        except: pass
     else:
-        os.symlink(__mod_path, _files_lnk, True)
+        try: os.symlink(__mod_path, _files_lnk, True)
+        except: pass
 
 
 # теперь нужно обработать перенаправление
@@ -78,8 +82,13 @@ def view_ufile(file_path=''):
 def files_management():
     portal_cfg = app_api.get_app_config()
     _tpl_name = os.path.join(ModConf.MOD_NAME, 'media_files.html')
+    _base_url = __web_prefix
+    _app_url_prefix = app_api.get_app_url_prefix()
+    if _app_url_prefix and not _base_url.startswith(_app_url_prefix):
+        _base_url = _app_url_prefix.rstrip('/') + '/' + _base_url.lstrip('/')
     return app_api.render_page(_tpl_name, title="Управление файлами",
-                           page_title="Управление файлами")
+                           page_title="Управление файлами",
+                        base_url=_base_url)
 
 
 @mod.route(__web_prefix + '/getStructTree', methods=['GET', 'POST'])

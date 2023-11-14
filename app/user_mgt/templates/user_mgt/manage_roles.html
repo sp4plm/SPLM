@@ -4,6 +4,8 @@
     <link rel="stylesheet" href="{{url_for('users.static', filename='css/main.css')}}" />
 {%- endblock page_styles %}
 {% block page_main_content %}
+<input type="hidden" value="{{base_url}}" id="js-base-url" />
+<span id="page-content-marker" style="display:none;"></span>
 {% endblock %}
 {%- block page_scripts %}
     {{super()}}

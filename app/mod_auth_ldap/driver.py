@@ -67,7 +67,6 @@ class Driver():
                 try: os.mkdir(self._logs)
                 except: pass
             _log = os.path.join(self._logs, self._get_ulog_name())
-            print(self._logs)
             _txt = os.linesep.join(self._errors2log)
             with open(_log, 'w', encoding='utf8') as fp:
                 fp.write(_txt)

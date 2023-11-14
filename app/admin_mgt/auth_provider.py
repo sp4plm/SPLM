@@ -19,9 +19,7 @@ class AuthProvider:
                 _files_mgt_pth = ''
                 if app_api.is_app_module_enabled('files_mgt'):
                     _files_api = app_api.get_mod_api('files_mgt').get_util()()
-                    print(self._debug_name + '.__init__._files_api', _files_api)
                     _files_mgt_pth = _files_api.get_dir_path('')
-                    print(self._debug_name + '.__init__._files_mgt_pth', _files_mgt_pth)
                     self._driver.set_external_logs_path(_files_mgt_pth)
             except Exception as ex:
                 print(self._debug_name + '.__init__.Exception:', str(ex))

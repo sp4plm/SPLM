@@ -6,7 +6,8 @@ MODULE_FOLDER = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
 
 data_folder = os.path.join(app.config['APP_DATA_PATH'], MODULE_FOLDER)
 if not os.path.exists(data_folder):
-    os.mkdir(data_folder)
+    try: os.mkdir(data_folder)
+    except: pass
 
 
 # SCHEDULE = "scedule"
@@ -23,7 +24,8 @@ class Jobs:
 
 		self.data_folder = os.path.join(data_folder, self.daemon)
 		if not os.path.exists(self.data_folder):
-			os.mkdir(self.data_folder)
+			try: os.mkdir(self.data_folder)
+			except: pass
 
 		self.daemon_json = self.daemon + ".json"
 		self._file = os.path.join(self.data_folder, self.daemon_json)

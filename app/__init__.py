@@ -11,28 +11,55 @@ from flask_themes2 import Themes
 
 from flask_apscheduler import APScheduler
 
+__package_path = os.path.dirname(__file__)  # app directory (app package directory)
+__app_work_path = os.path.dirname(__package_path)  # parent directory of app (application directory - all prog code)
+__app_instance_path = os.path.join(__app_work_path, 'instance')
 
 
-app = Flask(__name__, root_path=os.path.dirname(__file__))
+app = Flask(__name__, root_path=__package_path)
 app.config.from_object('config')
 
 # создание основных директорий для работы приложения
 # директория для пользовательских данных
 __dir_key = 'APP_DATA_PATH'
 if not os.path.exists(app.config[__dir_key]):
-    os.mkdir(app.config[__dir_key])
+    try: os.mkdir(app.config[__dir_key], )
+    except: pass
 # директория хранения логов
 __dir_name = os.path.join(app.config[__dir_key], 'logs')
 if not os.path.exists(__dir_name):
-    os.mkdir(__dir_name)
+    try: os.mkdir(__dir_name)
+    except: pass
 # директория для фалов изменяемых при работе портала
 __dir_key = 'APP_CONFIG_PATH'
 if not os.path.exists(app.config[__dir_key]):
-    os.mkdir(app.config[__dir_key])
+    try: os.mkdir(app.config[__dir_key])
+    except: pass
 # директория хранения тем приложения
 __dir_key = 'THEME_PATHS'
 if not os.path.exists(app.config[__dir_key]):
-    os.mkdir(app.config[__dir_key])
+    try: os.mkdir(app.config[__dir_key])
+    except: pass
+
+# try set url prefix
+# app.config['APP_URL_PREFIX'] - for multiproject
+__dir_key = 'APP_CONFIG_PATH'
+__prefix_file = os.path.join(app.config[__dir_key], 'prefix.url')
+if os.path.exists(__prefix_file):
+    _test_prefix = ''
+    with open(__prefix_file, 'r', encoding="utf-8") as _fp:
+        _test_prefix = _fp.read().strip("\n\r")
+    if _test_prefix:
+        _test_prefix = '/' + _test_prefix.lstrip('/').rstrip('/')
+        # print('app.__init__->generate APP_URL_PREFIX: _test_prefix', _test_prefix)
+        app.config['APP_URL_PREFIX'] = _test_prefix
+        # далее требуется развести авторизацию приложений под одним доменом, но в разных директориях
+        app.config['REMEMBER_COOKIE_PATH'] = _test_prefix.rstrip('/')  # '/app_1'
+        app.config['SESSION_COOKIE_NAME'] = app.config['SESSION_COOKIE_NAME'] + _test_prefix.replace('/', '#')
+        # дополнительно надо менять app.config['SECRET_KEY'] and app.config['WTF_CSRF_SECRET_KEY']
+        app.config['SECRET_KEY'] = app.config['SECRET_KEY'] + _test_prefix.replace('/', '!&@')
+        app.config['WTF_CSRF_SECRET_KEY'] = app.config['WTF_CSRF_SECRET_KEY'] + _test_prefix.replace('/', '#%$')
+    pass
 
 # управление модулями
 mod_manager = Manager(app)
@@ -76,6 +103,9 @@ login_manager.needs_refresh_message = u'Авторизуйтесь пожалу�
 # требуется обдумать и реализовать переход после авторизации на стартовую страницу портала - из настроек
 login_manager.login_view = 'portal.login'  # данный параметр требуется устанавливать через настройки
 
+from app.admin_mgt.models.user import User
+login_manager.anonymous_user = User
+
 app.add_template_global(app_api.get_app_root_tpl, name='app_root_tpl') # функция в шаблоне - получение главного шаблона портала
 app.add_template_global(app_api.is_app_module_enabled, name='check_module')
 app.add_template_global(PortalNavi.get_mod_tpl_path, name='mod_tpl_path')
@@ -88,49 +118,74 @@ app.add_template_global(app_api.get_portal_labels, name='portal_labels')
 # app.add_template_global(PortalSettings.get_jquery_info, name='portal_jquery')
 # app.add_template_global(PortalSettings.get_js_libs_info, name='portal_js_libs')
 app.add_template_global(app_api.get_portal_version(), name='portal_ver')
+app.add_template_global(app_api.get_portal_locale(), name='page_lang')
 
 # обработка запроса корня портала
 from app.views import mod as app_views
-app.register_blueprint(app_views)
+# app.register_blueprint(app_views)
+mod_manager.register_module_http_handler(app_views, 'app_views')
 
 # регистрируем модули приложения
 from app.admin_mgt.models.links import Link
 from app.admin_mgt.models.embedded_user import EmbeddedUser
 # модуль редактора
 from app.kv_editor.views import mod as kve_mod
-app.register_blueprint(kve_mod)
+# app.register_blueprint(kve_mod)
+mod_manager.register_module_http_handler(kve_mod, 'kv_editor')
 
-from app.admin_mgt.views import mod as adminModule, portal_mod, installer_mod, management_mod, configurator_mod
-app.register_blueprint(adminModule)
-app.register_blueprint(portal_mod)
-app.register_blueprint(installer_mod)
-app.register_blueprint(management_mod)
-app.register_blueprint(configurator_mod)
+from app.admin_mgt.views import mod as adminModule
+from app.admin_mgt.views import portal_mod
+from app.admin_mgt.views import installer_mod
+from app.admin_mgt.views import management_mod
+from app.admin_mgt.views import configurator_mod
+# app.register_blueprint(adminModule)
+mod_manager.register_module_http_handler(adminModule, 'admin_mgt')
+# app.register_blueprint(portal_mod)
+mod_manager.register_module_http_handler(portal_mod, 'admin_mgt')
+# app.register_blueprint(installer_mod)
+mod_manager.register_module_http_handler(installer_mod, 'admin_mgt')
+# app.register_blueprint(management_mod)
+mod_manager.register_module_http_handler(management_mod, 'admin_mgt')
+# app.register_blueprint(configurator_mod)
+mod_manager.register_module_http_handler(configurator_mod, 'admin_mgt')
 
 from app.files_mgt.views import mod as files_mgt_web
-app.register_blueprint(files_mgt_web)
+# app.register_blueprint(files_mgt_web)
+mod_manager.register_module_http_handler(files_mgt_web, 'files_mgt')
 
 from app.module_mgt.views import mod as module_mgt_web
-app.register_blueprint(module_mgt_web)
+# app.register_blueprint(module_mgt_web)
+mod_manager.register_module_http_handler(module_mgt_web, 'module_mgt')
 
 from app.themes_mgt.views import mod as themes_mgt_web
-app.register_blueprint(themes_mgt_web)
+# app.register_blueprint(themes_mgt_web)
+mod_manager.register_module_http_handler(themes_mgt_web, 'themes_mgt')
 
 if app_api.is_app_module_enabled('ts_mgt'):
     from app.ts_mgt.views import mod as tsModule
     app.register_blueprint(tsModule)
 
+# settings editor for printer pdf
+if app_api.is_app_module_enabled('printer'):
+    from app.printer.views import mod as print_pdf
+    app.register_blueprint(print_pdf)
+
 if app_api.is_app_module_enabled('user_mgt'):
     from app.user_mgt.models.users import User
     from app.user_mgt.models.roles import Role
     from app.user_mgt.views import mod as userModule
-    app.register_blueprint(userModule)
+    # app.register_blueprint(userModule)
+    mod_manager.register_module_http_handler(userModule, 'user_mgt')
+else:
+    pass
+    """ Установить настройку что открытый портал по умолчанию !!!! """
 
 from app.query_mgt.views import mod as query_mgtModule
 app.register_blueprint(query_mgtModule)
 
 from app.wiki.views import mod as wikiModule
-app.register_blueprint(wikiModule)
+# app.register_blueprint(wikiModule)
+mod_manager.register_module_http_handler(wikiModule, 'wiki')
 
 from app.onto_mgt.views import mod as ontoModule
 app.register_blueprint(ontoModule)
@@ -149,8 +204,11 @@ mod_manager.load_modules_http_handlers()
 def not_found(error):
     # требуется проверить - может быть портал только развернут, следовательно надо получить адрес административного
     # интерфейса и перенаправить
-    all_urls = [str(_u) for _u in app.url_map.iter_rules()]
-    if '/' not in all_urls:
+    # all_urls = [str(_u) for _u in app.url_map.iter_rules()]
+    # if '/' not in all_urls:
+    _marker = app.config['CONFIGURATOR_MARK_NAME']
+    _url_prefix = app.config['APP_URL_PREFIX']
+    if not os.path.exists(_marker):
         return redirect(url_for('portal.welcome'))
     return app_api.render_page('errors/404.html'), 404
 
@@ -166,7 +224,9 @@ def before_request():
     # надо выполнять простую проверку на наличие файла - что портал установлен и инициализирован
     # если файла нет перенаправлять на специальный урл инсталлятор портала? который закрыт паролем к административного
     # интерфейса
+    _test_url = url_for('portal.welcome')
     _marker = app.config['CONFIGURATOR_MARK_NAME']
+    _url_prefix = app.config['APP_URL_PREFIX']
     if not os.path.exists(_marker):
         opened_urls = []
         _url = url_for('portal.welcome')
@@ -179,6 +239,11 @@ def before_request():
                 -1 == request.path.find('/_themes/') and \
                 not request.path.startswith(install_url):
             return redirect(_url)
+
+    # надо отсеч статические файлы
+    if 0 < request.path.find('/static/') or 0 < request.path.find('/_themes/'):
+        return
+
     g.user = None
     session.permanent = True
     if current_user.is_authenticated:

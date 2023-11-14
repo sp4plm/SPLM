@@ -45,7 +45,8 @@ class AdminUtils(AdminConf):
         pth = ''
         pth = AdminConf.get_mod_path(os.path.join('default', 'navi'))
         if not os.path.exists(pth):
-            os.mkdir(pth)
+            try: os.mkdir(pth)
+            except: pass
         return pth
 
     @staticmethod
@@ -306,7 +307,8 @@ class AdminUtils(AdminConf):
                 #  считаем что все остальное директории
                 _t = os.path.join(_t, _st)
                 if not os.path.exists(_t):
-                    os.mkdir(_t)
+                    try: os.mkdir(_t)
+                    except: pass
             _res_path = os.path.join(_app_conf_pth, *_s)
         return _res_path
 
@@ -385,6 +387,20 @@ class AdminUtils(AdminConf):
         return ssk
 
     @staticmethod
+    def get_private_prefixes():
+        _lst = []
+        _url_prefix = app_api.get_app_url_prefix()
+        _lst.append(_url_prefix.rstrip('/') + '/' + AdminConf.MOD_WEB_ROOT.lstrip('/'))
+        _lst.append(_url_prefix.rstrip('/') + '/' + AdminConf.MOD_WEB_ROOT.lstrip('/') + '/installer')
+        _lst.append(_url_prefix.rstrip('/') + '/' + AdminConf.MOD_WEB_ROOT.lstrip('/') + '/management')
+        _lst.append(_url_prefix.rstrip('/') + '/' + AdminConf.MOD_WEB_ROOT.lstrip('/') + '/configurator')
+        _lst.append(_url_prefix.rstrip('/') + '/appmodules')
+        _lst.append(_url_prefix.rstrip('/') + '/themesmgt')
+        _lst.append(_url_prefix.rstrip('/') + '/mediadata')
+        # print('ADminUtils.get_private_prefixes->_lst', _lst)
+        return _lst
+
+    @staticmethod
     def is_admin_url(search_path):
         """
         Метод определяет используется ли url search_path для административного интерфейса или нет.
@@ -395,6 +411,20 @@ class AdminUtils(AdminConf):
         flg = False
         admin_navi = AdminNavigation()
         flg = admin_navi.is_admin_url(search_path)
+        if not flg:
+            _app_prefix = app_api.get_app_url_prefix().rstrip('/')
+            _lst_prefs = AdminUtils.get_private_prefixes()
+            _start_with_p = search_path.startswith(_app_prefix)
+            # print('AdminUtils.is_admin_url->_app_prefix:', _app_prefix)
+            # print('AdminUtils.is_admin_url->search_path:', search_path)
+            for _pref in _lst_prefs:
+                _check_pth = _app_prefix + _pref if not _start_with_p else _pref
+                # print('AdminUtils.is_admin_url->_pref:', _pref)
+                # print('AdminUtils.is_admin_url->_check_pth:', _check_pth)
+                if search_path.startswith(_check_pth):
+                    flg = True
+                    break
+        # print('AdminUtils.is_admin_url->result:', flg)
         return flg
 
     @staticmethod

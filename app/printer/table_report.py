@@ -43,6 +43,17 @@ class TableReport(DocumentFpdf):
         self._table_heads = []  # первая строка матрицы
         self._cur_process_sizes = None
 
+        self._header_color = (0,0,0)  # table header text color
+        self._header_bgcolor = (255,255,255)  # table header background color
+
+    def set_header_color(self, _rgb_tuple):
+        if _rgb_tuple and isinstance(_rgb_tuple, tuple) and 3 == len(_rgb_tuple):
+            self._header_color = _rgb_tuple
+
+    def set_header_bgcolor(self, _rgb_tuple):
+        if _rgb_tuple and isinstance(_rgb_tuple, tuple) and 3 == len(_rgb_tuple):
+            self._header_bgcolor = _rgb_tuple
+
     def set_sign_data(self, _data):
         self._sign_data = _data
 

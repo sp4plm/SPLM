@@ -67,6 +67,12 @@ def index():
         tmpl_vars['page_title'] = tmpl_vars['current_section']['label']
     # tmpl_vars['page_side_title'] = 'Содержание раздела'
 
+    _base_url = mod.url_prefix
+    _app_url_prefix = app_api.get_app_url_prefix()
+    if _app_url_prefix and not _base_url.startswith(_app_url_prefix):
+        _base_url = _app_url_prefix.rstrip('/') + '/' + _base_url.lstrip('/')
+    tmpl_vars['base_url'] = _base_url
+
     # print('host', request.host)
     # print('endpoint', request.endpoint)
     # print('url', request.url)

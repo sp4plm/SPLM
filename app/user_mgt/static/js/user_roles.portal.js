@@ -583,6 +583,9 @@
                     function _constructor(p){
                         //Desktop.EvMan.subscribe('pageResize', function(p){ _this.resize(); });
                     }// конструктор класса
+
+                    _this.baseUrl = $('#js-base-url').val();
+
                     _constructor(p);
                 };
                 _jsUtils.inherit(cls,parent);

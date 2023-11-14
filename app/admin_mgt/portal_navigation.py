@@ -18,6 +18,7 @@ class PortalNavigation(NavigationFiles):
         _t = AdminConf.get_mod_path('data')
         self._files_path = os.path.join(_t, AdminConf.NAVI_DIR_NAME)
         self._mod_manager = app_api.get_mod_manager()
+        self._url_prefix = app_api.get_app_url_prefix()
         self._map = []
         self.depricated_codes = ['admin_sections'] # список кодов навигационных блоков исключаемых из дерева
         self._navi_struct = self.get_all_navi()
@@ -67,9 +68,10 @@ class PortalNavigation(NavigationFiles):
                 if file_source:
                     # параметры функции сортировки
                     _a.append('asc')
-                    _a.append('srtid')  # если источник file то наверно специальная сортировка
+                    _a.append('srtid')  # если источник file, то наверно специальная сортировка
                 # print(self._debug_name + '._get_sections_navi._a', _a)
                 lst = self._sort_items(*_a)
+                lst = self.__add_url_prefix(lst)
         return lst
 
     def _get_sections_navi(self, section_code):
@@ -93,7 +95,27 @@ class PortalNavigation(NavigationFiles):
                 _a.append('srtid')  # если источник file то наверно специальная сортировка
             # print(self._debug_name + '._get_sections_navi._a', _a)
             lst = self._sort_items(*_a)
+            lst = self.__add_url_prefix(lst)
         return lst
+
+    def __add_url_prefix(self, _lst):
+        """
+        Метод добавляет к ссылкам url префикс для приложения
+        :param list _lst: список элементов навигации
+        :return: список элементов навигации
+        :rtype list:
+        """
+        if self._url_prefix:
+            def _up_d(x):
+                if not x['href']:
+                    return x
+                if not x['href'].startswith(self._url_prefix):
+                    x['href'] = self._url_prefix + x['href']
+                return x
+
+            _lst = map(_up_d, _lst)
+            _lst = list(_lst)
+        return _lst
 
     @staticmethod
     def _sort_items(_lst, ord='asc', attr='label'):
@@ -228,9 +250,13 @@ class PortalNavigation(NavigationFiles):
         def _snail(code):
             roots = self._get_sections_navi(code) if not _use_accsess else self.get_sections_navi(code, user)
             if roots:
+                _like_parent = False
                 for root in roots:
+                    _is_indexed = False
                     key = root['code']
-                    if key not in _indexed:
+                    _like_parent = (code == key)
+                    _is_indexed = (key in _indexed)
+                    if not _is_indexed:
                         _indexed.append(key)
                     root['parid'] = _t[code]['id'] if code in _t else 0
                     _ind = _indexed.index(key)
@@ -238,7 +264,9 @@ class PortalNavigation(NavigationFiles):
                     root['parent'] = code
                     if key not in _t:
                         _t[key] = root
-                    _snail(key)
+                    #  предупреждаем зацикленность
+                    if not _is_indexed and not _like_parent:
+                        _snail(key)
 
         _snail(start)
         return _t

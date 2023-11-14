@@ -1,5 +1,7 @@
 {% extends app_root_tpl() %}
 {% block page_main_content %}
+<input type="hidden" value="{{base_url}}" id="js-base-url" />
+<span id="page-content-marker" style="display:none;"></span>
 {% if dir_source %}
     {% if dir_source['files'] %}
         <br /><br />

@@ -10,9 +10,9 @@ class ModConf:
     MOD_NAME = os.path.basename(SELF_PATH)
     MOD_WEB_ROOT = '/mediadata'
 
-    _MAX_FILE_SIZE = 1024 * 1024 + 50
+    _MAX_FILE_SIZE = 1024 * 1024 * 50
     _ALLOWED_EXTENSIONS = ('jpg', 'jpeg', 'xml', 'png', 'gif', 'mp4', 'docx', 'doc',
-                           'pdf', 'ttl', 'xls', 'xlsx', 'dotm', 'dot', 'm4v', 'rq')
+                           'pdf', 'ttl', 'xls', 'xlsx', 'dotm', 'dot', 'm4v', 'rq', 'xlsm')
 
     @staticmethod
     def get_web_tpl_path():

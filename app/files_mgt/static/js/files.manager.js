@@ -5,6 +5,7 @@
                 var cls = function(p){
                     var _this = this,
                         _selfCode = 'PortalFiles',
+                        _url_pref,
                         // _agrigator = p.container, // куда встраивается наш модуль
                         // _EvMan = null // _agrigator[p.eventBus], // менеджер событий объекта в который встраивается наш модуль
                         _$box=null;
@@ -414,7 +415,7 @@
                         t += '<label>'+ _this.langData.interface.selectFiles+':</label>&nbsp;';
                         t += '<input type="file" multiple="true" name="File[]" value="" />';
                         t += '<br /><span>'+_this.langData.interface.maxFileSizeLbl+': '+_this.langData.interface.maxFileSize+'</span>';
-                        t += '<br /><span>'+_this.langData.interface.maxFilesUploadLbl+': '+_this.langData.interface.maxFilesUpload+'</span>';
+                        //t += '<br /><span>'+_this.langData.interface.maxFilesUploadLbl+': '+_this.langData.interface.maxFilesUpload+'</span>';
                         t += '<br /><button name="Upload">'+ _this.langData.interface.upload+'</button>';
                         t += '</form>';
                         return t;
@@ -428,7 +429,7 @@
                         t += '<input type="hidden" name="OldName" value="" />';
                         t += '<br /><label>'+ _this.langData.interface.file.substr(0,1).toUpperCase()+_this.langData.interface.file.substr(1)+':</label>&nbsp;';
                         t += '<input type="file" name="File" value="" />';
-                        t += '<br /><span>'+_this.langData.interface.maxFileSizeLbl+': '+_this.langData.interface.maxFileSize+'</span>';
+                        //t += '<br /><span>'+_this.langData.interface.maxFileSizeLbl+': '+_this.langData.interface.maxFileSize+'</span>';
                         t += '<br /><span>'+_this.langData.interface.maxFilesUploadLbl+': '+_this.langData.interface.maxFilesUpload+'</span>';
                         t += '<br /><button name="Update">'+ _this.langData.interface.upload+'</button>';
                         t += '</form>';
@@ -774,7 +775,6 @@
                             }
                         });
                     }
-
                     _c();
                 };
                 // теперь относледуемся

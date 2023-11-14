@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{{url_for('files_mgt.static', filename='css/files.manager.css')}}" />
 {% endblock page_styles %}
 {% block page_main_content %}
-<input type="hidden" value="/mediadata" id="js-base-url" />
+<input type="hidden" value="{{ base_url|default('/mediadata') }}" id="js-base-url" />
 <span id="page-content-marker" style="display:none;"></span>
 {% endblock %}
 {%- block vend_scripts %}

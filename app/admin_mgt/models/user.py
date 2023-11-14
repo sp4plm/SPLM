@@ -23,6 +23,9 @@ def load_user(id):
 
 
 class User(UserMixin):
+    """
+    Use current class like Application Anonimous User
+    """
     _class_file = __file__
     _debug_name = 'AdminMgtUser'
     id = 0
@@ -31,7 +34,7 @@ class User(UserMixin):
     password = 'zsdrsdmam433745v35v34'
     _roles = []
 
-    def __init__(self, id):
+    def __init__(self, id=4000000):
         #self.id = int(id) + 1000000
         self.id = int(id) - int(id)
 

@@ -109,7 +109,8 @@ class NavigationFiles():
                 #  считаем что все остальное директории
                 _t = os.path.join(_t, _st)
                 if not os.path.exists(_t):
-                    os.mkdir(_t)
+                    try: os.mkdir(_t)
+                    except: pass
             _res_pth = os.path.join(_app_conf_pth, *_s)
         return _res_pth
 

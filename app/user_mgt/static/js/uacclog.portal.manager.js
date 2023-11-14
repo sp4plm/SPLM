@@ -219,6 +219,8 @@ var _PortalUAccLogManagerCls = function(p){
                 _1this.buildGrid();
             };
 
+            _this.baseURL = $('#js-base-url').val();
+
             function _c(){}
             _c();
         };

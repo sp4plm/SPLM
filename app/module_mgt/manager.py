@@ -151,21 +151,28 @@ class Manager:
         #             print(self._debug_name + '.load_module_http_handler: {}' . format(str(ex)))
         #             load_http_mod = None
         if _http is not None:
-            # try:
-            #     views_mod = getattr(load_http_mod, self._web_handlers_var)
-            # except KeyError as e:
-            #     # можно также присвоить значение по умолчанию вместо бросания исключения
-            #     # raise ValueError(self._debug_name + '.load_module_http_handler: No web module var: {}'.format(e.args[0]))
-            #     print(self._debug_name + '.load_module_http_handler: No web module var: {}'.format(str(e)))
-            # call app.register_blueprint(views_mod)
-            try:
-                self._current_app.register_blueprint(_http)
-                flg = True
-            except Exception as ex:
-                # можно также присвоить значение по умолчанию вместо бросания исключения
-                # raise ValueError('Undefined component: {}'.format(e.args[0]))
-                print(self._debug_name + '.load_module_http_handler: Error on module web register action:', str(ex))
+            flg = self.register_module_http_handler(_http, getattr(_http, 'name'))
         return flg
+
+    def register_module_http_handler(self, _mod, mod_name=''):
+        """
+        Метод функция-обертка для регистрации Blueprint модуля в приложении
+        :param Blueprint _mod: экземпляр класса Blueprint
+        :param str mod_name: ЗАДЕЛ НА БУДУЩЕЕ!!! имя модуля для которого производится регистрация
+        :return: подтверждение или опровержение регистрации модуля Blueprint
+        :rtype boolean:
+        """
+        _flg = False
+        # type detect type without import
+        if -1 < str(type(_mod)).find('.Blueprint'):  #isinstance(_mod, Blueprint):
+            try:
+                # add app URL prefix for dynamic load modules
+                _url_prefix = self._current_app.config['APP_URL_PREFIX'] + getattr(_mod, 'url_prefix')
+                self._current_app.register_blueprint(_mod, url_prefix=_url_prefix)
+                _flg = True
+            except Exception as ex:
+                print(self._debug_name + '.register_module_http_handler: Error on module web register action:', str(ex))
+        return _flg
 
     def compile_modules_info(self):
         from flask import Flask
@@ -700,7 +707,8 @@ class Manager:
         # pth = os.path.join(os.path.dirname(self._class_file), 'data')
         pth = app_api.get_mod_data_path(self._get_mod_name())
         if not os.path.exists(pth):
-            os.mkdir(pth)
+            try: os.mkdir(pth)
+            except: pass
         return pth
 
     def _gen_cache_filename(self):

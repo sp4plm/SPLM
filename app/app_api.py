@@ -42,6 +42,19 @@ def get_app_config():
     return cfg
 
 
+def get_app_url_prefix():
+    """
+    Функция возвращает установленный URL префикс для всех запросов приложения
+    :return: URL префикс
+    :rtype str:
+    """
+    from app import app
+    _prefix = app.config['APP_URL_PREFIX']
+    if '/' == _prefix:
+        _prefix = ''
+    return _prefix
+
+
 def get_mod_manager():
     from app import app
     from app.module_mgt.manager import Manager
@@ -96,6 +109,11 @@ def get_app_root_tpl():
     return static_file_url(get_current_theme(), "layout.html").strip("/")
 
 
+def get_portal_locale():
+    _lang_code = 'ru'
+    return _lang_code
+
+
 def get_max_filesize_upload():
     """
     Функция возвращает  максимальный размер файла в
@@ -111,7 +129,7 @@ def get_allowed_file_exts():
     :return: ('jpg', 'jpeg', 'xml', 'png', 'gif', 'docx', 'doc', 'pdf', 'ttl', 'xls', 'xlsx')
     """
     app_config = get_app_config()
-    return ('jpg', 'jpeg', 'xml', 'png', 'gif', 'docx', 'doc', 'pdf', 'ttl', 'xls', 'xlsx')
+    return ('jpg', 'jpeg', 'xml', 'png', 'gif', 'docx', 'doc', 'pdf', 'ttl', 'xls', 'xlsx', 'xlsm')
 
 
 def get_app_root_dir():
@@ -181,7 +199,8 @@ def get_save_meta_path(mod_name, _create=False):
     import os.path
     _meta_pth = os.path.join(get_app_cfg_path(), mod_name)
     if _create and not os.path.exists(_meta_pth):
-        os.mkdir(_meta_pth)
+        try: os.mkdir(_meta_pth)
+        except: pass
     return _meta_pth
 
 
@@ -238,7 +257,7 @@ def tsc_query(_q, _params = {}):
 
     :param _q: <module>.<file>.<template>
     :param _params: dict - {VARNAME : VALUE}
-    :return: list or string or Graph
+    :return: list or string or rdflib.Graph
     '''
     import re
     from app.query_mgt.query import Query
@@ -374,6 +393,9 @@ def render_page(tmpl_name, **tmpl_vars):
     """
     from flask_themes2 import render_theme_template, get_theme
     tmpl_name = correct_template_path(tmpl_name)
+    _url_prefix = get_app_url_prefix()
+    tmpl_vars['_APP_URL_PREFIX_'] = _url_prefix
+    tmpl_vars['site_home_link'] = _url_prefix.rstrip('/') + '/' if _url_prefix else '/'
     return render_theme_template(get_theme(get_current_theme()), tmpl_name, **tmpl_vars)
 
 
@@ -435,7 +457,4 @@ def get_event_manager():
     """
     from app.utilites.event_manager import EventManager
     return EventManager()
-
-
-
 

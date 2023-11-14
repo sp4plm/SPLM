@@ -21,4 +21,11 @@
   <http://purl.org/dc/elements/1.1/type> <http://purl.org/dc/dcmitype/Software> ;
   <http://purl.org/dc/elements/1.1/format> "text/html, application"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://splm.portal.web/osplm#versionInfo> "$Id: 0.0.1 1 2022-05-27 14:23:00Z $"^^<http://www.w3.org/2001/XMLSchema#string> ;
-  <http://splm.portal.web/osplm#type> "service"^^<http://www.w3.org/2001/XMLSchema#string> .
+  <http://splm.portal.web/osplm#type> "service"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#hasWebPrefix> "/printer"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#httpEnabled> xsd:true .
+
+osplm:printer osplm:hasURL data:url_printer_1.
+data:url_printer_1 osplm:value "/printer/manage"^^<http://www.w3.org/2001/XMLSchema#string> .
+data:url_printer_1 rdfs:label "Настройка печати отчетов в PDF"^^<http://www.w3.org/2001/XMLSchema#string> .
+data:url_printer_1 osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> .

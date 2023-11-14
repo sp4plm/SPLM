@@ -5,6 +5,7 @@
 
 from flask import Blueprint, request, flash, g, session, redirect, url_for, current_app
 from flask_login import current_user, login_user, logout_user
+# werkzeug.urls.url_parse' is deprecated and will be removed in Werkzeug 3.0. Use 'urllib.parse.urlsplit' instead
 from werkzeug.urls import url_parse
 
 from app import db
@@ -43,12 +44,19 @@ def login():
 
     _p_navi = PortalNavigation()
     _start_url = _p_navi.get_portal_index_url()
+    _app_web_root = app_api.get_app_url_prefix()
+    if _app_web_root and not _start_url.startswith(_app_web_root.rstrip('/')):
+        _start_url = _app_web_root.rstrip('/') + '/' + _start_url.lstrip('/')
 
     if current_user.is_authenticated:
         # правильную страницу надо определять в настройках
         # redirect to defautl page from settings
         return redirect(_start_url)
+    else:
+        print(mod.name + '.views.login->current_user is not authenticated:', current_user)
+
     form = LoginForm()
+
     if form.validate_on_submit():
         # try to log in by local admin
         is_local_admin = False
@@ -63,6 +71,7 @@ def login():
             if not _portal_configurator.check_inst_marker():
                 flash('Неверное имя пользователя или пароль')
                 return redirect(url_for('portal.login'))
+            print(mod.name + '.views.login -> Simple user try accept!')
             user = User.query.filter_by(login=form.username.data).first()
             portal_cfg = AdminUtils.get_portal_config()
             # если авторизовываемся во внешнем сервисе, то:
@@ -106,8 +115,23 @@ def login():
                     # перезапрашиваем данные пользователя
                     secret = auth_user[spec_key]
                     user = User.query.filter_by(login=form.username.data).first()
+                    # теперь надо проверить пароли
+                    # если пароли не совпадают, но внешняя система авторизовала пользователя
+                    # значит пароль был изменен во внешней среде и нам следует обновить пароль
+                    if not user.check_password(secret):
+                        pass
+                        # print(mod.name + '.views.login -> Valid user change secret in external system!')
+                        try:
+                            user.set_password(secret)
+                            db.session.commit()
+                        except Exception as ex:
+                            _msg = 'Exception on -> try update user secret ()' + str(ex)
+                            print(mod.name + '.views.login -> ' + _msg)
                 else:
+                    print(mod.name + '.views.login -> No valid user for external system')
                     user = None
+            else:
+                print(mod.name + '.views.login -> Use local authentification!')
         # print(mod.name + '.views.login->catched user:', user)
         if user is None or not user.check_password(secret):
                 flash('Неверное имя пользователя или пароль')
@@ -131,6 +155,8 @@ def login():
         if is_local_admin:
             next_page = url_for('admin_mgt.index')
         return redirect(next_page)
+    else:
+        print(mod.name + '.views.login -> Can not validate login form!')
     tmpl_vars['form'] = form
     _tpl_name = os.path.join(AdminConf.MOD_NAME, 'login.html')
     return app_api.render_page(_tpl_name, **tmpl_vars)
@@ -149,6 +175,9 @@ def logout():
     try:
         _p_navi = PortalNavigation()
         _url = _p_navi.get_portal_index_url()
+        _app_web_root = app_api.get_app_url_prefix()
+        if _app_web_root and not _url.startswith(_app_web_root.rstrip('/')):
+            _url = _app_web_root.rstrip('/') + '/' + _url.lstrip('/')
     except Exception as ex:
         print(AdminConf.MOD_NAME + '.views.logout.Exception: ' + str(ex))
         _url = '/'
@@ -172,6 +201,12 @@ def welcome():
     except:
         pass
     tmpl_vars['welcome_text'] = 'Еще чуть-чуть и портал откроет свои двери для посетителей. :)'
+
+    _base_url = mod.url_prefix
+    _app_url_prefix = app_api.get_app_url_prefix()
+    if _app_url_prefix and not _base_url.startswith(_app_url_prefix):
+        _base_url = _app_url_prefix.rstrip('/') + '/' + _base_url.lstrip('/')
+    tmpl_vars['base_url'] = _base_url
     _tpl_name = os.path.join(AdminConf.MOD_NAME, 'portal', 'welcome.html')
     return app_api.render_page(_tpl_name, **tmpl_vars)
 

@@ -232,5 +232,6 @@ class PortalModeUtil():
         _pth = os.path.dirname(self._class_file)
         _pth = os.path.join(_pth, 'data')
         if not os.path.exists(_pth):
-            os.mkdir(_pth)
+            try: os.mkdir(_pth)
+            except: pass
         return _pth

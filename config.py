@@ -40,6 +40,8 @@ RECAPTCHA_PUBLIC_KEY = '6LeYIbsSAAAAACRPIllxA7wvXjIE411PfdB2gt2J'
 RECAPTCHA_PRIVATE_KEY = '6LeYIbsSAAAAAJezaIq3Ft_hSTo0YtyeFG-JgRtu'
 RECAPTCHA_OPTIONS = {'theme': 'white'}
 
+APP_URL_PREFIX = '/'  # префикс для URL при использовании при одном домене
+
 CONFIGURATOR_WAY='admin_mgt.portal_installer'
 CONFIGURATOR_MARK_NAME = os.path.join(APP_CONFIG_PATH, 'splm_installation')
 

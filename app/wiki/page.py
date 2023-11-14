@@ -11,7 +11,8 @@ MODULE_FOLDER = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
 # создаем папку в app/data
 data_folder = os.path.join(app.config['APP_DATA_PATH'], MODULE_FOLDER)
 if not os.path.exists(data_folder):
-    os.mkdir(data_folder)
+    try: os.mkdir(data_folder)
+    except: pass
 
 # создаем файл pages.json
 WIKI_JSON = os.path.join(data_folder, "pages.json")

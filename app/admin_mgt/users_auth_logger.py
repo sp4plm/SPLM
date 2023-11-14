@@ -226,7 +226,8 @@ class UsersAuthLogger:
         :rtype str:
         """
         if not os.path.exists(self._logs_dir):
-            os.mkdir(self._logs_dir)
+            try: os.mkdir(self._logs_dir)
+            except: pass
         return self._logs_dir
 
     def _get_file_name(self):

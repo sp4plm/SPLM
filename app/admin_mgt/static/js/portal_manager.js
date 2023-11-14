@@ -351,7 +351,14 @@ Page = function(parent){
 Desktop.EvMan = new window._custEvents(); // наш менеджер событий
 // когда весь ДОМ якобы загрузился начинаем работу
 $(function(){
-    var lng,metaName = 'content-language';
+    var lng, _url_pref, metaName = 'content-language';
+    _url_pref = ''; // TODO: как заполнять переменную из шаблона, либо переписать административный интерфейс!
+    if($('#app-base-pref').length>0){
+        _url_pref = $('#app-base-pref').val();
+        if('/' == _url_pref[_url_pref.length -1]) {
+            _url_pref = _url_pref.substring(0, _url_pref.length -1);
+        }
+    }
     $('head').find('meta').each(function(){
         if(!$(this).attr('http-equiv')){ return true; }
         if($(this).attr('http-equiv').toLowerCase()===metaName){
@@ -359,7 +366,7 @@ $(function(){
             return false;
         }
     });
-    $.post('/portal/management/interfaceData/?lng='+lng,null,function(answ){
+    $.post(_url_pref + '/portal/management/interfaceData/?lng='+lng,null,function(answ){
         if(typeof void null!==typeof answ && null!==answ){
             var r = 0;
             Desktop.app = appAdmin({'langData':answ.Pages});

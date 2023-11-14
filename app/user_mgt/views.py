@@ -43,9 +43,15 @@ def roles_page():
 
     # uq = Role.query
     # print(uq)
+    _base_url = mod.url_prefix.rstrip('/') + '/roles'
+    _app_url_prefix = app_api.get_app_url_prefix()
+    if _app_url_prefix and not _base_url.startswith(_app_url_prefix):
+        _base_url = _app_url_prefix.rstrip('/') + '/' + _base_url.lstrip('/')
+
     _tpl_name = os.path.join(_tpl_pref, "manage_roles.html")
     return app_api.render_page(_tpl_name, title=u"Список ролей пользователя",
-                           page_title=u'Список ролей пользователя')
+                           page_title=u'Список ролей пользователя',
+                        base_url=_base_url)
 
 
 @mod.route('/manage', methods=['GET'])
@@ -56,9 +62,14 @@ def users_page():
 
     # uq = User.query
     # print(uq)
+    _base_url = mod.url_prefix
+    _app_url_prefix = app_api.get_app_url_prefix()
+    if _app_url_prefix and not _base_url.startswith(_app_url_prefix):
+        _base_url = _app_url_prefix.rstrip('/') + '/' + _base_url.lstrip('/')
     _tpl_name = os.path.join(_tpl_pref, "manage_users.html")
     return app_api.render_page(_tpl_name, title=u"Список пользователей",
-                           page_title=u'Список пользователей')
+                           page_title=u'Список пользователей',
+                        base_url=_base_url)
 
 
 @mod.route('/profile', methods=['GET'])
@@ -130,6 +141,11 @@ def home():
     _tpl_vars['has_debug_role'] = use_debug_role
     _tpl_vars['can_change_secret'] = _can_change_secret
     _tpl_vars['debug_mode'] = use_debug_mode
+    _base_url = mod.url_prefix
+    _app_url_prefix = app_api.get_app_url_prefix()
+    if _app_url_prefix and not _base_url.startswith(_app_url_prefix):
+        _base_url = _app_url_prefix.rstrip('/') + '/' + _base_url.lstrip('/')
+    _tpl_vars['base_url'] = _base_url
 
     return app_api.render_page(_tpl_name, **_tpl_vars)
 
@@ -654,7 +670,8 @@ def __export_users_list():
         export_files_dir = os.path.join(_root, 'FilesExport')
     # export_files_dir = os.path.join(app_api.get_app_root_dir(), relative_public, 'FilesExport')
     if not os.path.exists(export_files_dir):
-        os.mkdir(export_files_dir)
+        try: os.mkdir(export_files_dir)
+        except: pass
     file_name = 'users-export-'+_mod_utis.get_now().strftime("%Y%m%d_%H-%M-%S")+'.xml'
     file_path = os.path.join(export_files_dir, file_name)
     errorMsg = 'Не удалось скачать список пользователей!'

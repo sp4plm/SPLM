@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
-
+from .mod_env import ModEnv
 from .table_report import TableReport
+from .table_report2 import TableReport2
+from .report import Report
 
 """
 
@@ -55,55 +57,178 @@ class ModApi():
     _class_file = __file__
     _debug_name = 'PrinterModApi'
 
-    def table_report(self, _report_data):
-        _report = TableReport()
+    def __init__(self):
+        self._env = ModEnv()
+
+    def table_report_new(self, _report_data):
+        _report = TableReport2()
         arg = ''
-        if 'logo1' in _report_data:
-            arg = _report_data['logo1']
+        _k = 'logo1'
+        if _k in _report_data:
+            arg = _report_data[_k]
         _report.set_logo_1(arg)  # (os.path.join(_images, 'logo_rosatom.png'))
 
         arg = ''
-        if 'logo2' in _report_data:
-            arg = _report_data['logo2']
+        _k = 'logo2'
+        if _k in _report_data:
+            arg = _report_data[_k]
         _report.set_logo_2(arg)  # (os.path.join(_images, 'proryv-logo.png'))
 
         arg = ''
-        if 'name' in _report_data:
-            arg = _report_data['name']
+        _k = 'name'
+        if _k in _report_data:
+            arg = _report_data[_k]
         _report.set_title(arg)
 
         arg = ''
-        if 'project' in _report_data:
-            arg = _report_data['project']
+        _k = 'project'
+        if _k in _report_data:
+            arg = _report_data[_k]
         _report.set_project_name(arg)  # ('Прорыв')
 
         arg = ''
-        if 'watermark' in _report_data:
-            arg = _report_data['watermark']
-        _report.set_watermark(_report_data['watermark'])  # (watermark['water_view'])
+        _k = 'watermark'
+        if _k in _report_data:
+            arg = _report_data[_k]
+        _report.set_watermark(arg)  # (watermark['water_view'])
 
         arg = '80%'
-        if 'width' in _report_data:
-            arg = _report_data['width']
+        _k = 'width'
+        if _k in _report_data:
+            arg = _report_data[_k]
         arg = '90%'
         _report.set_table_width(arg)  # ('80%')
 
         arg = []
-        if 'numbers' in _report_data:
-            arg = _report_data['numbers']
+        _k = 'numbers'
+        if _k in _report_data:
+            arg = _report_data[_k]
         _report.set_sign_data(arg)
-
         arg = []
-        if 'report_data' in _report_data:
-            arg = _report_data['report_data']
+        _k = 'report_data'
+        if _k in _report_data:
+            arg = _report_data[_k]
         else:
-            if 'table' in _report_data:
-                arg = self._html_rows2report_data(_report_data['table'])
+            _k = 'table'
+            if _k in _report_data:
+                arg = self._html_rows2report_data(_report_data[_k])
                 # print(self._debug_name + '.table_report -> report_data(table) ', arg)
         _report.set_data(arg)
+
+        arg = (0, 0, 0)
+        arg = self._env.cfg.get('main.table_report.header_color')  # default settings in hex
+        _k = 'header_color'
+        if _k in _report_data:
+            arg = _report_data[_k]
+        if isinstance(arg, str) and arg.startswith('#'):
+            try:
+                arg = _report.hex2rgb(arg)
+            except:
+                pass
+        _report.set_header_color(arg)
+
+        arg = (255, 255, 255)  # (208, 240, 142)
+        arg = self._env.cfg.get('main.table_report.header_bgcolor')  # default settings in hex
+        _k = 'header_bgcolor'
+        if _k in _report_data:
+            arg = _report_data[_k]
+        if isinstance(arg, str) and arg.startswith('#'):
+            try:
+                arg = _report.hex2rgb(arg)
+            except:
+                pass
+        _report.set_header_bgcolor(arg)
+
+        arg = 0
+        arg = self._env.cfg.get('main.table_report.repeat_header')
+        _k = 'repeat_header'
+        if _k in _report_data:
+            arg = _report_data[_k]
+        if arg in ('0', 'off', 'Off', 'OFF'):
+            arg = False
+        if not isinstance(arg, bool):
+            arg = True if arg else False
+        _report.set_repeat_header(arg)
+
+        return _report
+
+    def table_report(self, _report_data):
+        if 2.6 < TableReport.lib_version:
+            # print('yesssss!')
+            pass
+            return self.table_report_new(_report_data)
+        _report = TableReport()
+        arg = ''
+        _k = 'logo1'
+        if _k in _report_data:
+            arg = _report_data[_k]
+        _report.set_logo_1(arg)  # (os.path.join(_images, 'logo_rosatom.png'))
+
+        arg = ''
+        _k = 'logo2'
+        if _k in _report_data:
+            arg = _report_data[_k]
+        _report.set_logo_2(arg)  # (os.path.join(_images, 'proryv-logo.png'))
+
+        arg = ''
+        _k = 'name'
+        if _k in _report_data:
+            arg = _report_data[_k]
+        _report.set_title(arg)
+
+        arg = ''
+        _k = 'project'
+        if _k in _report_data:
+            arg = _report_data[_k]
+        _report.set_project_name(arg)  # ('Прорыв')
+
+        arg = ''
+        _k = 'watermark'
+        if _k in _report_data:
+            arg = _report_data[_k]
+        _report.set_watermark(arg)  # (watermark['water_view'])
+
+        arg = '80%'
+        _k = 'width'
+        if _k in _report_data:
+            arg = _report_data[_k]
+        arg = '90%'
+        _report.set_table_width(arg)  # ('80%')
+
+        arg = []
+        _k = 'numbers'
+        if _k in _report_data:
+            arg = _report_data[_k]
+        _report.set_sign_data(arg)
+        arg = []
+        _k = 'report_data'
+        if _k in _report_data:
+            arg = _report_data[_k]
+        else:
+            _k = 'table'
+            if _k in _report_data:
+                arg = self._html_rows2report_data(_report_data[_k])
+                # print(self._debug_name + '.table_report -> report_data(table) ', arg)
+        _report.set_data(arg)
+
+        arg = (0, 0, 0)
+        _k = 'header_color'
+        if _k in _report_data:
+            arg = _report_data[_k]
+        _report.set_header_color(arg)
+
+        arg = (255, 255, 255)
+        _k = 'header_bgcolor'
+        if _k in _report_data:
+            arg = _report_data[_k]
+        _report.set_header_bgcolor(arg)
         # _report.set_html(_test_report['html'])
         # _report.print(_doc_pth)
 
+        return _report
+
+    def report(self):
+        _report = Report()
         return _report
 
     @staticmethod

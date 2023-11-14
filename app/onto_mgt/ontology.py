@@ -51,6 +51,9 @@ class Ontology():
         return _baseURI
 
 
+
+
+
     def getFileOntoByPrefix(self, prefix):
         """ Возвращает файл по префиксу : fullname """
         uri = ""
@@ -65,6 +68,7 @@ class Ontology():
                 return onto[0]
 
         return ""
+
 
 
     def getOntoPrefix(self, onto_file):
@@ -86,6 +90,8 @@ class Ontology():
         return ""
 
 
+
+
     def getPrefixes(self):
         """ Возвращает список префиксов всех онтологий [[prefix, baseUri], ...]"""
         self.ONTOS_PREFIXES = []
@@ -94,6 +100,7 @@ class Ontology():
             self.ONTOS_PREFIXES.append([self.getOntoPrefix(onto[0]), onto[1]])
 
         return self.ONTOS_PREFIXES
+
 
 
     def getAllPrefixes(self, onto = ""):
@@ -116,6 +123,7 @@ class Ontology():
                 prefixes = {**prefixes, **result}
 
         return prefixes
+
 
 
     def getClasses(self, onto):
@@ -168,6 +176,7 @@ class Ontology():
             parent = self.getClassName(parent_result[0]["parent"])
 
         return parent
+
 
 
     def getGraph(self, onto):

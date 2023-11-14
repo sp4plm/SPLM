@@ -9,7 +9,7 @@
 {% if is_default %}
 {% set readonly=" readonly" %}
 {% endif %}
-<input type="hidden" value="/portal/configurator" id="js-base-url" />
+<input type="hidden" value="{{ base_url|default('/portal/configurator') }}" id="js-base-url" />
 <span id="page-content-marker" style="display:none;"></span>
 <form name="ConfigEditorFrm" style="width:98%;height:auto;margin: 0px auto;" onsubmit="return false;" method="POST">
     <div class="config-info">

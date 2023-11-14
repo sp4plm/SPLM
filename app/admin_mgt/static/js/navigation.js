@@ -3,7 +3,10 @@ $(function(){
         _$lastOpenDlg = null;
 
     _$box = $('#page-content-marker').parent();
-    _base_url = _$box.find('#js-base-url').val();
+    _base_url = $('#app-base-pref').val();
+    if('/' == _base_url[_base_url.length -1]) {
+        _base_url = _base_url.substring(0, _base_url.length -1);
+    }
 
     function clickAddNaviLinks(){
         hideNaviBlocks();
@@ -135,7 +138,7 @@ $(function(){
     function clickSelectLink() {
         var url;
         // alert('Open link selector');
-        url = '/portal/management/navigation/item/links';
+        url = _base_url + '/portal/management/navigation/item/links';
         $.post(url, null, function(answ){
             var cnt, idx, rows;
             rows = [];
@@ -252,7 +255,7 @@ $(function(){
 
     function clickCloseLinkForm() {
         var url, blk_code;
-        url = '/portal/management/navigation';
+        url = _base_url + '/portal/management/navigation';
         blk_code = _$box.find('input[name="NaviCode"]').val();
         url += '/' + blk_code;
         window.location = url;
@@ -260,7 +263,7 @@ $(function(){
 
     function clickAddNewLink(){
         var url, blk_code, item_code;
-        url = '/portal/management/navigation';
+        url = _base_url + '/portal/management/navigation';
         item_code = 'new'
         blk_code = _$box.find('input[name="NaviCode"]').val();
         url += '/' + blk_code;
@@ -270,7 +273,7 @@ $(function(){
 
     function clickEditLink(linkData){
         var url, blk_code, item_code;
-        url = '/portal/management/navigation';
+        url = _base_url + '/portal/management/navigation';
         item_code = 'new'
         blk_code = _$box.find('input[name="NaviCode"]').val();
         url += '/' + blk_code;
@@ -297,7 +300,7 @@ $(function(){
         _data = {'item': '', 'block': ''};
         _data['item'] = linkData['code'];
         _data['block'] = _$box.find('input[name="NaviCode"]').val();
-        $.post('/portal/management/navigation/item/delete', _data, function(answ){
+        $.post(_base_url + '/portal/management/navigation/item/delete', _data, function(answ){
             if(answ){
                 if (typeof void null != typeof answ.state && answ.state == 200) {
                     if(typeof void null != typeof $tr) {
@@ -344,7 +347,7 @@ $(function(){
         _data['item'] = linkData['code'];
         _data['block'] = _$box.find('input[name="NaviCode"]').val();
         _data['dir'] = direct;
-        $.post('/portal/management/navigation/item/sort', _data, function(answ){
+        $.post(_base_url + '/portal/management/navigation/item/sort', _data, function(answ){
             if(answ){
                 if (typeof void null != typeof answ.state && answ.state == 200) {
                     if(typeof void null != typeof $tr) {
@@ -424,7 +427,7 @@ $(function(){
         var _data;
         _data = {'code': ''};
         _data['code'] = _naviBlock['code'];
-        $.post('/portal/management/navigation/block/delete', _data, function(answ){
+        $.post(_base_url + '/portal/management/navigation/block/delete', _data, function(answ){
             if(answ){
                 if (typeof void null != typeof answ.state && answ.state == 200) {
                     if(typeof void null != typeof $tr) {
@@ -443,7 +446,7 @@ $(function(){
 
     function clickEditNaviLinks(_naviBlock) {
         var url;
-        url = '/portal/management/navigation';
+        url = _base_url + '/portal/management/navigation';
         url += '/' + _naviBlock['code'];
         window.location = url;
     }

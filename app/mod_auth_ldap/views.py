@@ -28,7 +28,11 @@ def __servers_manage():
     _tpl_vars = {}
     _tpl_vars['page_title'] = 'Настройка серверов авторизации'
     _tpl_vars['page_side_title'] = ''
-    _tpl_vars['base_url'] = _web_prefix
+    _base_url = _web_prefix
+    _app_url_prefix = app_api.get_app_url_prefix()
+    if _app_url_prefix and not _base_url.startswith(_app_url_prefix):
+        _base_url = _app_url_prefix.rstrip('/') + '/' + _base_url.lstrip('/')
+    _tpl_vars['base_url'] = _base_url
     _tpl_vars['servers'] = []  # список имеющихся
 
     # надо смешать файлы находящиеся в модуле - неизмененные

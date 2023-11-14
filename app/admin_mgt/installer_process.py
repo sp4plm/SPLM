@@ -38,7 +38,8 @@ __2_log('Installer.start', True)
 
 # копируем файлы по умолчанию по указанному пути
 if not os.path.exists(_installer_target):
-    os.mkdir(_installer_target)
+    try: os.mkdir(_installer_target)
+    except: pass
 
 __2_log('Installer.add destination directory ' + _installer_target)
 

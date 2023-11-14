@@ -18,6 +18,9 @@ _auth_decorator = app_api.get_auth_decorator()
 @_auth_decorator
 def portal_root_view():
     _start_url = PortalNavi.get_start_url()
+    _app_web_root = app_api.get_app_url_prefix()
+    if _app_web_root and not _start_url.startswith(_app_web_root.rstrip('/')):
+        _start_url = _app_web_root.rstrip('/') + '/' + _start_url.lstrip('/')
     if '/' != _start_url:
         return redirect(_start_url)
     tmpl_vars = {}

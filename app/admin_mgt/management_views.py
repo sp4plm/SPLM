@@ -71,6 +71,11 @@ def admin_navigation():
     def_blocks = []
     def_blocks = (def_config.get('navi.Codes')).values()
     tmpl_vars['def_blocks'] = list(def_blocks)
+    _base_url = mod.url_prefix
+    _app_url_prefix = app_api.get_app_url_prefix()
+    if _app_url_prefix and not _base_url.startswith(_app_url_prefix):
+        _base_url = _app_url_prefix.rstrip('/') + '/' + _base_url.lstrip('/')
+    tmpl_vars['base_url'] = _base_url
     # требуется каждому блоку добавить путь - в дереве каких отношений участвует
     # есть ли у него родители
     _tpl_name = os.path.join(AdminConf.MOD_NAME, 'admin_navigation.html')
@@ -153,6 +158,11 @@ def edit_navigation(block, item):
     tmpl_vars['back_url'] = url_for(WEB_MOD_NAME + '.edit_navigation', block=block)
     tmpl_vars['curr_blk'] = curr_blk
     tmpl_vars['curr_point'] = {} if curr_point is None else curr_point
+    _base_url = mod.url_prefix
+    _app_url_prefix = app_api.get_app_url_prefix()
+    if _app_url_prefix and not _base_url.startswith(_app_url_prefix):
+        _base_url = _app_url_prefix.rstrip('/') + '/' + _base_url.lstrip('/')
+    tmpl_vars['base_url'] = _base_url
     tpl_name = os.path.join(AdminConf.MOD_NAME, tpl_name.lstrip(os.path.sep))
     return app_api.render_page(tpl_name, **tmpl_vars)
 
@@ -652,6 +662,12 @@ def section_view(code, sub_item):
                 tmpl_vars['navi'].append(tpl)
     if current_subitem is not None:
         tmpl_vars['page_title'] += ':' + current_subitem['label']
+
+    _base_url = mod.url_prefix
+    _app_url_prefix = app_api.get_app_url_prefix()
+    if _app_url_prefix and not _base_url.startswith(_app_url_prefix):
+        _base_url = _app_url_prefix.rstrip('/') + '/' + _base_url.lstrip('/')
+    tmpl_vars['base_url'] = _base_url
     return app_api.render_page(AdminConf.get_root_tpl(), **tmpl_vars)
 
 
@@ -808,7 +824,7 @@ def interface_data():
                 'name': 'Наименование',
                 'path': 'Путь',
                 'maxFileSizeLbl': 'Максимальный размер файла',
-                'maxFileSize': '20', # ini_get('upload_max_filesize'),
+                'maxFileSize': '50', # ini_get('upload_max_filesize'),
                 'maxFilesUploadLbl': 'Максимальное количество файлов',
                 'maxFilesUpload': '20' # get_cfg_var('max_file_uploads')
             },

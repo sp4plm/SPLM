@@ -6,7 +6,7 @@ from app.admin_mgt.admin_conf import AdminConf
 from app.admin_mgt.navigation_files import NavigationFiles
 from app.utilites.code_helper import CodeHelper
 from app.utilites.some_config import SomeConfig
-from app import mod_manager
+from app import mod_manager, app_api
 
 
 class AdminNavigation(NavigationFiles):
@@ -22,6 +22,7 @@ class AdminNavigation(NavigationFiles):
         self.current_section_navi = None
         self._map = []
         self._navi_struct = {}
+        self._url_prefix = app_api.get_app_url_prefix()
         self.gen_map()
         self._navi_struct = self._get_structure()
         # print(self._debug_name + '.__init__: map', self._map)
@@ -65,6 +66,7 @@ class AdminNavigation(NavigationFiles):
                 _a.append('srtid')  # если источник file то наверно специальная сортировка
             # сортировка по labels
             data = self._sort_items(_a)
+            data = self.__add_url_prefix(data)
         return data
 
     @staticmethod
@@ -165,9 +167,23 @@ class AdminNavigation(NavigationFiles):
 
     @staticmethod
     def _get_section_items_filename(code):
+        """
+        Метод возвращает реальный путь к файлу
+        :param str code: код секции навигации
+        :return: путь к файлу
+        :rtype str:
+        """
         file_name = code + '.json'
         file_path = os.path.join(AdminConf.get_mod_path('data'), AdminConf.NAVI_DIR_NAME, file_name)
         return file_path
+
+    def has_block_file(self, code):
+        _pth = self._get_section_items_filename(code)
+        return os.path.exists(_pth) and os.path.isfile(_pth)
+
+    def get_block_filepath(self, code):
+        _pth = self._get_section_items_filename(code)
+        return _pth
 
     def get_section_by_code(self, code):
         current = None
@@ -182,10 +198,14 @@ class AdminNavigation(NavigationFiles):
     def _tree_snail(self, code):
         roots = self.get_sections_navi(code)
         _t = []
+        _like_parent = False
         if roots:
             for root in roots:
                 key = root['code']
-                leafs = self._tree_snail(key)
+                _like_parent = (code == key)
+                #  предупреждаем зацикленность в одном блоке
+                if not _like_parent:
+                    leafs = self._tree_snail(key)
                 root['childs'] = leafs
                 _t.append(root)
         return _t
@@ -213,9 +233,13 @@ class AdminNavigation(NavigationFiles):
         def _snail(code):
             roots = self.get_sections_navi(code)
             if roots:
+                _like_parent = False
                 for root in roots:
+                    _is_indexed = False
                     key = root['code']
-                    if key not in _indexed:
+                    _like_parent = (code == key)
+                    _is_indexed = (key in _indexed)
+                    if not _is_indexed:
                         _indexed.append(key)
                     root['parid'] = _t[code]['id'] if code in _t else 0
                     _ind = _indexed.index(key)
@@ -223,7 +247,9 @@ class AdminNavigation(NavigationFiles):
                     root['parent'] = code
                     if key not in _t:
                         _t[key] = root
-                    _snail(key)
+                    #  предупреждаем зацикленность
+                    if not _is_indexed and not _like_parent:
+                        _snail(key)
 
         _snail(start)
         return _t
@@ -237,17 +263,22 @@ class AdminNavigation(NavigationFiles):
         #     self.gen_map()
         # if self._map:
         if self._navi_struct:
-            #print("flask_request.path", flask_request.path)
+            #print(self._debug_name + ".get_current_section->flask_request.path", flask_request.path)
             match = flask_request.path
             for key, ptn in self._navi_struct.items():
-                # print("ptn['href']", ptn['href'])
-                if '' != ptn['href'] and match.startswith(ptn['href']):
-                    # print("ptn", ptn)
+                # print(self._debug_name + ".get_current_section->ptn['href']", ptn['href'])
+                if '' == ptn['href']:
+                    continue
+                _test_href = ptn['href']
+                if self._url_prefix and not _test_href.startswith(self._url_prefix):
+                    _test_href = self._url_prefix.rstrip('/') + '/' + _test_href.lstrip('/')
+                if match.startswith(_test_href):
+                    # print(self._debug_name + ".get_current_section->ptn", ptn)
                     if 0 == ptn['parid']:
                         current = ptn
                     else:
                         current = self._navi_struct[ptn['parent']]
-                    #print("current", current)
+                    #print(self._debug_name + ".get_current_section->current", current)
                     break
         return current
 
@@ -260,13 +291,19 @@ class AdminNavigation(NavigationFiles):
         #     self.gen_map()
         # if self._map:
         if self._navi_struct:
-            # print("flask_request.path", flask_request.path)
+            # print(self._debug_name + ".get_current_subitem->flask_request.path", flask_request.path)
             match = flask_request.path
             for key, ptn in self._navi_struct.items():
-                # print("ptn", ptn)
-                # print("ptn['href']", ptn['href'])
-                if '' != ptn['href'] and match.startswith(ptn['href']) and 0 < ptn['id']:
-                    # print("ptn", ptn)
+                # print(self._debug_name + ".get_current_subitem->ptn", ptn)
+                # print(self._debug_name + ".get_current_subitem->ptn['href']", ptn['href'])
+                if '' == ptn['href']:
+                    continue
+                _test_href = ptn['href']
+                if self._url_prefix and not _test_href.startswith(self._url_prefix):
+                    _test_href = self._url_prefix.rstrip('/') + '/' + _test_href.lstrip('/')
+                # print(self._debug_name + ".get_current_subitem->_test_href", _test_href)
+                if match.startswith(_test_href) and 0 < ptn['id']:
+                    # print(self._debug_name + ".get_current_subitem->ptn", ptn)
                     current = ptn
                     break
         return current
@@ -296,7 +333,27 @@ class AdminNavigation(NavigationFiles):
                 _a.append('srtid') # если источник file то наверно специальная сортировка
             # print(self._debug_name + '.get_sections_navi._a', _a)
             lst = self._sort_items(*_a)
+            lst = self.__add_url_prefix(lst)
         return lst
+
+    def __add_url_prefix(self, _lst):
+        """
+        Метод добавляет к ссылкам url префикс для приложения
+        :param list _lst: список элементов навигации
+        :return: список элементов навигации
+        :rtype list:
+        """
+        if self._url_prefix:
+            def _up_d(x):
+                if not x['href']:
+                    return x
+                if not x['href'].startswith(self._url_prefix):
+                    x['href'] = self._url_prefix.rstrip('/') + '/' + x['href'].lstrip('/')
+                return x
+
+            _lst = map(_up_d, _lst)
+            _lst = list(_lst)
+        return _lst
 
     def get_default_blocks(self):
         """
@@ -337,9 +394,12 @@ class AdminNavigation(NavigationFiles):
                 lst += _lst
         if lst:
             # print('search_path', search_path)
+            _url_prefix = self._url_prefix.rstrip('/')
             for io in lst:
                 # print("io['href']", io['href'])
                 _to_test = io['href'].rstrip('/') + '/' # добавим slash для правильной части пути
+                if _url_prefix and not _to_test.startswith(_url_prefix):
+                    _to_test = _url_prefix.rstrip('/') + '/' + _to_test.lstrip('/')
                 if search_path.startswith(_to_test):
                     flg = True
                     break

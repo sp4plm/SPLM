@@ -19,11 +19,13 @@ MODULE_FOLDER = os.path.basename(os.path.dirname(os.path.abspath(__file__)))
 # app/data/onto_mgt
 MODULE_FOLDER = os.path.join(app.config['APP_DATA_PATH'], MODULE_FOLDER)
 if not os.path.exists(MODULE_FOLDER):
-    os.mkdir(MODULE_FOLDER)
+    try: os.mkdir(MODULE_FOLDER)
+    except: pass
 
 NAVIGATION_GRAPH_PATH = os.path.join(MODULE_FOLDER, "navigation_graphs")
 if not os.path.exists(NAVIGATION_GRAPH_PATH):
-	os.mkdir(NAVIGATION_GRAPH_PATH)
+	try: os.mkdir(NAVIGATION_GRAPH_PATH)
+	except: pass
 
 from app.admin_mgt.mod_api import ModApi
 
@@ -212,11 +214,51 @@ def Defrag(URL):
     else:
         return ""
 
+def get_onto_data(prefix):
+    """"""
+    G = Ontology().getGraph(prefix)
+
+    query_cls_string = """select ?term ?term_lbl ?term_cls ?term_comm ?term_dfnt {
+                                    ?term rdfs:subClassOf* owl:Thing .
+                                    ?term a ?term_cls .
+                                    Optional {?term rdfs:label ?term_lbl . }
+                                    Optional { ?term rdfs:comment ?term_comm . }
+                                    }
+                               """
+
+    data_cls = {}
+    for row in G.query(query_cls_string):
+        data_cls[str(row[0]).split("#")[1]] = [["URI", str(row[0])], ["Наименование", str(row[1])],
+                                               ["Класс", str(row[2])], ["Комментарий", str(row[3])]]
+
+    query_prd_string = """select ?term ?term_lbl ?term_cls ?term_dom ?term_rng ?term_comm
+                                    {?term a owl:ObjectProperty .
+                                    ?term a ?term_cls .
+                                    Optional { ?term rdfs:label ?term_lbl . }
+                                    Optional { ?term rdfs:domain ?term_dom . } 
+                                    Optional { ?term rdfs:range ?term_rng . } 
+                                    Optional { ?term rdfs:comment ?term_comm . }
+                                    }
+                               """
+    data_prd = {}
+    for row in G.query(query_prd_string):
+        data_prd[str(row[0]).split("#")[1]] = [["URI", str(row[0])], ["Наименование", str(row[1])],
+                                               ["Класс", str(row[2])], ["Domain", str(row[3])], ["Range", str(row[4])],
+                                               ["Комментарий", str(row[5])]]
+
+    data = {}
+    data['Классы онтологии'] = data_cls
+    data['Предикаты онтологии'] = data_prd
+
+    return data
+
 
 @mod.route('/nav_ontology')
 @_auth_decorator
 def nav_ontology():
-    """ Метод отвечает за навигацию по файлу онтологии и возвращает информацию об отношениях, аксиомах и экземплярах класса """
+    """
+    Метод отвечает за навигацию по файлу онтологии и возвращает информацию об отношениях, аксиомах и экземплярах класса
+    """
     owl_Thing = "http://www.w3.org/2002/07/owl#Thing"
 
     _onto = unquote(request.args.get('onto') if request.args.get('onto') else "")
@@ -405,10 +447,62 @@ def print_onto():
     return app_api.render_page('/onto_mgt/print_onto.html', data=data )
 
 
+@mod.route('/ontologies/print_onto/result', methods=["GET"])
+@_auth_decorator
+def print():
+    """ Печать классов онтологии """
+    _printer = app_api.get_mod_api('printer')
+    _pdf_tool = _printer.report()
+
+    data = {}
+    argms = request.args.to_dict()
+    if 'prefix' in argms:
+        data = get_onto_data(argms['prefix'])
+
+    html = ""
+    for type_key, type_val in data.items():
+        for key, val in type_val.items():
+            html += '<table width="100%" border="0" style="border-collapse:collapse;">'
+            html += """
+                <thead>
+                <tr>
+                    <th bgcolor="#efefef">Элемент: {key}</th>
+                </tr>
+                </thead>""".format(key=key)
+
+            html += "<tbody>"
+            for row in val:
+                html += """
+                    <tr>
+                        <td>{k}</td>
+                        <td>{v}</td>
+                    </tr>
+                """.format(k=row[0], v=row[1])
+            html += "</tbody>"
+            html += "</table>"
+
+    _pdf_tool.set_html(html)
+
+    _pdf_dir = os.path.join(MODULE_FOLDER, "pdf", "")
+    if not os.path.exists(_pdf_dir):
+        try: os.mkdir(_pdf_dir)
+        except: pass
+
+    _pdf_file = "pdf_" + datetime.now().strftime("%d-%m-%Y_%H-%M-%S") + ".pdf"
+    _pdf = os.path.join(_pdf_dir, _pdf_file)
+
+    _pdf_tool.print(_pdf)
+
+    _file = send_file(_pdf, download_name=_pdf_file, as_attachment=False)
+    # удаляем файл из памяти
+    os.remove(_pdf)
+    return _file
+
+
 @mod.route('/getFiles/ontos', methods=['GET', 'POST'])
 @_auth_decorator
 def get_files():
-    """ Метод получает информацию о загруженных онтологиях"""
+    """ Метод получает информацию о загруженных онтология """
     dir_name = "ontos"
 
     answer = {'rows': [], 'page': 1, 'records': 20, 'total': 1}
@@ -519,7 +613,8 @@ def upload_files():
                             if os.path.exists(file_name):
                                 # появился дубликат - создаем директорию загрузки если ее нет
                                 if not os.path.exists(_tmp_path):
-                                    os.mkdir(_tmp_path)
+                                    try: os.mkdir(_tmp_path)
+                                    except: pass
                                 file_existed = []
                                 file_existed.append(secure_name) # имя файла дубликата
                                 file_existed.append(file_name) # полное имя файла под замену
@@ -743,7 +838,7 @@ def download_file():
 @mod.route('/accept_newfile/ontos', methods=['POST'])
 @_auth_decorator
 def accept_new_file():
-    """ Метод принимает новый файл в случае совпадения имен"""
+    """ Метод принимает новый файл в случае совпадения имен """
     dir_name = "ontos"
 
     answer = {'Msg': '', 'Data': None, 'State': 404}

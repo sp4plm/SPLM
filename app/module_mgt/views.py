@@ -52,6 +52,7 @@ def __view_module_info(name):
     _tpl_vars['page_side_title'] = 'Список модулей'
     _tpl_vars['module'] = None
     _tpl_vars['_admin_links'] = []
+    _app_url_prefix = app_api.get_app_url_prefix()
     # если информация пришла, то подготавливаем вывод
     if _mod_inf is not None:
         _dc = {}
@@ -70,11 +71,23 @@ def __view_module_info(name):
         _tpl_vars['module'] = _dc
         _urls = _mod_man.get_mod_admin_urls(name)
         # print('_urls', _urls)
+        if _urls and _app_url_prefix:
+            _kcnt = len(_urls)
+            for _kx in range(0, _kcnt):
+                if _urls[_kx]:
+                    if not _urls[_kx]['href'].startswith(_app_url_prefix):
+                        _urls[_kx]['href'] = _app_url_prefix.rstrip('/') + '/' + _urls[_kx]['href'].lstrip('/')
+
         _tpl_vars['_admin_links'] = _urls
         _tpl_vars['page_title'] = _dc['dc:title']
         pass
     else:
         pass
+
+    _base_url = mod.url_prefix
+    if _app_url_prefix and not _base_url.startswith(_app_url_prefix):
+        _base_url = _app_url_prefix.rstrip('/') + '/' + _base_url.lstrip('/')
+    _tpl_vars['base_url'] = _base_url
     # иначе выводим сообщение что модуля не существует
     return app_api.render_page(_tpl_name, **_tpl_vars)
 

@@ -42,6 +42,7 @@
     {%- endblock page_scripts %}
     {%- endblock scripts %}
     {%- endblock body %}
+    <input type="hidden" value="{{ _APP_URL_PREFIX_|default('') }}" id="app-base-pref" />
   </body>
 {%- endblock html %}
 </html>
