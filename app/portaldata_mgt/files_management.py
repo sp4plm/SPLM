@@ -34,7 +34,8 @@ class FilesManagement(object):
         if not self._work_path.rstrip(os.path.sep).endswith(_root_name):
             self._work_path = os.path.join(self._work_path.rstrip(os.path.sep), _root_name)
             if not os.path.exists(self._work_path):
-                os.mkdir(self._work_path)
+                try: os.mkdir(self._work_path)
+                except: pass
         _sections_lst = self._mod_conf['Main']['work_sections'].split(',')
 
         if _sections_lst:
@@ -44,7 +45,8 @@ class FilesManagement(object):
                     continue
                 _t = os.path.join(self._work_path, _sec)
                 if not os.path.exists(_t):
-                    os.mkdir(_t)
+                    try: os.mkdir(_t)
+                    except: pass
                 if 'use_register' in self._mod_conf[_sec] and 1 == self._mod_conf[_sec]['use_register']:
                     pass
 

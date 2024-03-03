@@ -2,9 +2,7 @@
 """
 Модуль предназначен для административного интерфейса портала по URL - /portal
 """
-import string
 import json
-import random
 
 from crontab import CronSlices, CronTab
 
@@ -24,10 +22,6 @@ from app import app
 from .jobs import Jobs
 
 from ..utilites.extend_processes import ExtendProcesses
-from datetime import datetime
-
-
-
 
 WEB_MOD_NAME = 'portal_management'
 mod = Blueprint(WEB_MOD_NAME, __name__, url_prefix=AdminConf.MOD_WEB_ROOT+'/management',
@@ -898,62 +892,60 @@ def interface_data():
     return json.dumps(interface)
 
 
-
-
-def get_executable_files():
-    query = """SELECT ?cron_lbl ?cron_file WHERE {
-        ?mod osplm:hasPathToCronExecutableFile ?mod_uri .
-        ?mod_uri rdfs:label ?cron_lbl .
-        ?mod_uri osplm:value ?cron_file .
-        }"""
-
-    executable_files = app_api.get_mod_manager().query(query)
-    # {"text" : <label>, "value" : <file>}
-    executable_files = [{"text" : str(item['cron_lbl']) + " - " + str(item['cron_file']), "value" : str(item['cron_file'])} for item in executable_files]
-
-    return executable_files
-
+############
+### CRON ###
+############
 
 @mod.route('/cron')
 @requires_auth
 def cron():
     """ Отображает список заданий для крона """
-    return app_api.render_page('admin_mgt/cron.html', crons = Jobs("cron").get_job_data())
+    return app_api.render_page('admin_mgt/cron.html', crons=Jobs("cron").get_job_data())
 
 
 @mod.route('/cron_item/<cron_item>', methods=["GET", "POST"])
 @mod.route('/cron_item/', methods=["GET", "POST"])
 @requires_auth
-def cron_item(cron_item = ''):
+def cron_item(cron_item=''):
     """ Редактор заданий для крона """
     template = 'admin_mgt/cron_item.html'
 
     job = Jobs("cron")
     if not cron_item:
-        cron_item = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
+        cron_item = Jobs.create_job_id()
 
     if request.method == 'GET':
-        return app_api.render_page(template, cron_item = cron_item, values = job.get_job_object(cron_item), executable_files = get_executable_files(), alert_message = "")
+        return app_api.render_page(template, cron_item=cron_item, values=job.get_job_object(cron_item),
+                                   executable_files=Jobs.get_executable_files(), alert_message="")
 
     elif request.method == 'POST':
         if 'save' in request.form:
             try:
                 if request.form['cron_item']:
-                        active = request.form['active'] if 'active' in request.form and request.form['active'] else '0'
-                        values = {"name" : request.form['name'], "period" : request.form['period'], "action" : request.form['action'], "active" : active}
+                    values = {
+                        "name": request.form['name'],
+                        "period": request.form['period'],
+                        "action": request.form['action'],
+                        "active": request.form['active'] if 'active' in request.form and request.form['active'] else '0'
+                    }
 
-                        # невалидный период
-                        if not CronSlices.is_valid(values['period']):
-                            return app_api.render_page(template, cron_item = request.form['cron_item'], values = job.get_job_object(request.form['cron_item']), executable_files = get_executable_files(), alert_message = "Период невалидный!")
+                    # невалидный период
+                    if not CronSlices.is_valid(values['period']):
+                        return app_api.render_page(template, cron_item=request.form['cron_item'],
+                                                   values=job.get_job_object(request.form['cron_item']),
+                                                   executable_files=Jobs.get_executable_files(),
+                                                   alert_message="Период невалидный!")
 
-                        # файл не существует
-                        if not os.path.exists(os.path.join(app.config['APP_ROOT'], "app", values['action'])) or not os.path.isfile(os.path.join(app.config['APP_ROOT'], "app", values['action'])):
-                            return app_api.render_page(template, cron_item = request.form['cron_item'], values = job.get_job_object(request.form['cron_item']), executable_files = get_executable_files(), alert_message = "Файл не существует!")
+                    # файл не существует
+                    if not os.path.exists(os.path.join(app.config['APP_ROOT'], "app", values['action'])) or not os.path.isfile(os.path.join(app.config['APP_ROOT'], "app", values['action'])):
+                        return app_api.render_page(template, cron_item=request.form['cron_item'],
+                                                   values=job.get_job_object(request.form['cron_item']),
+                                                   executable_files=Jobs.get_executable_files(),
+                                                   alert_message="Файл не существует!")
 
-
-                        job.edit_job_object(request.form['cron_item'], values)
-                        cron_reload(job)
-            except:
+                    job.edit_job_object(request.form['cron_item'], values)
+                    cron_reload(job)
+            finally:
                 print("При изменении возникла ошибка!")
 
         if 'delete' in request.form:
@@ -963,15 +955,19 @@ def cron_item(cron_item = ''):
                 cron.write()
 
                 job.delete_job_object(request.form['cron_item'])
-            except:
+            finally:
                 print("При изменении возникла ошибка!")
-
 
         return redirect(url_for('portal_management.cron'))
 
 
 def cron_reload(job):
-    """ Метод перезагружает крон. Происходит активация/деактивация заданий для крона в соответствии с файлом cron.json """
+    """
+    Метод перезагружает крон.
+    Происходит активация/деактивация заданий для крона в соответствии с файлом cron.json
+
+    :param job: job
+    """
     # Это настройка пути до python для сервера
     python_path = app.venv_exec if hasattr(app, 'venv_exec') else sys.executable
 
@@ -981,93 +977,90 @@ def cron_reload(job):
     for item in cron_data:
         cron.remove_all(comment=item)
         if cron_data[item]['active'] == '1':
-            PERIOD = cron_data[item]['period']
-            if CronSlices.is_valid(PERIOD):
+            _period = cron_data[item]['period']
+            if CronSlices.is_valid(_period):
                 action = cron_data[item]['action'].strip()
                 if action.startswith("/") or action.startswith("\\"):
                     action = action[1:]
-                COMMAND = python_path + " " + os.path.join(app.config['APP_ROOT'], "app", action)
-                cron_job = cron.new(command = COMMAND, comment = item)
-                cron_job.setall(PERIOD)
+                _command = python_path + " " + os.path.join(app.config['APP_ROOT'], "app", action)
+                cron_job = cron.new(command=_command, comment=item)
+                cron_job.setall(_period)
             else:
                 print("NOT VALID PERIOD!!!")
 
     cron.write()
 
 
-
-
-
-
-def job_by_script(action):
-    """ Метод запускает питоновский скрипт отдельным процессом """
-    log = os.path.join(app.config['APP_DATA_PATH'], "logs", "job_by_script.log")
-    with open(log, "w", encoding="utf-8") as f:
-        f.write("")
-
-    script = os.path.join(app.config['APP_ROOT'], "app", action)
-    data = ExtendProcesses.run(script, [], errors = log)
-
-
+################
+### SCHEDULE ###
+################
 
 @mod.route('/schedule')
 @requires_auth
-def schedule_main():
+def schedule():
     """ Отображает список периодических заданий """
-    return app_api.render_page('admin_mgt/schedule.html', schedules = Jobs("schedule").get_job_data())
-
+    return app_api.render_page('admin_mgt/schedule.html', schedules=Jobs("schedule").get_job_data())
 
 
 @mod.route('/schedule_item/<schedule_item>', methods=["GET", "POST"])
 @mod.route('/schedule_item/', methods=["GET", "POST"])
 @requires_auth
-def schedule_item(schedule_item = ''):
-    """ Редактор периодических заданий """
+def schedule_item(schedule_item=''):
+    """
+    Редактор периодических заданий
+
+    :param str schedule_item:
+    """
     template = 'admin_mgt/schedule_item.html'
 
     job = Jobs("schedule")
     if not schedule_item:
-        schedule_item = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(15))
+        schedule_item = Jobs.create_job_id()
 
     if request.method == 'GET':
-        return app_api.render_page(template, schedule_item = schedule_item, values = job.get_job_object(schedule_item), executable_files = get_executable_files(), alert_message = "")
+        return app_api.render_page(template, schedule_item=schedule_item, values=job.get_job_object(schedule_item),
+                                   executable_files=Jobs.get_executable_files(), alert_message="")
 
     elif request.method == 'POST':
         if 'save' in request.form:
             try:
                 if request.form['schedule_item']:
-                    active = request.form['active'] if 'active' in request.form and request.form['active'] else '0'
-                    values = {"name" : request.form['name'], "period" : request.form['period'], "action" : request.form['action'], "active" : active}
-                    
+                    values = {
+                        "name": request.form['name'],
+                        "period": request.form['period'],
+                        "action": request.form['action'],
+                        "active": request.form['active'] if 'active' in request.form and request.form['active'] else '0'
+                    }
+
                     # невалидный период
                     if not CronSlices.is_valid(values['period']):
-                        return app_api.render_page(template, schedule_item = request.form['schedule_item'], values = job.get_job_object(request.form['schedule_item']), executable_files = get_executable_files(), alert_message = "Период невалидный!")
+                        return app_api.render_page(template, schedule_item=request.form['schedule_item'],
+                                                   values=job.get_job_object(request.form['schedule_item']),
+                                                   executable_files=Jobs.get_executable_files(),
+                                                   alert_message="Период невалидный!")
 
                     # файл не существует
-                    if not os.path.exists(os.path.join(app.config['APP_ROOT'], "app", values['action'])) or not os.path.isfile(os.path.join(app.config['APP_ROOT'], "app", values['action'])):
-                        return app_api.render_page(template, schedule_item = request.form['schedule_item'], values = job.get_job_object(request.form['schedule_item']), executable_files = get_executable_files(), alert_message = "Файл не существует!")
+                    action_file = os.path.join(app.config['APP_ROOT'], "app", values['action'])
+                    if not os.path.exists(action_file) or not os.path.isfile(action_file):
+                        return app_api.render_page(template, schedule_item=request.form['schedule_item'],
+                                                   values=job.get_job_object(request.form['schedule_item']),
+                                                   executable_files=Jobs.get_executable_files(),
+                                                   alert_message="Файл не существует!")
 
-                    # чтобы изменить задание - сначала удаляем его, потом создаем заново
-                    try:
-                        current_app.apscheduler.remove_job(values['name'])
-                    except:
-                        pass
-
-                    minute, hour, day, month, day_of_week = values['period'].split(' ')
-                    current_app.apscheduler.add_job(id = values['name'], func=job_by_script, trigger="cron", day_of_week=day_of_week, month=month, day=day, hour=hour, minute=minute, second="0", args=[values['action']])
-
+                    Jobs.update_job(request.form['schedule_item'], values, scheduler=current_app.apscheduler)
                     job.edit_job_object(request.form['schedule_item'], values)
-
-            except:
+            except Exception as e:
+                print(e)
                 print("При изменении возникла ошибка!")
 
-
-        if 'delete' in request.form:
+        elif 'delete' in request.form:
             try:
-                current_app.apscheduler.remove_job(request.form['schedule_item'])
+                if current_app.apscheduler.get_job(request.form['schedule_item']) is not None:
+                    current_app.apscheduler.remove_job(request.form['schedule_item'])
+
                 job.delete_job_object(request.form['schedule_item'])
-            except:
-                print("При изменении возникла ошибка!")
+            except Exception as e:
+                print(e)
+                print("При удалении возникла ошибка!")
 
-
-        return redirect(url_for('portal_management.schedule_main'))
+        return redirect(url_for('portal_management.schedule'))

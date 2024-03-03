@@ -300,6 +300,16 @@ class PortalSearch:
 
         return rec
 
+    def get_result_item_link(self, result_item):
+        _href = ''
+        _o_link = result_item.split(self.breaker)[1]
+        _o_link = _o_link.split('href="')[1]
+        _cb = _o_link.find('"')
+        _href = _o_link[:_cb]
+        # print(self._debug_name + '.run->_href', _href)
+        """  """
+        return _href
+
     def read_request_args(self, request):
         """"""
         self._request = request

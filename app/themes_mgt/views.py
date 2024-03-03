@@ -244,7 +244,11 @@ def __index():
     _tmpl_vars = {}
     _tmpl_vars['page_title'] = 'Управление темами проекта'
 
-    _tmpl_vars['base_url'] = _mod_utils.MOD_WEB_ROOT
+    _base_url = _mod_utils.MOD_WEB_ROOT
+    _app_url_prefix = app_api.get_app_url_prefix()
+    if _app_url_prefix and not _base_url.startswith(_app_url_prefix):
+        _base_url = _app_url_prefix.rstrip('/') + '/' + _base_url.lstrip('/')
+    _tmpl_vars['base_url'] = _base_url
     _base_tbl = JQGridHelper.get_jqgrid_config()
     # теперь надо добавить состав колонок
     _base_tbl['colModel'] = _mod_utils.get_view_table_columns()

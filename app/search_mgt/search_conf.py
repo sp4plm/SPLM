@@ -11,6 +11,10 @@ class SearchConf:
 
     DESCRIPTION_FILE = os.path.join(SELF_PATH, 'dublin.ttl')
 
+    SEARCH_BY_CODE_QUERY = 'query_mgt.app.search_by_code'
+    SEARCH_BY_CODE_VAR = 'CODE'
+    OBJECT_VIEW = 'splm_nav.uri_class'
+
 
     @staticmethod
     def get_mod_tpl_path():

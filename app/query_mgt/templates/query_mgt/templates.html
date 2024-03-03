@@ -7,7 +7,7 @@
 
 {% block page_main_content %}
 	<form method="post">
-		<h1>Список шаблонов</h1>
+		<h1>{% if title %}{{ title }} {% else %} Список шаблонов {% endif %}</h1>
 
 		{% if file %}
 			<input type="text" value="{{file}}" name="file" readonly>
@@ -18,20 +18,20 @@
 		<ul>
 			{% for template in templates %}
 				<li>
-					<a href="{{url_for(module + '.sparqt_template', file = file, template = template)}}">{{template}}</a>
+					<a href="{{url_for(module + '._sparqt_editor', file = file, template = template)}}">{{template}}</a>
 				</li>
 			{% endfor %}
 		</ul>
 
-		{% if can_delete %}
-		<input type="submit" value="Удалить изменения" name="delete" formaction="{{url_for(module + '.sparqt_file', file = file)}}">
+		{% if can_remove %}
+		<input type="submit" value="Удалить изменения" name="delete" formaction="{{url_for(module + '._sparqt_templates', file = file)}}">
 		{% endif %}
 
 		<br/>
 
 	</form>
 	<form method="get">
-		<input type="submit" value="К списку файлов" formaction="{{url_for(module + '.sparqt_manager')}}">
+		<input type="submit" value="К списку файлов" formaction="{{url_for(module + '._sparqt_list')}}">
 	</form>
 {% endblock %}
 

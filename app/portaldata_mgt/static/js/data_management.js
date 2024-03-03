@@ -654,7 +654,7 @@ if(typeof void null!=typeof jQuery){
 
         function getPublishProcDialogTmpl(){
             var t = '',
-            lbl3 = 'Файлов для загрузки';
+            lbl3 = 'Файлов для обработки';
             t += '<table id="publish-proc-table">';
             t += '<tbody>';
             t += '<tr>';

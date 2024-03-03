@@ -2,6 +2,7 @@
 import os
 from app import app_api
 
+
 class QueryConf:
     _class_file = __file__
     _debug_name = 'QueryConf'
@@ -19,7 +20,7 @@ class QueryConf:
         """
         Метод отдает путь до html шаблонов (templates) для текущего модуля
 
-        :return: абсолютный путь до templates
+        :return: абсолютный путь до templates 
         :rtype: str
         """
         pth = QueryConf.get_mod_path('templates')
@@ -30,7 +31,7 @@ class QueryConf:
         """
         Метод отдает путь до статических файлов (static) для текущего модуля
 
-        :return: абсолютный путь до static
+        :return: абсолютный путь до static 
         :rtype: str
         """
         pth = QueryConf.get_mod_path('static')

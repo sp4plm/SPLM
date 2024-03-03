@@ -26,21 +26,14 @@
   <http://splm.portal.web/osplm#httpEnambled> xsd:true ;
   <http://splm.portal.web/osplm#hasPathForSPARQLquery> "sparqt/"^^<http://www.w3.org/2001/XMLSchema#string> .
 
-
 <http://splm.portal.web/osplm#query_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_querymgt_1> .
-<http://splm.portal.web/osplm/data#url_querymgt_1> osplm:value "/query"^^<http://www.w3.org/2001/XMLSchema#string> ;
+<http://splm.portal.web/osplm/data#url_querymgt_1> osplm:value "/query/sparqt"^^<http://www.w3.org/2001/XMLSchema#string> ;
   rdfs:label "SPARQLManager"^^<http://www.w3.org/2001/XMLSchema#string> ;
   osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> ;
   osplm:hasHTMLtemplate "ontos.html"^^<http://www.w3.org/2001/XMLSchema#string> .
-
-<http://splm.portal.web/osplm#query_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_querymgt_2> .
-<http://splm.portal.web/osplm/data#url_querymgt_2> osplm:value "/query/file"^^<http://www.w3.org/2001/XMLSchema#string> ;
-  rdfs:label "Редактор sparqt файлов"^^<http://www.w3.org/2001/XMLSchema#string> .
-
 
 <http://splm.portal.web/osplm#query_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_querymgt_3> .
 <http://splm.portal.web/osplm/data#url_querymgt_3> osplm:value "/query/logs"^^<http://www.w3.org/2001/XMLSchema#string> ;
   rdfs:label "Протокол работы модуля Query_mgt"^^<http://www.w3.org/2001/XMLSchema#string> ;
   osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> ;
   osplm:hasHTMLtemplate "logs.html"^^<http://www.w3.org/2001/XMLSchema#string> .
-

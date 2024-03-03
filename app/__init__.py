@@ -5,6 +5,7 @@ from flask_login import LoginManager, current_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
+from .applogs import LogsConf
 from app.module_mgt.manager import Manager
 
 from flask_themes2 import Themes
@@ -15,6 +16,10 @@ __package_path = os.path.dirname(__file__)  # app directory (app package directo
 __app_work_path = os.path.dirname(__package_path)  # parent directory of app (application directory - all prog code)
 __app_instance_path = os.path.join(__app_work_path, 'instance')
 
+# must be configured before create instance Flask app
+# https://flask.palletsprojects.com/en/latest/logging/
+from config import APP_LOG_PATH as LOG_PATH
+LogsConf(LOG_PATH).configure()
 
 app = Flask(__name__, root_path=__package_path)
 app.config.from_object('config')
@@ -26,7 +31,8 @@ if not os.path.exists(app.config[__dir_key]):
     try: os.mkdir(app.config[__dir_key], )
     except: pass
 # директория хранения логов
-__dir_name = os.path.join(app.config[__dir_key], 'logs')
+__dir_key = 'APP_LOG_PATH'  # перенесено в config для настройки через logging
+__dir_name = app.config[__dir_key]  # перенесено в config для настройки через logging
 if not os.path.exists(__dir_name):
     try: os.mkdir(__dir_name)
     except: pass
@@ -89,8 +95,6 @@ from app import app_api
 from app.utilites.code_helper import CodeHelper
 from app.utilites.portal_navi import PortalNavi
 
-from app.utilites.extend_processes import ExtendProcesses
-
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -119,6 +123,12 @@ app.add_template_global(app_api.get_portal_labels, name='portal_labels')
 # app.add_template_global(PortalSettings.get_js_libs_info, name='portal_js_libs')
 app.add_template_global(app_api.get_portal_version(), name='portal_ver')
 app.add_template_global(app_api.get_portal_locale(), name='page_lang')
+
+# logger view
+from app.applogs.views import mod as web_logs
+# app.register_blueprint(web_logs,
+#                        url_prefix=app.config['APP_URL_PREFIX'].rstrip('/') + '/' + web_logs.url_prefix.lstrip('/'))
+mod_manager.register_module_http_handler(web_logs, 'web_logs')
 
 # обработка запроса корня портала
 from app.views import mod as app_views
@@ -210,12 +220,25 @@ def not_found(error):
     _url_prefix = app.config['APP_URL_PREFIX']
     if not os.path.exists(_marker):
         return redirect(url_for('portal.welcome'))
+    app.logger.info('Undefined request path -> ' + str(request.path))
     return app_api.render_page('errors/404.html'), 404
 
 
 @app.errorhandler(500)
 def internal_error(error):
     # db.session.rollback()
+    app.logger.exception('Exception occurred -> ' + str(error))
+    return app_api.render_page('errors/500.html'), 500
+
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    # db.session.rollback()
+    """"""
+    """
+    Отлавливаем в логирование неотлавливаемые ошибки
+    """
+    app.logger.exception('Exception occurred -> ' + str(e))
     return app_api.render_page('errors/500.html'), 500
 
 
@@ -246,6 +269,11 @@ def before_request():
 
     g.user = None
     session.permanent = True
+    # print('app.__init__.before_request->session:', session.__dict__)
+    # print('app.__init__.before_request->current_user:', current_user)
+    # print('app.__init__.before_request->request.path:', request.path)
+    # print('app.__init__.before_request->session.get(\'csrf_token\'):', session.get('csrf_token'))
+    g.user = User()  # устанавление пользователя - гостя
     if current_user.is_authenticated:
         if '_user_id' in session:
             uid = int(session['_user_id'])
@@ -280,29 +308,13 @@ def before_request():
                 return redirect(publish_proc_page)
 
 
-
-def job_by_script(action):
-    log = os.path.join(app.config['APP_DATA_PATH'], "logs", "job_by_script.log")
-    with open(log, "w", encoding="utf-8") as f:
-        f.write("")
-
-    script = os.path.join(app.config['APP_ROOT'], "app", action)
-    data = ExtendProcesses.run(script, [], errors = log)
-
-
 scheduler = APScheduler()
 scheduler.init_app(app)
 scheduler.start()
 
+# импорт здесь во избежании зацикленности
 from app.admin_mgt.jobs import Jobs
 # получаем все существующие задания
 j = Jobs("schedule").get_job_data()
-
 # назначаем в scheduler ранее активные задания
-for item in j:
-    if 'active' in j[item] and j[item]['active'] == "1":
-        if 'period' in j[item] and 'action' in j[item] and 'name' in j[item]:
-            # вычисляем период 
-            minute, hour, day, month, day_of_week = j[item]['period'].split(' ')
-            # запускаем активные задания с id <name>
-            scheduler.add_job(id = j[item]['name'], func=job_by_script, trigger="cron", day_of_week=day_of_week, month=month, day=day, hour=hour, minute=minute, second="0", args=[j[item]['action']])
+[Jobs.update_job(item, j[item], scheduler=scheduler) for item in j]

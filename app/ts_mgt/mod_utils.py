@@ -54,7 +54,8 @@ class ModUtils:
         _pth = ModUtils.get_mod_pth()
         _pth = os.path.join(_pth, 'tmp')
         if not os.path.exists(_pth):
-            os.mkdir(_pth)
+            try: os.mkdir(_pth)
+            except: pass
         return _pth
 
     @staticmethod
@@ -113,6 +114,13 @@ class ModUtils:
     def get_portal_storage():
         _store = Utilites.get_storage_driver()
         return _store
+
+    @staticmethod
+    def is_construct_query(_q_txt):
+        _flg = False
+        if -1 < _q_txt.find('CONSTRUCT ') or -1 < _q_txt.find('construct '):
+            _flg = True
+        return _flg
 
     @staticmethod
     def send_query(end_point, q):

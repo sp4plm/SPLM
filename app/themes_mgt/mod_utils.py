@@ -92,7 +92,8 @@ class ModUtils(ModConf):
         # создаем временную директорию
         root_dir = self.get_mod_path('data')
         extract_dir = os.path.join(root_dir, 'extract_t' + str(datetime.now()))
-        os.mkdir(extract_dir)
+        try: os.mkdir(extract_dir)
+        except: pass
         # разархивируем архив во временную директорию
         unpack_flg = CodeHelper.make_unpack(zip_file, extract_dir)
         if not unpack_flg:
@@ -140,7 +141,8 @@ class ModUtils(ModConf):
             # всегда сохраняем файл в директорию данных модуля
             dirname = self.get_mod_path('data')
             if not os.path.exists(dirname):
-                os.mkdir(dirname)
+                try: os.mkdir(dirname)
+                except: pass
             work_file = os.path.join(dirname, filename)
             if os.path.exists(work_file.encode('utf-8')):
                 os.unlink(work_file)

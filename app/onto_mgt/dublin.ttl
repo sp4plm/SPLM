@@ -23,7 +23,8 @@
   <http://splm.portal.web/osplm#versionInfo> "$Id: 0.0.1 1 2021-08-12 11:30:00Z $"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://splm.portal.web/osplm#type> "webservice"^^<http://www.w3.org/2001/XMLSchema#string> ;
   <http://splm.portal.web/osplm#web_prefix> "/onto"^^<http://www.w3.org/2001/XMLSchema#string> ;
-  <http://splm.portal.web/osplm#httpEnambled> xsd:true .
+  <http://splm.portal.web/osplm#httpEnambled> xsd:true ;
+  <http://splm.portal.web/osplm#hasPathForSPARQLquery> "sparqt/"^^<http://www.w3.org/2001/XMLSchema#string> .
 
 <http://splm.portal.web/osplm#onto_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_ontomgt_1> .
 <http://splm.portal.web/osplm/data#url_ontomgt_1> osplm:value "/onto/ontologies"^^<http://www.w3.org/2001/XMLSchema#string> ;

@@ -10,6 +10,8 @@ from werkzeug.security import generate_password_hash
 APP_ROOT = os.path.abspath(os.path.dirname(__file__))
 APP_DATA_PATH = os.path.join(APP_ROOT, 'app', 'data')
 APP_CONFIG_PATH = os.path.join(APP_ROOT, 'app', 'cfg')
+# project Logging
+APP_LOG_PATH = os.path.join(APP_DATA_PATH, 'logs')
 
 DEBUG = True
 

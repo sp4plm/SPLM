@@ -256,6 +256,7 @@ img {
     background: #ecf5fd;
     padding: 10px 15px;
     font-size: 14px;
+    border-bottom: 1px solid #79b7e7;
 }
 .dataframe thead tr th:first-child {
     border-radius: 8px 0 0 8px;

@@ -156,7 +156,7 @@ def create_tree(structure, node):
     try:
         tree = nx.tree_data(G, node, {'children': 'children' , 'id': 'id'})
         return get_attrs(tree['children'], tree['id'])
-    except:
+    except: 
         return {}
 
 
@@ -176,20 +176,23 @@ def get_sidebar_navi(href):
 
     #  Вывод бокового меню без учета смежных с корнем (href) узлов
 
-    id = get_id_by_href( href )
-    item = get_element_by_id(id)
+    _id = get_id_by_href(href)
+    item = get_element_by_id(_id)
 
-    # для структуры в виде дерева
-    if PortalNavi.get_portal_navi(item['code'], g.user):
-        return json.dumps(create_tree(get_structure(item['id']), item['id']), ensure_ascii=False)
+    if item:
+        # для структуры в виде дерева
+        if PortalNavi.get_portal_navi(item['code'], g.user):
+            return json.dumps(create_tree(get_structure(item['id']), item['id']), ensure_ascii=False)
 
-    # для плоского списка
-    else:
-        lst = []
-        for el in PortalNavi.get_brothers(item, g.user):
-            _name = '<a href="' + el['href'] + '">' + el['label'] + '</a>'
-            lst.append( {'id':el['id'], 'order':el['srtid'], 'name':_name} )
-        return json.dumps(lst)
+        # для плоского списка
+        else:
+            lst = []
+            for el in PortalNavi.get_brothers(item, g.user):
+                _name = '<a href="' + el['href'] + '">' + el['label'] + '</a>'
+                lst.append( {'id':el['id'], 'order':el['srtid'], 'name':_name} )
+            return json.dumps(lst)
+
+    return json.dumps({})
 
 
 def create_tree_description(tree):

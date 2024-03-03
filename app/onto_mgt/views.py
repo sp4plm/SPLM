@@ -24,8 +24,8 @@ if not os.path.exists(MODULE_FOLDER):
 
 NAVIGATION_GRAPH_PATH = os.path.join(MODULE_FOLDER, "navigation_graphs")
 if not os.path.exists(NAVIGATION_GRAPH_PATH):
-	try: os.mkdir(NAVIGATION_GRAPH_PATH)
-	except: pass
+    try: os.mkdir(NAVIGATION_GRAPH_PATH)
+    except: pass
 
 from app.admin_mgt.mod_api import ModApi
 
@@ -69,67 +69,67 @@ except:
 
 
 def js_code_tree(tree):
-	"""
+    """
 	Метод строит дерево в html и добавляет ссылки для узлов
 	"""
-	if tree:
-		parent_id = json.loads(tree)[0]['id']
+    if tree:
+        parent_id = json.loads(tree)[0]['id']
 
-		js = '''<script type="text/javascript">
-		$(function() {
+        js = '''<script type="text/javascript">
+        $(function() {
+    
+            $('#tree3').hide()
+    
+            $('#tree3').tree({
+                saveState: 'tree3',
+                data: %s
+            });
+    
+    
+            $('#tree3').bind(
+                'tree.click',
+                function(event) {
+                    // The clicked node is 'event.node'
+                    var node = event.node;
+    
+                    url = window.location.href.split('?')[0];
+                    params = window.location.href.split('?')[1].split('&');
+                    for (let i = 0; i < params.length; i++) {
+                      p = params[i].split('=')
+                      if (p[0] == "onto") {
+                        url += "?" + params[i]
+                        break
+                      }
+                    }
+                    url += "&uri=" + encodeURIComponent(node.uri)
+                    location.href = url
+                }
+            );
+    
+            $('#tree3').show()
+    
+    
+        });
+        </script>''' % (tree)
+    else:
+        js = ''
 
-			$('#tree3').hide()
-
-			$('#tree3').tree({
-				saveState: 'tree3',
-				data: %s
-			});
-
-
-			$('#tree3').bind(
-			    'tree.click',
-			    function(event) {
-			        // The clicked node is 'event.node'
-			        var node = event.node;
-
-			        url = window.location.href.split('?')[0];
-			        params = window.location.href.split('?')[1].split('&');
-			        for (let i = 0; i < params.length; i++) {
-					  p = params[i].split('=')
-					  if (p[0] == "onto") {
-					  	url += "?" + params[i]
-					  	break
-					  }
-					}
-					url += "&uri=" + encodeURIComponent(node.uri)
-					location.href = url
-			    }
-			);
-
-			$('#tree3').show()
-
-
-		});
-		</script>''' % (tree)
-	else:
-		js = ''
-
-	return js
+    return js
 
 
 def get_className(ontology_class):
-	"""
-	Метод отдает класс онтологии
-	"""
-	prefixes = {"http://www.w3.org/2002/07/owl" : "owl"}
-	try:
-		ontology, ontology_class = ontology_class.split("#")
-		if ontology in list(prefixes.keys()):
-			ontology_class = prefixes[ontology] + ":" + ontology_class
-	except Exception as e:
-		pass
+    """
+    Метод отдает класс онтологии
+    """
+    prefixes = {"http://www.w3.org/2002/07/owl" : "owl"}
+    try:
+        ontology, ontology_class = ontology_class.split("#")
+        if ontology in list(prefixes.keys()):
+            ontology_class = prefixes[ontology] + ":" + ontology_class
+    except Exception as e:
+        pass
 
-	return ontology_class
+    return ontology_class
 
 
 # 2 функции по рендеру таблицы ОТНОШЕНИЯ
@@ -167,44 +167,44 @@ def compileTableRow(value, is_header, column, colors_class = "", total = False, 
 
 # Создание дерева
 def load_graph(gr):
-	"""
-	Метод получает данные из графа
-	"""
-	path = []
+    """
+    Метод получает данные из графа
+    """
+    path = []
 
-	qrslt = gr.query('SELECT ?s ?o { ?s ^rdfs:subClassOf ?o . filter (isIRI(?s) && isIRI(?o))} order by ?s')
+    qrslt = gr.query('SELECT ?s ?o { ?s ^rdfs:subClassOf ?o . filter (isIRI(?s) && isIRI(?o))} order by ?s')
 
-	for row in qrslt:
-		path.append([str(row[0]),str(row[1])])
+    for row in qrslt:
+        path.append([str(row[0]),str(row[1])])
 
-	return path
+    return path
 
 def create_graph_by_node(node, g):
-	""" Метод создает граф для дерева """
+    """ Метод создает граф для дерева """
 
-	ontology_file_format = "ttl"
+    ontology_file_format = "ttl"
 
-	# Циклическая функция сбора подчиненных узлов
-	def get_children(n):
-		""" Метод возвращает всех детей узла """
-		i = ''
-		child = []
-		for k in G.successors(n):
-			i = Defrag(n) + '_' + Defrag(k)
-			ch2 = sorted(get_children(k), key=lambda x: x['name'])
-			child.append({'id' : i, 'name' : get_className(k), 'uri' : k, 'children' : ch2})
+    # Циклическая функция сбора подчиненных узлов
+    def get_children(n):
+        """ Метод возвращает всех детей узла """
+        i = ''
+        child = []
+        for k in G.successors(n):
+            i = Defrag(n) + '_' + Defrag(k)
+            ch2 = sorted(get_children(k), key=lambda x: x['name'])
+            child.append({'id' : i, 'name' : get_className(k), 'uri' : k, 'children' : ch2})
 
-		return child
+        return child
 
-	input = load_graph(g)
+    input = load_graph(g)
 
-	G = nx.DiGraph()
-	G.add_edges_from(input)
+    G = nx.DiGraph()
+    G.add_edges_from(input)
 
-	ch1 = sorted(get_children(node), key=lambda x: x['name'])
-	data = [{'id' : Defrag(node), 'name' : get_className(node), "uri" : node, 'children' : ch1}]  # Начинаем создавать дерево с указанного узла
+    ch1 = sorted(get_children(node), key=lambda x: x['name'])
+    data = [{'id' : Defrag(node), 'name' : get_className(node), "uri" : node, 'children' : ch1}]  # Начинаем создавать дерево с указанного узла
 
-	return data
+    return data
 
 
 def Defrag(URL):
@@ -287,7 +287,7 @@ def nav_ontology():
 
     TREE = json.dumps(create_graph_by_node(owl_Thing, graph))
 
-    relations_code = "query_mgt.navigation.subject_nav_onto"
+    relations_code = "onto_mgt.onto.subject_nav_onto"
     RELATIONS = compile_query_result( json.loads( graph.query(compile_query(relations_code, {"URI" : uri})).serialize(format="json").decode("utf-8") )  )
 
 
@@ -320,9 +320,9 @@ def nav_ontology():
     table_cols_names = [compileTableRow(table_cols_names[i], True, i + 1) for i in range(0, len(table_cols_names))]
     table_data = []
     for p_item in subject_P:
-    	for item in total_subject_P_O[p_item]:
-    		row = [subject_P[p_item], subject_O[item], ""]
-    		table_data.append([compileTableRow(row[i], False, i + 1) for i in range(0, len(row))])
+        for item in total_subject_P_O[p_item]:
+            row = [subject_P[p_item], subject_O[item], ""]
+            table_data.append([compileTableRow(row[i], False, i + 1) for i in range(0, len(row))])
 
     relations_html = create_table([table_cols_names] + table_data)
 
@@ -331,9 +331,9 @@ def nav_ontology():
 
     table_data = []
     for ax in range(0, len(AXIOMS)):
-    		AXIOMS[ax] = re.sub(r"\n", "<br>", AXIOMS[ax])
-    		row = [str(ax + 1), AXIOMS[ax]]
-    		table_data.append([compileTableRow(row[i], False, i + 1) for i in range(0, len(row))])
+        AXIOMS[ax] = re.sub(r"\n", "<br>", AXIOMS[ax])
+        row = [str(ax + 1), AXIOMS[ax]]
+        table_data.append([compileTableRow(row[i], False, i + 1) for i in range(0, len(row))])
 
     axioms_html = create_table(table_data)
 
@@ -353,103 +353,72 @@ def nav_ontology():
 @mod.route('/ontologies')
 @_auth_decorator
 def ontologies():
-	""" Метод отдает структуру таблицы онтологий и рисует ее """
-	_base_url = '/' + MOD_NAME
+    """ Метод отдает структуру таблицы онтологий и рисует ее """
+    _base_url = '/' + MOD_NAME
 
-	# Таблица онтологий
-	cols_ontos = [
-		{"label": "", "index": "toolbar", "name": "toolbar", "width": 40, "sortable": False, "search": False},
-		# {name: 'Type', index: 'Type', label: 'Type', hidden: True, sortable: False}
-		{"label": "Тип", "index": "Type", "name": "Type", "hidden": True, "search": False},
-		{"label": "ID", "index": "id", "name": "id", "hidden": True, "search": False},
-		{"label": "Имя", "index": "name", "name": "Name", "width": 90, "search": True, "stype": 'text',
-		 "searchoptions": {"sopt": ['cn', 'nc', 'eq', 'ne', 'bw', 'bn', 'ew', 'en']}
-		 },
-		{"label": "Префикс", "index": "prefix", "name": "prefix", "width": 20, "align": "center",
-		 "search": True, 'stype': 'text',
-		 "searchoptions": {"sopt": ['cn', 'nc', 'eq', 'ne', 'bw', 'bn', 'ew', 'en']}
-		 },
-		{"label": "Дата загрузки", "index": "loaddate", "name": "loaddate", "width": 40, "align": "center",
-		 "search": True, 'stype': 'text',
-		 "searchoptions": {"sopt": ['cn', 'nc', 'eq', 'ne', 'bw', 'bn', 'ew', 'en']}
-		 }
-	]
+    # Таблица онтологий
+    cols_ontos = [
+        {"label": "", "index": "toolbar", "name": "toolbar", "width": 40, "sortable": False, "search": False},
+        # {name: 'Type', index: 'Type', label: 'Type', hidden: True, sortable: False}
+        {"label": "Тип", "index": "Type", "name": "Type", "hidden": True, "search": False},
+        {"label": "ID", "index": "id", "name": "id", "hidden": True, "search": False},
+        {"label": "Имя", "index": "name", "name": "Name", "width": 90, "search": True, "stype": 'text',
+         "searchoptions": {"sopt": ['cn', 'nc', 'eq', 'ne', 'bw', 'bn', 'ew', 'en']}
+         },
+        {"label": "Префикс", "index": "prefix", "name": "prefix", "width": 20, "align": "center",
+         "search": True, 'stype': 'text',
+         "searchoptions": {"sopt": ['cn', 'nc', 'eq', 'ne', 'bw', 'bn', 'ew', 'en']}
+         },
+        {"label": "Дата загрузки", "index": "loaddate", "name": "loaddate", "width": 40, "align": "center",
+         "search": True, 'stype': 'text',
+         "searchoptions": {"sopt": ['cn', 'nc', 'eq', 'ne', 'bw', 'bn', 'ew', 'en']}
+         }
+    ]
 
-	cfg_ontos = {
-		"datatype": "json",
-		"mtype": "POST",
-		"colModel": [],
-		"pager": '',
-		"rowNum": 10,
-		"rowList": [10, 20, 30],
-		"sortname": "id",
-		"sortorder": "desc",
-		"viewrecords": True,
-		"gridview": True,
-		"jsonReader": {"repeatitems": False},
-		"autoencode": True,
-		"autowidth": True,
-		"caption": "",
-		"toolbar": [True, "top"],
-		"width": 1024
-	}
-	cfg_ontos['colModel'] = cols_ontos
-	cfg_ontos['url'] = url_for("onto.get_files")
+    cfg_ontos = {
+        "datatype": "json",
+        "mtype": "POST",
+        "colModel": [],
+        "pager": '',
+        "rowNum": 10,
+        "rowList": [10, 20, 30],
+        "sortname": "id",
+        "sortorder": "desc",
+        "viewrecords": True,
+        "gridview": True,
+        "jsonReader": {"repeatitems": False},
+        "autoencode": True,
+        "autowidth": True,
+        "caption": "",
+        "toolbar": [True, "top"],
+        "width": 1024
+    }
+    cfg_ontos['colModel'] = cols_ontos
+    cfg_ontos['url'] = url_for("onto.get_files")
 
 
-	return app_api.render_page("/onto_mgt/ontos.html", tbl = json.dumps(cfg_ontos))
+    return app_api.render_page("/onto_mgt/ontos.html", tbl = json.dumps(cfg_ontos))
 
 
 @mod.route('/ontologies/print_onto')
 @_auth_decorator
 def print_onto():
-    '''
+    """
     Функция вывода онтологии для просмотра и печати
-    '''
+    """
     argms = request.args.to_dict()
 
     if 'prefix' in argms.keys():
-
-        G = Ontology().getGraph(argms['prefix'])
-
-        query_cls_string = """select ?term ?term_lbl ?term_cls ?term_comm ?term_dfnt {
-                                ?term rdfs:subClassOf* owl:Thing .
-                                ?term a ?term_cls .
-                                Optional {?term rdfs:label ?term_lbl . }
-                                Optional { ?term rdfs:comment ?term_comm . }
-                                }
-                           """
-
-        data_cls = {}
-        for row in G.query(query_cls_string):
-            data_cls[str(row[0]).split("#")[1]] = [["URI",str(row[0])],["Наименование",str(row[1])],["Класс",str(row[2])],["Комментарий",str(row[3])]]
-
-        query_prd_string = """select ?term ?term_lbl ?term_cls ?term_dom ?term_rng ?term_comm
-                                {?term a owl:ObjectProperty .
-                                ?term a ?term_cls .
-                                Optional { ?term rdfs:label ?term_lbl . }
-                                Optional { ?term rdfs:domain ?term_dom . } 
-                                Optional { ?term rdfs:range ?term_rng . } 
-                                Optional { ?term rdfs:comment ?term_comm . }
-                                }
-                           """
-        data_prd = {}
-        for row in G.query(query_prd_string):
-            data_prd[str(row[0]).split("#")[1]] = [["URI",str(row[0])],["Наименование",str(row[1])],["Класс",str(row[2])],["Domain",str(row[3])],["Range",str(row[4])],["Комментарий",str(row[5])]]
-
-        data = {}
-        data['Классы онтологии'] = data_cls
-        data['Предикаты онтологии'] = data_prd
-
+        data = get_onto_data(argms['prefix'])
     else:
-        data = {'Ошибка! Префикс онтологии не указан.':{"":""}}
+        data = {'Ошибка! Префикс онтологии не указан.': {"": ""}}
 
-    return app_api.render_page('/onto_mgt/print_onto.html', data=data )
+    return app_api.render_page('/onto_mgt/print_onto.html', data=data)
 
 
 @mod.route('/ontologies/print_onto/result', methods=["GET"])
 @_auth_decorator
-def print():
+def print_onto_result():
     """ Печать классов онтологии """
     _printer = app_api.get_mod_api('printer')
     _pdf_tool = _printer.report()

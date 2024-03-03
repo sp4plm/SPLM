@@ -71,6 +71,14 @@
                     ?res_cls rdfs:label ?cl_lbl . #{SearchCLS}
                 }order by ?res_lbl"
     },
+    "search_by_code" : {
+        "_CMT_": "Выбирает полную информацию об объекте по его label",
+        "#VARS":{"CODE":{"mark":"#{CODE}","default":""}},
+        "#TXT":"SELECT ?o ?o_lbl ?o_cls WHERE {
+                    ?o rdf:type ?o_cls .
+                    ?o rdfs:label \"#{CODE}\" .
+                }"
+    },
     "for_tgf":{
         "_CMT_": "Выбирает все что связано отношением hasParentReq и имеет последнюю версию. Предназначен для выгрузки в формате tgf. Страница /formats.php",
         "#VARS":{},

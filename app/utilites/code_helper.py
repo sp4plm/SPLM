@@ -204,6 +204,18 @@ class CodeHelper:
         return flg
 
     @staticmethod
-    def make_pack(pack_source, pack_file):
+    def make_pack(pack_source, zip_file):
         flg = False
+        import zipfile
+        if not os.path.exists(zip_file):
+            with open(zip_file, 'a') as fm:
+                os.utime(zip_file, None)
+        statinfo = os.stat(zip_file)
+        with zipfile.ZipFile(zip_file, 'w') as myzip:
+            _download_files = os.scandir(pack_source)
+            for ifile in _download_files:
+                add_file_name = os.path.basename(ifile)
+                myzip.write(ifile, arcname=add_file_name)
+        statinfo2 = os.stat(zip_file)
+        flg = statinfo.st_size < statinfo2.st_size
         return flg

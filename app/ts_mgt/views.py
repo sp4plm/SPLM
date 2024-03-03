@@ -84,13 +84,39 @@ def __exec_query():
 
     _ts = request.form['ts']  # triple store
     _q = request.form['q']
+
     _q_res = app_api.tsc_query(_q)
+
+    # требуется обработать граф - rdflib.Graph
+    if ModUtils.is_construct_query(_q):
+        from rdflib import Graph
+        if isinstance(_q_res, Graph):
+            _g = Graph()
+            _g += _q_res
+            _q_res = []
+            # тепрь будем преобразовывать в список словарей
+            if _g.__len__() > 0:
+                pass
+                _r_keys = ['s', 'p', 'o']
+                for _i in _g:
+                    _t = {}
+                    # print(mod.name + '.views.__exec_query -> _i', _i)
+                    _t1 = []
+                    for _c in _i:
+                        # print(mod.name + '.views.__exec_query -> _c', _c)
+                        _t1.append(str(_c))
+                    # print(mod.name + '.views.__exec_query -> _t1', _t1)
+
+                    # _t = (_r_keys, *_t1)
+                    _t = {_r_keys[_k]: _t1[_k] for _k in range(len(_r_keys))}
+                    # print(mod.name + '.views.__exec_query -> _t', _t)
+                    _q_res.append(_t)
 
     if isinstance(_q_res, list):
         answer['Data'] = ModUtils.format_qanswer(_q_res)
     else:
         answer['Error'] = _q_res
-        answer['Msg'] = 'Ошибка выполнения запроса: ' + answer['Error']
+        answer['Msg'] = 'Ошибка выполнения запроса: ' + str(answer['Error'])
         answer['State'] = 500
 
     return json.dumps(answer)

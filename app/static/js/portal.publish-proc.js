@@ -140,7 +140,7 @@ if(typeof void null!=typeof jQuery){
             var t = '',
             lbl1 = 'Файлов данных',
             lbl2 = 'Файлов для конвертации',
-            lbl3 = 'Файлов для загрузки';
+            lbl3 = 'Файлов для обработки';
             t += '<table id="publish-proc-table">';
             t += '<tbody>';
             t += '<tr>';

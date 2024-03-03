@@ -185,5 +185,10 @@ def __manage():
     _base_tbl['sortname'] = 'Name'
     _base_tbl['sortorder'] = 'asc'
     _tpl_vars['json_tbl'] = json.dumps(_base_tbl)
+    _base_url = mod.url_prefix
+    _app_url_prefix = app_api.get_app_url_prefix()
+    if _app_url_prefix and not _base_url.startswith(_app_url_prefix):
+        _base_url = _app_url_prefix.rstrip('/') + '/' + _base_url.lstrip('/')
+    _tpl_vars['base_url'] = _base_url
     _tpl_name = os.path.join(mod_name, 'index.html')
     return app_api.render_page(_tpl_name, **_tpl_vars)

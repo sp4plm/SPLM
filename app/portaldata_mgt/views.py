@@ -25,7 +25,8 @@ from .data_publish_logger import DataPublishLogger
 _mod_name = ModUtils().get_mod_name()
 _w_pth = app_api.get_mod_data_path(_mod_name)
 if not os.path.exists(_w_pth):
-    os.mkdir(_w_pth)
+    try: os.mkdir(_w_pth)
+    except: pass
 
 mod = Blueprint(_mod_name, __name__,
                 url_prefix=ModUtils().get_web_prefix(),
@@ -578,7 +579,8 @@ def __upload_files(section):
                     if os.path.exists(file_name):
                         # появился дубликат - создаем директорию загрузки если ее нет
                         if not os.path.exists(_tmp_path):
-                            os.mkdir(_tmp_path)
+                            try: os.mkdir(_tmp_path)
+                            except: pass
                         file_existed = []
                         file_existed.append(secure_name) # имя файла дубликата
                         file_existed.append(file_name) # полное имя файла под замену
@@ -1321,7 +1323,8 @@ def __filtered_download_files(name):
     _temp_pth = _files_utils.get_dir_path('temp')
     zip_file = os.path.join(_temp_pth, zip_file_name)
     if not os.path.exists(_temp_pth):
-        os.mkdir(_temp_pth)
+        try: os.mkdir(_temp_pth)
+        except: pass
     if 'media' != name:
         _records = []
         _records = __get_filtered_records(name)
@@ -1387,7 +1390,8 @@ def __filtered_download_files(name):
             _zip_target = _files_utils.get_dir_path(media_path)
             _zip_src = os.path.join(_temp_pth, os.path.basename(_zip_target))
             if not os.path.exists(_zip_src):
-                os.mkdir(_zip_src)
+                try: os.mkdir(_zip_src)
+                except: pass
             # требуется делать через копирование иначе не работает фильтр внутри!!!!!
             # print(mod.name + '.views.__filtered_download_files: _zip_src -> ' + str(_zip_src))
             from shutil import make_archive, rmtree, copytree
