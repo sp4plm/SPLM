@@ -1,0 +1,32 @@
+# baseURI: http://splm.portal.web/osplm
+# prefix: osplm
+
+@prefix osplm: <http://splm.portal.web/osplm#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix data: <http://splm.portal.web/osplm/data#> .
+
+<http://splm.portal.web/osplm#applogs> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://splm.portal.web/osplm#Module> ;
+  <http://purl.org/dc/elements/1.1/contributor> "Антон Новиков"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://www.w3.org/2000/01/rdf-schema#label> "Flask error log viewer"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/title> "Модуль отображения файла ошибок flask"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/subject> "Flask error log viewer"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/description> "Модуль предоставляет функционал отображения и скачивания файла ошибок портала"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/date> "$Date: 2024-02-05 18:07:00 0300 (Mon, 5 Feb 2024) $"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/creator> "Антон Новиков"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/rights> "GNU"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://purl.org/dc/elements/1.1/type> <http://purl.org/dc/dcmitype/Software> ;
+  <http://purl.org/dc/elements/1.1/format> "text/html, application"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#versionInfo> "$Id: 0.0.1 1 2024-02-05 18:07:00Z $"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#type> "webservice"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#hasWebPrefix> "/applogs"^^<http://www.w3.org/2001/XMLSchema#string> ;
+  <http://splm.portal.web/osplm#httpEnabled> xsd:true .
+
+<http://splm.portal.web/osplm#applogs> osplm:hasURL <http://splm.portal.web/osplm/data#url_applogs_21> .
+<http://splm.portal.web/osplm/data#url_applogs_21> osplm:value "/applogs"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_applogs_21> rdfs:label "Просмотр файлов логирования"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_applogs_21> osplm:forAdminPurpose <http://www.w3.org/2001/XMLSchema#true> .
+<http://splm.portal.web/osplm/data#url_applogs_21> osplm:hasHTMLtemplate "applogs/index.html"^^<http://www.w3.org/2001/XMLSchema#string> .
