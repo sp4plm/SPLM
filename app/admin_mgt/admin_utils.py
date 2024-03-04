@@ -421,7 +421,7 @@ class AdminUtils(AdminConf):
                 _check_pth = _app_prefix + _pref if not _start_with_p else _pref
                 # print('AdminUtils.is_admin_url->_pref:', _pref)
                 # print('AdminUtils.is_admin_url->_check_pth:', _check_pth)
-                if search_path.startswith(_check_pth):
+                if search_path.startswith(_check_pth.rstrip('/')+'/'):
                     flg = True
                     break
         # print('AdminUtils.is_admin_url->result:', flg)
