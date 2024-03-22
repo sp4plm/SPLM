@@ -70,7 +70,7 @@
 <http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_19> .
 <http://splm.portal.web/osplm/data#url_usermgt_19> osplm:value "/users/roles/save"^^<http://www.w3.org/2001/XMLSchema#string> .
 <http://splm.portal.web/osplm#user_mgt> osplm:hasURL <http://splm.portal.web/osplm/data#url_usermgt_20> .
-<http://splm.portal.web/osplm/data#url_usermgt_20> osplm:value "/users/export/list"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://splm.portal.web/osplm/data#url_usermgt_20> osplm:value "/users/export"^^<http://www.w3.org/2001/XMLSchema#string> .
 <http://splm.portal.web/osplm/data#url_usermgt_20> osplm:shallBeShownInMenu <http://www.w3.org/2001/XMLSchema#true> .
 <http://splm.portal.web/osplm/data#url_usermgt_20> rdfs:label "Экспорт списка пользователей"^^<http://www.w3.org/2001/XMLSchema#string> .
 <http://splm.portal.web/osplm/data#url_usermgt_20> osplm:isAvailableFor "tosters"^^<http://www.w3.org/2001/XMLSchema#string> .
