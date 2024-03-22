@@ -1,0 +1,11 @@
+{
+    "subject_nav_onto" : {
+        "_CMT_": "Выбираем данные, где предмет является субъектом (для навигации по онтологии) без blank nodes",
+        "#VARS":{"URI":{"mark":"#{URI}","default":""}},
+        "#TXT":"SELECT ?p ?p_lbl ?o ?o_lbl WHERE {
+                    <#{URI}> ?p ?o .
+                    OPTIONAL { ?o rdfs:label ?o_lbl. }
+                    OPTIONAL { ?p rdfs:label ?p_lbl. } . filter (isIRI(?o))
+                }"
+    }
+}
