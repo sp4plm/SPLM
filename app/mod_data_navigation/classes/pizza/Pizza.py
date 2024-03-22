@@ -65,10 +65,10 @@ class Pizza:
         query = tsc_query('mod_data_navigation.Pizza.one_instances',
                           {'URI': self.pref_unquote + self.argm['class']})
 
-        if not isinstance(query, str):
-            self.pref_4_data = query[0]['inst'].split("#")[0] + "#"
-        else:
+        if isinstance(query, str) or len(query) == 0:
             self.pref_4_data = ''
+        else:
+            self.pref_4_data = query[0]['inst'].split("#")[0] + "#"
 
     def __make_href__(self, cls='', prf='', uri='', lbl=''):
         if uri =='':
@@ -196,7 +196,7 @@ class Pizza:
             else:
                 templ = app_api.render_page("data_navigation/Pizza_inst.html", title="Пицца",
                                 class_name=self.__make_href__(cls=self.argm['class'], prf=self.argm['prefix'], uri='', lbl=class_lbl),
-                                instance={"No data":{"Comment":"about this instance.","Avatar":""}},
+                                instance={"No data":{"Comment":"about this instance.","Topping": {"None":"None"},"Avatar":""}},
                                 argm=self.argm.items(),
                                 page_path=page_path)
 
