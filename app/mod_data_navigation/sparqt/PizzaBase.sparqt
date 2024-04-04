@@ -26,6 +26,16 @@
                 Optional {
                   ?uri rdfs:comment ?att_val .
                   BIND ('Comment' as ?att_cls_lbl) . }}
+                        } UNION {
+                select ?uri ?att_cls_lbl ?att_val {
+                  BIND (<#{URI}> as ?uri )
+                  Optional {
+                    ?pz onto:hasPart ?uri .
+                    ?pz a ?pz_cls .
+                    ?pz rdfs:label ?pz_lbl .
+                    BIND ('Pizza' as ?att_cls_lbl) .
+                    BIND (CONCAT(STR(?pz_cls), '&&', STR(?pz), '&&', ?pz_lbl) as ?att_val )
+                    }}
                 }}"
     },
     "list_of_subclasses":{

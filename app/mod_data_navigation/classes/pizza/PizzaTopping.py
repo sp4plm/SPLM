@@ -47,7 +47,7 @@ class PizzaTopping:
         for p in prefixes:
             if p[0] == argm['prefix']:
                 self.pref_unquote = p[1]
-        print(self.pref_unquote + self.argm['class'])
+        # print(self.pref_unquote + self.argm['class'])
         query = tsc_query('mod_data_navigation.PizzaTopping.one_instances',
                           {'URI':  self.pref_unquote + self.argm['class'] })
 
@@ -60,7 +60,7 @@ class PizzaTopping:
         if uri =='':
             uri_str = '<a href="{}?prefix={}">{}</a>'.format(cls,prf,lbl)
         else:
-            uri_str = '<a href="{}?prefix={}&uri={}">{}</a>'.format(cls,prf,uri,lbl)
+            uri_str = '<a href="{}?prefix={}&uri={}">{}</a>'.format(cls,prf,quote(uri),lbl)
 
         return uri_str
 
@@ -102,12 +102,26 @@ class PizzaTopping:
             gravatar_url = "http://www.gravatar.com/avatar/{}?d=identicon&s=300".format(myHash)
             Avatar = '<img class="img-responsive" style="margin: 0 auto;" src=\"' + gravatar_url + '\" width=\"400\" height=\"400\" alt=\"pizza topping\">'
 
-            if len(df) > 0:
+            if not df.empty:
                 for ind, row in df.iterrows():
                     if not row.inst_lbl in d:
                         d.update({row.inst_lbl: {}})
+                        d[row.inst_lbl].update({'Ingredients': {}})
+                        d[row.inst_lbl].update({'Pizza': {}})
+                    if row.att_cls_lbl == 'Ingredients':
+                        row_ing = row.att_val.split('&&')
+                        d[row.inst_lbl]['Ingredients'].update(
+                            {row_ing[2]: self.__make_href__(cls=row_ing[0].split('#')[1],
+                                                             prf='pizza', uri=row_ing[1],
+                                                             lbl=row_ing[2])})
+                    elif row.att_cls_lbl == 'Pizza':
+                        row_pzz = row.att_val.split('&&')
+                        d[row.inst_lbl]['Pizza'].update(
+                            {row_pzz[2]: self.__make_href__(cls=row_pzz[0].split('#')[1],
+                                                            prf='pizza', uri=row_pzz[1],
+                                                            lbl=row_pzz[2])})
                     else:
-                        d[row.inst_lbl].update({row.att_cls_lbl: row.att_val})
+                        d[row.inst_lbl].update({row.att_cls_lbl : row.att_val})
 
                 d[row.inst_lbl].update({'Avatar':Avatar})
 

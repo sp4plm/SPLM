@@ -23,7 +23,8 @@ from app.utilites.axiom_reader import getClassAxioms
 MOD_PATH = app_api.get_mod_path( "mod_data_navigation" )
 
 # with open(os.path.join( MOD_PATH, FILE ), 'r', encoding='utf-8') as f:
-FILE = 'shacl/shacl.ttl'
+FILE_REQS = 'shacl/shacl_reqs.ttl'
+FILE_RULES = 'shacl/shacl_rules.ttl'
 
 def make_breadcrumbs(prefix, pref_unquote, cls):
 
@@ -80,52 +81,36 @@ class Pizza:
 
     def __get_axioms__(self):
         text = ""
+        replaces = {"onto:hasPart": "состоит из: ",
+                    "owl:someValuesFrom": " хотя бы 1 экземпляра класса ", "rdf:type - owl:Restriction":"",
+                    "onto:": "", 'OWL:intersectionOf:':'пересечение множеств ', "owl:onProperty -":"",
+                    "rdfs:subClassOf:":"", "OWL:subClassOf: ":"", "rdf:type - owl:Class":"",
+                    "owl:unionOf":"объединяет: "}
+
         G = onto_mod_api.get_graph(self.argm['prefix'])
         AXIOMS = getClassAxioms(URIRef(self.pref_unquote + self.argm['class']), G, self.pref_unquote)
 
-        if AXIOMS:
-            text = "Это такая сущность, для которой выполняются все следующие условия: <br>"
-            for a in AXIOMS:
-                a = a.replace("\n\n", "<br>")
+        if 'subClass' in AXIOMS.keys():
+            text = "<p>Это объект класса {}</p>".format(self.parent)
 
-                str = a.split(' - ')
-                text = text + "{} {} {}".format(str[2].split("\n")[0], str[2].split("\n")[1], str[3]) + ' и '
+            a = AXIOMS['subClass'].values()
+            if a:
+                a_str = ' '.join(a)
+                a_str = a_str.replace("\n", "<br>").replace("(","").replace(")","")
+                a_str = re.sub("|".join(replaces.keys()), lambda match: replaces[match.string[match.start():match.end()]], a_str)
+                text += "<p>для которого выполняются все следующие условия:</p>" + a_str
 
-            text = text[:-3]
 
-            replaces = {"onto:hasBase": "связано отношением 'Имеет основу'",
-                        "owl:someValuesFrom": " хотя бы с одним из экземпляров класса ",
-                        "onto:PizzaBase": "Основа",
-                        "onto:hasTopping":"связано отношением 'Имеет топпинг'",
-                        }
-            text = re.sub("|".join(replaces.keys()), lambda match: replaces[match.string[match.start():match.end()]], text)
+        if 'equivalentClass' in AXIOMS.keys():
+            ec = AXIOMS['equivalentClass'].values()
+            if ec:
+                ec_str = ' '.join(ec)
+                ec_str = ec_str.replace("\n\n", "<br>")
+                ec_str = re.sub("|".join(replaces.keys()), lambda match: replaces[match.string[match.start():match.end()]], ec_str)
+                text += "<p>для которого выполняются все следующие условия:</p>" + ec_str
 
+        text = text.replace("<br><br>", "<br>").replace("<br><br>", "<br>")
         return text
-
-
-    def __get_requirements__(self):
-        reqs = pd.DataFrame()
-        with open( os.path.join( MOD_PATH, FILE ), 'r', encoding='utf-8' ) as f:
-            G = Graph()
-            G.parse( f )
-            query_str = """prefix sh: <http://www.w3.org/ns/shacl#>
-                           prefix pz: <%s> 
-                        select distinct ?code ?text {
-                        ?sh a sh:NodeShape .
-                        ?sh sh:targetClass <%s> .
-                        ?sh sh:property|sh:rule ?pr .
-                        ?pr sh:name ?code .
-                        ?pr sh:description ?text .} order by ?code
-                        """ % (self.pref_unquote, self.pref_unquote + self.argm['class'])
-
-            reqs = pd.DataFrame(G.query(query_str))
-
-        if not reqs.empty:
-            reqs.columns = ['Код', 'Текст требования']
-        else:
-            reqs = pd.DataFrame()
-
-        return reqs
 
 
     def getTemplate(self):
@@ -173,7 +158,7 @@ class Pizza:
                         d[row.inst_lbl].update({'Topping':{} })
                     if row.att_cls_lbl == 'Topping':
                         row_topp = row.att_val.split('&&')
-                        d[row.inst_lbl]['Topping'].update({row_topp[2] : self.__make_href__(cls=row_topp[0].split('#')[1],
+                        d[row.inst_lbl]['Topping'].update({row_topp[2]: self.__make_href__(cls=row_topp[0].split('#')[1],
                                                                                     prf='pizza', uri=row_topp[1],
                                                                                      lbl=row_topp[2])})
                     elif row.att_cls_lbl == 'Base':
@@ -247,11 +232,18 @@ class Pizza:
                 instances = df2.to_html(escape=False, index=False)
 
             # Проверяем наличие требований к классу
-            req = self.__get_requirements__()
+            req = get_requirements_and_rules(self.pref_unquote, self.argm['class'], FILE_REQS)
             if not req.empty:
                 requirements = req.to_html(index=False)
             else:
                 requirements = ""
+
+            # Проверяем наличие правил логических выводов
+            rule = get_requirements_and_rules(self.pref_unquote, self.argm['class'], FILE_RULES)
+            if not req.empty:
+                rules = rule.to_html(index=False)
+            else:
+                rules = ""
 
             definition = self.__get_axioms__()
 
@@ -264,14 +256,44 @@ class Pizza:
                         sidebar4 = '<a href="{}?prefix={}&uri={}">{}</a>'.format('Mushroom',self.argm['prefix'],quote('http://www.co-ode.org/ontologies/pizza/pizza.owl#NamedIndividual_3'),'Грибная пицца 1'),
                         definition = definition,
                         requirements = requirements,
+                        rules = rules,
                         subclasses=subclasses,
                         instances=instances,
                         page_path=page_path)
 
         return templ
 
-def get_reqs_verification(prefix, ontoclass):
 
+def get_requirements_and_rules(pref, cls, choiced_file):
+    # choice can be 'req' or 'rule'
+
+    reqs = pd.DataFrame()
+
+    with open( os.path.join( MOD_PATH, choiced_file ), 'r', encoding='utf-8' ) as f:
+        G = Graph()
+        G.parse( f )
+        query_str = """prefix sh: <http://www.w3.org/ns/shacl#>
+                       prefix pz: <%s> 
+                    select distinct ?code ?text {
+                    ?sh a sh:NodeShape .
+                    ?sh sh:targetClass <%s> .
+                    ?sh sh:property|sh:rule ?pr .
+                    ?pr sh:name ?code .
+                    ?pr sh:description ?text .} order by ?code
+                    """ % (pref, pref + cls)
+
+        reqs = pd.DataFrame(G.query(query_str))
+
+    if not reqs.empty:
+        reqs.columns = ['Код', 'Текст требования']
+    else:
+        reqs = pd.DataFrame()
+
+    return reqs
+
+
+def get_reqs_verification(prefix, ontoclass, choiced_file):
+    print(ontoclass)
     pref_unquote = ''
     prefixes = onto_mod_api.get_prefixes()
     for p in prefixes:
@@ -283,7 +305,7 @@ def get_reqs_verification(prefix, ontoclass):
     data = tsc_query('mod_data_navigation.Pizza.get_subgraph',
                       {'URI': pref_unquote + ontoclass})
 
-    with open( os.path.join( MOD_PATH, FILE ), 'r', encoding='utf-8' ) as file:
+    with open( os.path.join( MOD_PATH, choiced_file ), 'r', encoding='utf-8' ) as file:
         shacl = Graph()
         shacl.parse( file )
 
@@ -302,26 +324,36 @@ def get_reqs_verification(prefix, ontoclass):
                      advanced=True,
                      js=False,
                      inplace=True,
-                     debug=False)
+                     debug=True)
 
         conforms, results_graph, results_text = r
-
+        results_graph.serialize('valid.ttl')
         if not conforms:
             qry_validat = """prefix sh: <http://www.w3.org/ns/shacl#>
-                                SELECT ?code ?text ?cmf ?message ?inst ?val
-                                where { ?val_rep a sh:ValidationReport .
-                                    ?val_rep sh:conforms ?cmf .
-                                    ?val_rep sh:result ?rslt .
-                                    ?rslt sh:resultMessage ?message .
+                                SELECT ?code ?text ?conf ?message ?inst ?val {{ 
+                                    ?rslt a sh:ValidationResult .
+                                    ?rslt sh:resultSeverity ?cmf .
+                                    BIND(STRAFTER(STR(?cmf),'#') as ?conf) .
                                     ?rslt sh:focusNode ?inst .
-                                    ?rslt sh:sourceConstraintComponent ?comp .
+                                    ?rslt sh:resultMessage ?message .                                    
                                     ?rslt sh:sourceShape ?shape .
                                     ?shape sh:name ?code .
-                                    ?shape sh:description ?text .
+                                    ?shape sh:description ?text . 
                                 Optional { ?rslt sh:value ?val . }
-                                       } order by ?code"""
+                                            } union {
+                                    ?rslt a sh:ValidationResult .
+                                    ?rslt sh:resultSeverity ?cmf .
+                                   BIND(STRAFTER(STR(?cmf),'#') as ?conf) .
+                                   ?rslt sh:focusNode ?inst .
+                                   Optional {?rslt sh:resultMessage ?message .}
+                                   ?rslt sh:sourceConstraint ?shape .
+                                   ?shape sh:name ?code .
+                                   ?shape sh:description ?text . 
+                                 Optional { ?rslt sh:value ?val . }
+                                       }} order by ?code"""
 
             val = pd.DataFrame(results_graph.query(qry_validat))
+
             if len( val.columns ) == 6:
                 val.columns = ['Код', 'Текст требования', 'Выполнено', 'Обоснование', 'Объект', 'Значение']
                 val['Объект'] = val['Объект'].str.replace(pref_unquote, '', regex=True)
@@ -352,4 +384,4 @@ def get_reqs_verification(prefix, ontoclass):
         val = pd.DataFrame([['Не получен ответ от базы данных, обратитесь к администратору портала.']],
                            columns=['Ошибка'])
 
-    return val
+    return val, len(new_triples)

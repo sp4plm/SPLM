@@ -27,36 +27,25 @@
                 Optional {
                   ?uri rdfs:comment ?att_val .
                   BIND ('Comment' as ?att_cls_lbl) . }}
-                } UNION {
-                 select ?uri ?att_cls_lbl ?att_val {
-                BIND (<#{URI}> as ?uri )
-                Optional {
-                  ?uri onto:hasPrice ?att_val .
-                  BIND ('Price' as ?att_cls_lbl) . }}
-                } UNION {
-                select ?uri ?att_cls_lbl ?att_val {
-                  BIND (<#{URI}> as ?uri )
-                  Optional {
-                    ?uri onto:hasSize ?att_val .
-                    BIND ('Size' as ?att_cls_lbl) . }}
                   } UNION {
                 select ?uri ?att_cls_lbl ?att_val {
                   BIND (<#{URI}> as ?uri )
                   Optional {
-                    ?uri onto:hasIngredient ?topp .
-                    ?topp rdfs:label ?top_lbl .
-                    ?topp a ?topp_cls .
-                    BIND (CONCAT(STR(?topp_cls), '&&', STR(?topp), '&&', ?top_lbl) as ?att_val )
-                    BIND ('Topping' as ?att_cls_lbl) . }}
-                  } UNION {
+                    ?uri onto:hasPart ?food .
+                    ?food a ?food_cls .
+                    ?food rdfs:label ?food_lbl .
+                    BIND ('Ingredients' as ?att_cls_lbl) .
+                    BIND (CONCAT(STR(?food_cls), '&&', STR(?food), '&&', ?food_lbl) as ?att_val ) }}
+                    } UNION {
                 select ?uri ?att_cls_lbl ?att_val {
                   BIND (<#{URI}> as ?uri )
                   Optional {
-                    ?uri onto:hasBase ?base .
-                    ?base rdfs:label ?base_lbl .
-                    ?base a ?base_cls .
-                    BIND (CONCAT(STR(?base_cls), '&&', STR(?base), '&&', ?base_lbl) as ?att_val )
-                    BIND ('Base' as ?att_cls_lbl) . }}
+                    ?pz onto:hasPart ?uri .
+                    ?pz a ?pz_cls .
+                    ?pz rdfs:label ?pz_lbl .
+                    BIND ('Pizza' as ?att_cls_lbl) .
+                    BIND (CONCAT(STR(?pz_cls), '&&', STR(?pz), '&&', ?pz_lbl) as ?att_val )
+                    }}
                 }}"
     },
     "list_of_subclasses":{

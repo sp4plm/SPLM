@@ -330,9 +330,17 @@ def nav_ontology():
     AXIOMS = getClassAxioms(URIRef(uri), graph, base_uri + "#")
 
     table_data = []
-    for ax in range(0, len(AXIOMS)):
-        AXIOMS[ax] = re.sub(r"\n", "<br>", AXIOMS[ax])
-        row = [str(ax + 1), AXIOMS[ax]]
+    def get_values_from_dict(d):
+        for v in d.values():
+            if isinstance(v, dict):
+                yield from get_values_from_dict(v)
+            else:
+                yield v
+    list_ax = list(get_values_from_dict(AXIOMS))
+
+    for ax in range(0, len(list_ax)):
+        list_ax[ax] = re.sub(r"\n", "<br>", list_ax[ax])
+        row = [str(ax + 1), list_ax[ax]]
         table_data.append([compileTableRow(row[i], False, i + 1) for i in range(0, len(row))])
 
     axioms_html = create_table(table_data)

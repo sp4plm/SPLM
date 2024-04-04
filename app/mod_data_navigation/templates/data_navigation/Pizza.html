@@ -74,7 +74,7 @@
 
 {% block page_main_content %}
 	<div class="container-fluid">
-		<h2 class="content-header">Теукщая категория: {{class_name | safe }}</h2>
+		<h2 class="content-header">Текущая категория: {{class_name | safe }}</h2>
 		<br>
 			{% if definition %}
 				<h3>Определение:</h3>
@@ -85,12 +85,20 @@
 			{% if requirements %}
 				<h3>Требования к пицце:</h3>
 					{{ requirements | safe }}
-				<h5>* Требования представлены в виде текста и машиночитаемых правил, сформулированных с использованием классов и отношений из онтологии "Пицца" с целью обеспечения их автоматизированной проверки.</h5>
-			{% endif %}
+						<h5>* Требования представлены в виде текста и машиночитаемых требований, сформулированных с использованием классов и отношений из онтологии "Пицца" с целью обеспечения их автоматизированной проверки.</h5>
+						<input id="startverifybutton" type="button" action="Pizza?prefix=pizza" value="Проверить выполнение требований"/>
+						<br>
+					{% endif %}
+				<span id="ver-mark" style="display:none;"></span>
 		<br>
-			<input id="startverifybutton" type="button" action="Pizza?prefix=pizza" value="Проверить выполнение требований"/>
-		<br>
-		<span id="ver-mark" style="display:none;"></span>
+			{% if rules %}
+				<h3>Правила логических выводов на основе информации о пиццах:</h3>
+					{{ rules | safe }}
+						<h5>* Правила предназначены для создания новых записей в базе данных, на основе логических выводов.</h5>
+						<input id="startrulesbutton" type="button" action="Pizza?prefix=pizza" value="Выполнить логические правила"/>
+						<br>
+					{% endif %}
+				<span id="rule-mark" style="display:none;"></span>
 		<br>
 			{% if instances %}<h3>Доступные варианты пиццы для заказа:</h3>{{ instances | safe }}{% endif %}
 		<br>

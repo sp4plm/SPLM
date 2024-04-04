@@ -54,36 +54,40 @@ def getClassAxioms(ontoclass, G, prefix):
         if rest == 'rdf:nil':
             rest = ''
 
-        mstr = '\n' + first + ' ' + rest + ' '.join(other)
+        mstr = '\n' + first + ' ' + rest + ' (' + ' '.join(other) + ') '
         return mstr
 
+    axioms = {}
+
     # Работаем с аксиомами эквивалентных классов
-    axioms = []
     axiom = ''
+    axioms['equivalentClass'] = {}
     for o in G.objects(ontoclass, OWL.equivalentClass):
+        ax_name = 'equivalentClass_' + str(o)
         if type(o) == BNode:
-            axiom = axiom + 'OWL:equivalentClass:\n'
             for o2 in G.objects (o, OWL.intersectionOf):
                 if type(o2) == BNode:
-                    axiom = axiom + 'OWL:intersectionOf:' + drillelements(o2)
+                    axiom = axiom + 'OWL:intersectionOf: ' + drillelements(o2)
                 else:
                     axiom = axiom + qName(o2)
                 axiom = axiom + '\n'
-            axioms.append(axiom)
+            axioms['equivalentClass'][ax_name] = axiom
+
             axiom = ''
 
     # Работаем с аксиомами подклассов
+    axioms['subClass'] = {}
     for o in G.objects(ontoclass, RDFS.subClassOf):
         if type(o) == BNode:
-            axiom = axiom + 'rdfs:subClassOf:\n'
+            ax_name = 'subClass_' + str(o)
+            axiom = 'rdfs:subClassOf: \n'
             for p3, o3 in G.predicate_objects(o):
                 if type(o3) == BNode:
-                    axiom = axiom + 'OWL:subClassOf:' + drillelements(o3)
+                    axiom = axiom + 'OWL:subClassOf: ' + drillelements(o3)
                 else:
                     axiom = axiom + qName(p3) + ' - ' + qName(o3) + '\n'
             axiom = axiom + '\n'
-            axioms.append(axiom)
-            axiom = ''
+            axioms['subClass'][ax_name] = axiom
 
-    # print('\n '.join(axioms))
+    # print(axioms)
     return axioms

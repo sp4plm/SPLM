@@ -31,32 +31,32 @@
                  select ?uri ?att_cls_lbl ?att_val {
                 BIND (<#{URI}> as ?uri )
                 Optional {
-                  ?uri onto:hasPrice ?att_val .
-                  BIND ('Price' as ?att_cls_lbl) . }}
+                  ?uri onto:hasAttribute ?att_val_cls .
+                  ?att_val_cls onto:hasAttributeValue/onto:value ?att_val .
+                  ?att_val_cls a ?att_cls .
+                  ?att_cls rdfs:label ?att_cls_lbl . }}
                 } UNION {
                 select ?uri ?att_cls_lbl ?att_val {
                   BIND (<#{URI}> as ?uri )
                   Optional {
-                    ?uri onto:hasSize ?att_val .
-                    BIND ('Size' as ?att_cls_lbl) . }}
-                  } UNION {
-                select ?uri ?att_cls_lbl ?att_val {
-                  BIND (<#{URI}> as ?uri )
-                  Optional {
-                    ?uri onto:hasTopping ?topp .
-                    ?topp rdfs:label ?top_lbl .
+                    ?uri onto:hasPart ?topp .
                     ?topp a ?topp_cls .
-                    BIND (CONCAT(STR(?topp_cls), '&&', STR(?topp), '&&', ?top_lbl) as ?att_val )
-                    BIND ('Topping' as ?att_cls_lbl) . }}
+                    ?topp_cls rdfs:subClassOf* onto:PizzaTopping .
+                    ?topp rdfs:label ?topp_lbl .
+                    BIND ('Topping' as ?att_cls_lbl) .
+                    BIND (CONCAT(STR(?topp_cls), '&&', STR(?topp), '&&', ?topp_lbl) as ?att_val )
+                    }}
                   } UNION {
                 select ?uri ?att_cls_lbl ?att_val {
                   BIND (<#{URI}> as ?uri )
                   Optional {
-                    ?uri onto:hasBase ?base .
-                    ?base rdfs:label ?base_lbl .
+                    ?uri onto:hasPart ?base .
                     ?base a ?base_cls .
+                    ?base_cls rdfs:subClassOf* onto:PizzaBase .
+                    ?base rdfs:label ?base_lbl .
+                    BIND ('Base' as ?att_cls_lbl) .
                     BIND (CONCAT(STR(?base_cls), '&&', STR(?base), '&&', ?base_lbl) as ?att_val )
-                    BIND ('Base' as ?att_cls_lbl) . }}
+                    }}
                 }}"
     },
     "list_of_subclasses":{

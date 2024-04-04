@@ -156,19 +156,35 @@ def uri_class(class_object):
 
     return cls.getTemplate()
 
+
+
 @mod.route(url_prefix + '/getver/<class_object>')
 @_auth_decorator
 def get_verif_result(class_object):
-
-    html="<h4>Результаты проверки выполнения требований:</h4>"
+    html='<h4 style="color:#c22719">Результаты проверки выполнения требований:</h4>'
 
     # Берем необходимые аргументы из http запроса
     argms = request.args.to_dict()
     argms['class'] = class_object
 
-    from .classes.pizza.Pizza import get_reqs_verification
-    df = get_reqs_verification(argms['prefix'],argms['class'])
+    from .classes.pizza.Pizza import get_reqs_verification, FILE_REQS
+    df, len_new_triples = get_reqs_verification(argms['prefix'],argms['class'], FILE_REQS)
     html += df.to_html(index=False)
+    return html
+
+@mod.route(url_prefix + '/rules/<class_object>')
+@_auth_decorator
+def get_rules_result(class_object):
+
+    html='<h4 style="color:#c22719">Результаты выполнения правил:</h4>'
+
+    # Берем необходимые аргументы из http запроса
+    argms = request.args.to_dict()
+    argms['class'] = class_object
+
+    from .classes.pizza.Pizza import get_reqs_verification, FILE_RULES
+    df, len_new_triples = get_reqs_verification(argms['prefix'],argms['class'], FILE_RULES)
+    html += "<span>В результате выполнения правил добавлено %s записей в базу данных.</span>" % len_new_triples
     return html
 
 

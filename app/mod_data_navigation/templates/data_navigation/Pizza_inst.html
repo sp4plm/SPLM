@@ -112,8 +112,8 @@
 					<div class="statement">
 						<span class="predicat">Ингредиенты:</span>
 						{% for topp in val.Topping.values() %}
-						<span class="object">{{ topp | safe }}</span>
-							{% endfor %}
+							<span class="object">{{ topp | safe }}</span>
+						{% endfor %}
 					</div>
 					<div class="statement">
 						<span class="predicat">Основа:</span>

@@ -14,10 +14,14 @@
 pizza:America
   a pizza:Country ;
   a owl:Thing ;
-  pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1250"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:Americ_att_size;
+  pizza:hasPart pizza:base_1 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
+  rdfs:label "America" ;
+.
+pizza:Americ_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
 .
 pizza:Hot_1
   a pizza:Hot ;
@@ -25,14 +29,22 @@ pizza:Hot_1
 .
 pizza:AmericanHot_1
   a pizza:AmericanHot ;
-  pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1250"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:HotGreenPepperTopping_1 ;
-  pizza:hasTopping pizza:JalapenoPepperTopping_1 ;
-  pizza:hasTopping pizza:PeperoniSausageTopping_1 ;
-  pizza:hasTopping pizza:tomato_top_inst ;
+  pizza:hasAttribute pizza:AmericanHot_1_att_price;
+  pizza:hasAttribute pizza:AmericanHot_1_att_size;
+  pizza:hasPart pizza:base_2 ;
+  pizza:hasPart pizza:HotGreenPepperTopping_1 ;
+  pizza:hasPart pizza:JalapenoPepperTopping_1 ;
+  pizza:hasPart pizza:PeperoniSausageTopping_1 ;
+  pizza:hasPart pizza:tomato_top_inst ;
   rdfs:label "American Hot" ;
+.
+pizza:AmericanHot_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1450"^^xsd:integer] ;
+.
+pizza:AmericanHot_1_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "32"^^xsd:integer] ;
 .
 pizza:AnchoviesTopping_1
   a pizza:AnchoviesTopping ;
@@ -52,14 +64,22 @@ pizza:Calzone_1
 .
 pizza:Capricciosa_1
   a pizza:Capricciosa ;
-  pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "2110"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:ArtichokeTopping_1 ;
-  pizza:hasTopping pizza:ParmaHamTopping_1 ;
-  pizza:hasTopping pizza:TobascoPepperSauce_1 ;
-  pizza:hasTopping pizza:mozarella_top_inst ;
+  pizza:hasAttribute pizza:Capricciosa_1_att_price;
+  pizza:hasAttribute pizza:Capricciosa_1_att_size;
+  pizza:hasPart pizza:base_1 ;
+  pizza:hasPart pizza:ArtichokeTopping_1 ;
+  pizza:hasPart pizza:ParmaHamTopping_1 ;
+  pizza:hasPart pizza:TobascoPepperSauce_1 ;
+  pizza:hasPart pizza:mozarella_top_inst ;
   rdfs:label "Capricciosa" ;
+.
+pizza:Capricciosa_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "2110"^^xsd:integer] ;
+.
+pizza:Capricciosa_1_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
 .
 pizza:CheeseyVegetableTopping_1
   a pizza:CheeseyVegetableTopping ;
@@ -71,34 +91,58 @@ pizza:ChickenTopping_1
 .
 pizza:ClosedPizza_1
   a pizza:ClosedPizza ;
-  pizza:hasBase pizza:Calzone_1 ;
-  pizza:hasPrice "1900"^^xsd:integer ;
-  pizza:hasSize "38" ;
-  pizza:hasTopping pizza:ArtichokeTopping_1 ;
-  pizza:hasTopping pizza:TobascoPepperSauce_1 ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:ClosedPizza_1_att_price;
+  pizza:hasAttribute pizza:ClosedPizza_1_att_size;
+  pizza:hasPart pizza:Calzone_1 ;
+  pizza:hasPart pizza:ArtichokeTopping_1 ;
+  pizza:hasPart pizza:TobascoPepperSauce_1 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:comment "Это острая пицца, по старинному рецепту." ;
   rdfs:label "Закрытая пицца 1" ;
+.
+pizza:ClosedPizza_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1900"^^xsd:integer] ;
+.
+pizza:ClosedPizza_1_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "38"^^xsd:integer] ;
 .
 pizza:England
   a pizza:Country ;
   a owl:Thing ;
-  pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1250"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:England_att_price;
+  pizza:hasAttribute pizza:England_att_size;
+  pizza:hasPart pizza:base_2 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:label "Британская пицца" ;
+.
+pizza:England_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+.
+pizza:England_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
 .
 pizza:Fiorentina_1
   a pizza:Fiorentina ;
-  pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1900"^^xsd:integer ;
-  pizza:hasSize "38" ;
-  pizza:hasTopping pizza:OliveTopping_1 ;
-  pizza:hasTopping pizza:SpinachTopping_1 ;
-  pizza:hasTopping pizza:mozarella_top_inst ;
-  pizza:hasTopping pizza:tomato_top_inst ;
+  pizza:hasAttribute pizza:Fiorentina_1_att_price;
+  pizza:hasAttribute pizza:Fiorentina_1_att_size;
+  pizza:hasPart pizza:base_2 ;
+  pizza:hasPart pizza:OliveTopping_1 ;
+  pizza:hasPart pizza:SpinachTopping_1 ;
+  pizza:hasPart pizza:mozarella_top_inst ;
+  pizza:hasPart pizza:tomato_top_inst ;
   rdfs:label "Fiorentina" ;
+.
+pizza:Fiorentina_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1900"^^xsd:integer] ;
+.
+pizza:Fiorentina_1_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "39"^^xsd:integer] ;
 .
 pizza:FourCheesesTopping_1
   a pizza:FourCheesesTopping ;
@@ -106,56 +150,94 @@ pizza:FourCheesesTopping_1
 .
 pizza:FourSeasons_1
   a pizza:FourSeasons ;
-  pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1900"^^xsd:integer ;
-  pizza:hasSize "39" ;
-  pizza:hasTopping pizza:AnchoviesTopping_1 ;
-  pizza:hasTopping pizza:OliveTopping_1 ;
-  pizza:hasTopping pizza:SpinachTopping_1 ;
-  pizza:hasTopping pizza:mozarella_top_inst ;
-  pizza:hasTopping pizza:tomato_top_inst ;
+  pizza:hasAttribute pizza:FourSeasons_1_att_price;
+  pizza:hasAttribute pizza:FourSeasons_1_att_size;
+  pizza:hasPart pizza:base_1 ;
+  pizza:hasPart pizza:AnchoviesTopping_1 ;
+  pizza:hasPart pizza:OliveTopping_1 ;
+  pizza:hasPart pizza:SpinachTopping_1 ;
+  pizza:hasPart pizza:mozarella_top_inst ;
+  pizza:hasPart pizza:tomato_top_inst ;
   rdfs:label "Four Seasons" ;
+.
+pizza:FourSeasons_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1900"^^xsd:integer] ;
+.
+pizza:FourSeasons_1_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "39"^^xsd:integer] ;
 .
 pizza:France
   a pizza:Country ;
-  pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "7250"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:France_att_price;
+  pizza:hasAttribute pizza:France_att_size;
+  pizza:hasPart pizza:base_2 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:label "Пицца Франция" ;
+.
+pizza:France_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "7250"^^xsd:integer] ;
+.
+pizza:France_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "30"^^xsd:integer] ;
 .
 pizza:FruttiDiMare_1
   a pizza:FruttiDiMare ;
-  pizza:hasBase pizza:base_1 ;
-  pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1900"^^xsd:integer ;
-  pizza:hasSize "38" ;
-  pizza:hasTopping pizza:MixedSeafoodTopping_1 ;
-  pizza:hasTopping pizza:OliveTopping_1 ;
-  pizza:hasTopping pizza:ParmesanTopping_1 ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:FruttiDiMare_1_att_price;
+  pizza:hasAttribute pizza:FruttiDiMare_1_att_size;
+  pizza:hasPart pizza:base_1 ;
+  pizza:hasPart pizza:base_2 ;
+  pizza:hasPart pizza:MixedSeafoodTopping_1 ;
+  pizza:hasPart pizza:OliveTopping_1 ;
+  pizza:hasPart pizza:ParmesanTopping_1 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:label "Frutti DiMare" ;
+.
+pizza:FruttiDiMare_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1900"^^xsd:integer] ;
+.
+pizza:FruttiDiMare_1_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "30"^^xsd:integer] ;
 .
 pizza:Germany
   a pizza:Country ;
-  pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1250"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:Germany_att_price;
+  pizza:hasAttribute pizza:Germany_att_size;
+  pizza:hasPart pizza:base_2 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:label "Пицца Германия" ;
+.
+pizza:Germany_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+.
+pizza:Germany_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
 .
 pizza:Giardiniera_1
   a pizza:Giardiniera ;
-  pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1900"^^xsd:integer ;
-  pizza:hasSize "38" ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:Giardiniera_1_att_price;
+  pizza:hasAttribute pizza:Giardiniera_1_att_size;
+  pizza:hasPart pizza:base_1 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:label "Giardiniera" ;
+.
+pizza:Giardiniera_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1900"^^xsd:integer] ;
+.
+pizza:Giardiniera_1_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "38"^^xsd:integer] ;
 .
 pizza:GoatsCheeseTopping_1
   a pizza:GoatsCheeseTopping ;
-  pizza:hasPrice "1900"^^xsd:integer ;
-  pizza:hasSize "38" ;
   rdfs:label "Goats Cheese Topping" ;
 .
 pizza:GreenPepperTopping_1
@@ -174,11 +256,19 @@ pizza:HotSpicedBeefTopping_1
 .
 pizza:Italy
   a pizza:Country ;
-  pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1250"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:Italy_att_price;
+  pizza:hasAttribute pizza:Italy_att_size;
+  pizza:hasPart pizza:base_2 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:label "Итальянская пицца" ;
+.
+pizza:Italy_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+.
+pizza:Italy_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
 .
 pizza:JalapenoPepperTopping_1
   a pizza:JalapenoPepperTopping ;
@@ -186,11 +276,19 @@ pizza:JalapenoPepperTopping_1
 .
 pizza:LaReine_1
   a pizza:LaReine ;
-  pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1900"^^xsd:integer ;
-  pizza:hasSize "38" ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:LaReine_1_att_price;
+  pizza:hasAttribute pizza:LaReine_1_att_size;
+  pizza:hasPart pizza:base_2 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:label "La Reine" ;
+.
+pizza:LaReine_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1900"^^xsd:integer] ;
+.
+pizza:LaReine_1_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "38"^^xsd:integer] ;
 .
 pizza:LeekTopping_1
   a pizza:LeekTopping ;
@@ -198,10 +296,18 @@ pizza:LeekTopping_1
 .
 pizza:Margherita_1
   a pizza:Margherita ;
-  pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1250"^^xsd:integer ;
-  pizza:hasSize "31" ;
+  pizza:hasPart pizza:base_1 ;
+  pizza:hasAttribute pizza:Margherita_1_att_price;
+  pizza:hasAttribute pizza:Margherita_1_att_size;
   rdfs:label "Margherita" ;
+.
+pizza:Margherita_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+.
+pizza:Margherita_1_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
 .
 pizza:MixedSeafoodTopping_1
   a pizza:MixedSeafoodTopping ;
@@ -213,139 +319,237 @@ pizza:MushroomTopping_1
 .
 pizza:NamedIndividual_0
   a pizza:Pizza ;
-  pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1200"^^xsd:integer ;
-  pizza:hasSize "38" ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
-  pizza:hasTopping pizza:mozarella_top_inst ;
+  pizza:hasAttribute pizza:NamedIndividual_0_att_price;
+  pizza:hasAttribute pizza:NamedIndividual_0_att_size;
+  pizza:hasPart pizza:base_1 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
+  pizza:hasPart pizza:mozarella_top_inst ;
+  pizza:hasPart pizza:SweetPepperTopping_1 ;
   rdfs:comment "Это самая популярная и вкусная пицца, которую наш шеф повар приготовил по оригинальному старинному рецепту." ;
   rdfs:label "Пицца от шеф повара" ;
 .
+pizza:NamedIndividual_0_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "5200"^^xsd:integer] ;
+.
+pizza:NamedIndividual_0_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "38"^^xsd:integer] ;
+.
 pizza:NamedIndividual_1
   a pizza:American ;
-  pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1580"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:HotSpicedBeefTopping_1 ;
-  pizza:hasTopping pizza:ParmaHamTopping_1 ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
-  pizza:hasTopping pizza:tomato_top_inst ;
+  pizza:hasAttribute pizza:NamedIndividual_1_att_price;
+  pizza:hasAttribute pizza:NamedIndividual_1_att_size;
+  pizza:hasPart pizza:base_2 ;
+  pizza:hasPart pizza:HotSpicedBeefTopping_1 ;
+  pizza:hasPart pizza:ParmaHamTopping_1 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
+  pizza:hasPart pizza:tomato_top_inst ;
   rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
   rdfs:label "Американо" ;
 .
+pizza:NamedIndividual_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1580"^^xsd:integer] ;
+.
+pizza:NamedIndividual_1_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+.
 pizza:NamedIndividual_2
   a pizza:Cajun ;
-  pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1700"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:PeperonataTopping_1 ;
-  pizza:hasTopping pizza:PrawnsTopping_1 ;
-  pizza:hasTopping pizza:RedOnionTopping_1 ;
-  pizza:hasTopping pizza:TobascoPepperSauce_1 ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
-  pizza:hasTopping pizza:mozarella_top_inst ;
-  pizza:hasTopping pizza:tomato_top_inst ;
+  pizza:hasAttribute pizza:NamedIndividual_2_att_price;
+  pizza:hasAttribute pizza:NamedIndividual_2_att_size;
+  pizza:hasPart pizza:base_1 ;
+  pizza:hasPart pizza:PeperonataTopping_1 ;
+  pizza:hasPart pizza:PrawnsTopping_1 ;
+  pizza:hasPart pizza:RedOnionTopping_1 ;
+  pizza:hasPart pizza:TobascoPepperSauce_1 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
+  pizza:hasPart pizza:mozarella_top_inst ;
+  pizza:hasPart pizza:tomato_top_inst ;
   rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
   rdfs:label "Каджун 1" ;
 .
+pizza:NamedIndividual_2_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1700"^^xsd:integer] ;
+.
+pizza:NamedIndividual_2_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+.
 pizza:NamedIndividual_3
   a pizza:Mushroom ;
-  pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "2300"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:MushroomTopping_1 ;
-  pizza:hasTopping pizza:SundriedTomatoTopping_1 ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:NamedIndividual_3_att_price;
+  pizza:hasAttribute pizza:NamedIndividual_3_att_size;
+  pizza:hasPart pizza:base_2 ;
+  pizza:hasPart pizza:MushroomTopping_1 ;
+  pizza:hasPart pizza:SundriedTomatoTopping_1 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
   rdfs:label "Грибная пицца 1" ;
-.pizza:NamedIndividual_33
+.
+pizza:NamedIndividual_3_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "2300"^^xsd:integer] ;
+.
+pizza:NamedIndividual_3_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+.
+pizza:NamedIndividual_33
   a pizza:Pizza ;
-  pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1300"^^xsd:integer ;
-  pizza:hasSize "39" ;
-  pizza:hasTopping pizza:MushroomTopping_1 ;
-  pizza:hasTopping pizza:SundriedTomatoTopping_1 ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:NamedIndividual_33_att_price;
+  pizza:hasAttribute pizza:NamedIndividual_33_att_size;
+  pizza:hasPart pizza:base_2 ;
+  pizza:hasPart pizza:MushroomTopping_1 ;
+  pizza:hasPart pizza:SundriedTomatoTopping_1 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:comment "Это вкусная вегтарианская пицца." ;
   rdfs:label "Грибная пицца 1" ;
 .
+pizza:NamedIndividual_33_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1300"^^xsd:integer] ;
+.
+pizza:NamedIndividual_33_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "39"^^xsd:integer] ;
+.
 pizza:NamedIndividual_4
   a pizza:Mushroom ;
-  pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "2500"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:MushroomTopping_1 ;
-  pizza:hasTopping pizza:SlicedTomatoTopping_1 ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:NamedIndividual_4_att_price;
+  pizza:hasAttribute pizza:NamedIndividual_4_att_size;
+  pizza:hasPart pizza:base_2 ;
+  pizza:hasPart pizza:MushroomTopping_1 ;
+  pizza:hasPart pizza:SlicedTomatoTopping_1 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
   rdfs:label "Грибная пицца 2" ;
 .
+pizza:NamedIndividual_4_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "2500"^^xsd:integer] ;
+.
+pizza:NamedIndividual_4_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+.
 pizza:NamedIndividual_5
   a pizza:Mushroom ;
-  pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1250"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:MushroomTopping_1 ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
-  pizza:hasTopping pizza:mozarella_top_inst ;
+  pizza:hasAttribute pizza:NamedIndividual_5_att_price;
+  pizza:hasAttribute pizza:NamedIndividual_5_att_size;
+  pizza:hasPart pizza:base_2 ;
+  pizza:hasPart pizza:MushroomTopping_1 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
+  pizza:hasPart pizza:mozarella_top_inst ;
   rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
   rdfs:label "Грибная пицца 3" ;
 .
+pizza:NamedIndividual_5_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1300"^^xsd:integer] ;
+.
+pizza:NamedIndividual_5_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+.
 pizza:NamedIndividual_6
   a pizza:Mushroom ;
-  pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1300"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:MushroomTopping_1 ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:NamedIndividual_6_att_price;
+  pizza:hasAttribute pizza:NamedIndividual_6_att_size;
+  pizza:hasPart pizza:base_2 ;
+  pizza:hasPart pizza:MushroomTopping_1 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
   rdfs:label "Грибная пицца 4" ;
 .
+pizza:NamedIndividual_6_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1300"^^xsd:integer] ;
+.
+pizza:NamedIndividual_6_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+.
 pizza:NamedIndividual_7
   a pizza:Soho ;
-  pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1000"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:OliveTopping_1 ;
-  pizza:hasTopping pizza:ParmesanTopping_1 ;
-  pizza:hasTopping pizza:RocketTopping_1 ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
-  pizza:hasTopping pizza:mozarella_top_inst ;
-  pizza:hasTopping pizza:tomato_top_inst ;
+  pizza:hasAttribute pizza:NamedIndividual_7_att_price;
+  pizza:hasAttribute pizza:NamedIndividual_7_att_size;
+  pizza:hasPart pizza:base_1 ;
+  pizza:hasPart pizza:OliveTopping_1 ;
+  pizza:hasPart pizza:ParmesanTopping_1 ;
+  pizza:hasPart pizza:RocketTopping_1 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
+  pizza:hasPart pizza:mozarella_top_inst ;
+  pizza:hasPart pizza:tomato_top_inst ;
   rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
   rdfs:label "Пицца Сохо 1" ;
 .
+pizza:NamedIndividual_7_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1000"^^xsd:integer] ;
+.
+pizza:NamedIndividual_7_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+.
 pizza:NamedIndividual_8
   a pizza:Soho ;
-  pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1600"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:OliveTopping_1 ;
-  pizza:hasTopping pizza:RocketTopping_1 ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
-  pizza:hasTopping pizza:tomato_top_inst ;
+  pizza:hasAttribute pizza:NamedIndividual_8_att_price;
+  pizza:hasAttribute pizza:NamedIndividual_8_att_size;
+  pizza:hasPart pizza:base_1 ;
+  pizza:hasPart pizza:OliveTopping_1 ;
+  pizza:hasPart pizza:RocketTopping_1 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
+  pizza:hasPart pizza:tomato_top_inst ;
   rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
   rdfs:label "Пицца Сохо 2" ;
 .
+pizza:NamedIndividual_8_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1600"^^xsd:integer] ;
+.
+pizza:NamedIndividual_8_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+.
 pizza:NamedIndividual_9
   a pizza:Soho ;
-  pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "900"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:ParmesanTopping_1 ;
-  pizza:hasTopping pizza:RocketTopping_1 ;
-  pizza:hasTopping pizza:SlicedTomatoTopping_1 ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:NamedIndividual_9_att_price;
+  pizza:hasAttribute pizza:NamedIndividual_9_att_size;
+  pizza:hasPart pizza:base_1 ;
+  pizza:hasPart pizza:ParmesanTopping_1 ;
+  pizza:hasPart pizza:RocketTopping_1 ;
+  pizza:hasPart pizza:SlicedTomatoTopping_1 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:comment "Это самая вкусная пицца, по оригинальному рецепту." ;
   rdfs:label "Пицца Сохо 3" ;
 .
+pizza:NamedIndividual_9_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "900"^^xsd:integer] ;
+.
+pizza:NamedIndividual_9_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+.
 pizza:Napoletana_1
   a pizza:Napoletana ;
-  pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1250"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:Napoletana_1_att_price;
+  pizza:hasAttribute pizza:Napoletana_1_att_size;
+  pizza:hasPart pizza:base_1 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:label "Napoletana" ;
+.
+pizza:Napoletana_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+.
+pizza:Napoletana_1_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
 .
 pizza:OliveTopping_1
   a pizza:OliveTopping ;
@@ -357,11 +561,19 @@ pizza:ParmaHamTopping_1
 .
 pizza:Parmense_1
   a pizza:Parmense ;
-  pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1250"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:SlicedTomatoTopping_1 ;
+  pizza:hasAttribute pizza:Parmense_1_att_price;
+  pizza:hasAttribute pizza:Parmense_1_att_size;
+  pizza:hasPart pizza:base_2 ;
+  pizza:hasPart pizza:SlicedTomatoTopping_1 ;
   rdfs:label "Parmense" ;
+.
+pizza:Parmense_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+.
+pizza:Parmense_1_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
 .
 pizza:ParmesanTopping_1
   a pizza:ParmesanTopping ;
@@ -385,11 +597,19 @@ pizza:PineKernels_1
 .
 pizza:PolloAdAstra_1
   a pizza:PolloAdAstra ;
-  pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1250"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:PolloAdAstra_1_att_price;
+  pizza:hasAttribute pizza:PolloAdAstra_1_att_size;
+  pizza:hasPart pizza:base_1 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:label "Pollo Ad Astra" ;
+.
+pizza:PolloAdAstra_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+.
+pizza:PolloAdAstra_1_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
 .
 pizza:PrawnsTopping_1
   a pizza:PrawnsTopping ;
@@ -397,19 +617,35 @@ pizza:PrawnsTopping_1
 .
 pizza:PrinceCarlo_1
   a pizza:PrinceCarlo ;
-  pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1250"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:PrinceCarlo_1_att_price;
+  pizza:hasAttribute pizza:PrinceCarlo_1_att_size;
+  pizza:hasPart pizza:base_2 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:label "Prince Carlo" ;
+.
+pizza:PrinceCarlo_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+.
+pizza:PrinceCarlo_1_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
 .
 pizza:QuattroFormaggi_1
   a pizza:QuattroFormaggi ;
-  pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1250"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:QuattroFormaggi_1_att_price;
+  pizza:hasAttribute pizza:QuattroFormaggi_1_att_size;
+  pizza:hasPart pizza:base_1 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:label "Quattro Formaggi" ;
+.
+pizza:QuattroFormaggi_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+.
+pizza:QuattroFormaggi_1_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
 .
 pizza:RedOnionTopping_1
   a pizza:RedOnionTopping ;
@@ -425,11 +661,19 @@ pizza:RosemaryTopping_1
 .
 pizza:Siciliana_1
   a pizza:Siciliana ;
-  pizza:hasBase pizza:base_1 ;
-  pizza:hasPrice "1250"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:Siciliana_1_att_price;
+  pizza:hasAttribute pizza:Siciliana_1_att_size;
+  pizza:hasPart pizza:base_1 ;
+  pizza:hasPart pizza:SweetPepperTopping_1 ;
   rdfs:label "Siciliana" ;
+.
+pizza:Siciliana_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+.
+pizza:Siciliana_1_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
 .
 pizza:SlicedTomatoTopping_1
   a pizza:SlicedTomatoTopping ;
@@ -437,11 +681,19 @@ pizza:SlicedTomatoTopping_1
 .
 pizza:SloppyGiuseppe_1
   a pizza:SloppyGiuseppe ;
-  pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1250"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:SloppyGiuseppe_1_att_price;
+  pizza:hasAttribute pizza:SloppyGiuseppe_1_att_size;
+  pizza:hasPart pizza:base_2 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:label "Sloppy Giuseppe" ;
+.
+pizza:SloppyGiuseppe_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+.
+pizza:SloppyGiuseppe_1_att_size
+  a pizza:Size ;
+  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
 .
 pizza:SpinachTopping_1
   a pizza:SpinachTopping ;
@@ -458,6 +710,46 @@ pizza:SundriedTomatoTopping_1
 pizza:SweetPepperTopping_1
   a pizza:SweetPepperTopping ;
   rdfs:label "Sweet Pepper Topping" ;
+  pizza:hasPart pizza:sugar_1 ;
+  pizza:hasPart pizza:pepper_1 ;
+  pizza:hasPart pizza:oil_1 ;
+  pizza:hasPart pizza:solt_1 ;
+.
+pizza:sugar_1
+  a pizza:Food ;
+  rdfs:label "Сахар" ;
+  pizza:hasAttribute pizza:sugar_1_att_price;
+.
+pizza:sugar_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "90"^^xsd:integer] ;
+.
+pizza:pepper_1
+  a pizza:Food ;
+  rdfs:label "Перец" ;
+  pizza:hasAttribute pizza:pepper_1_att_price;
+.
+pizza:pepper_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "10"^^xsd:integer] ;
+.
+pizza:oil_1
+  a pizza:Food ;
+  rdfs:label "Масло" ;
+  pizza:hasAttribute pizza:oil_1_att_price;
+.
+pizza:oil_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "200"^^xsd:integer] ;
+.
+pizza:solt_1
+  a pizza:Food ;
+  rdfs:label "Соль" ;
+  pizza:hasAttribute pizza:solt_1_att_price;
+.
+pizza:solt_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "42"^^xsd:integer] ;
 .
 pizza:TobascoPepperSauce_1
   a pizza:TobascoPepperSauce ;
@@ -465,11 +757,14 @@ pizza:TobascoPepperSauce_1
 .
 pizza:Veneziana_1
   a pizza:Veneziana ;
-  pizza:hasBase pizza:base_2 ;
-  pizza:hasPrice "1250"^^xsd:integer ;
-  pizza:hasSize "31" ;
-  pizza:hasTopping pizza:gorgonzola_top_inst ;
+  pizza:hasAttribute pizza:Veneziana_1_att_price;
+  pizza:hasPart pizza:base_2 ;
+  pizza:hasPart pizza:gorgonzola_top_inst ;
   rdfs:label "Veneziana" ;
+.
+pizza:Veneziana_1_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
 .
 pizza:base_1
   a pizza:DeepPanBase ;
@@ -494,6 +789,10 @@ pizza:tomato_top_inst
 pizza:IceCream_instance
   a pizza:IceCream ;
   rdfs:label "Мороженное пломбир" ;
-  pizza:hasPrice "150"^^xsd:integer;
+  pizza:hasAttribute pizza:IceCream_instance_att_price;
+.
+pizza:IceCream_instance_att_price
+  a pizza:Price ;
+  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
 .
 

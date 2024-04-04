@@ -61,7 +61,7 @@ class PizzaBase:
         if uri =='':
             uri_str = '<a href="{}?prefix={}">{}</a>'.format(cls,prf,lbl)
         else:
-            uri_str = '<a href="{}?prefix={}&uri={}">{}</a>'.format(cls,prf,uri,lbl)
+            uri_str = '<a href="{}?prefix={}&uri={}">{}</a>'.format(cls,prf,quote(uri),lbl)
 
         return uri_str
 
@@ -90,7 +90,7 @@ class PizzaBase:
 
         # Если есть аргумент URI, то значит показываем страничку "Экземпляра класса"
         if 'uri' in self.argm.keys():
-            query_inst = tsc_query('mod_data_navigation.Pizza.instance',
+            query_inst = tsc_query('mod_data_navigation.PizzaBase.instance',
                                    {'PREF': self.pref_unquote, 'URI': self.argm['uri']})
 
             if not isinstance(query_inst,str):
@@ -107,6 +107,14 @@ class PizzaBase:
                 for ind, row in df.iterrows():
                     if not row.inst_lbl in d:
                         d.update({row.inst_lbl:{} })
+                        d[row.inst_lbl].update({'Pizza': {}})
+                    if row.att_cls_lbl == 'Pizza':
+                        row_pzz = row.att_val.split('&&')
+                        d[row.inst_lbl]['Pizza'].update(
+                            {row_pzz[2]: self.__make_href__(cls=row_pzz[0].split('#')[1],
+                                                            prf='pizza', uri=row_pzz[1],
+                                                            lbl=row_pzz[2])})
+
                     else:
                         d[row.inst_lbl].update({row.att_cls_lbl : row.att_val})
 

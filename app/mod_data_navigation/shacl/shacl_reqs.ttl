@@ -1,0 +1,64 @@
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pizza: <http://www.co-ode.org/ontologies/pizza/pizza.owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix terms: <http://purl.org/dc/terms/> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+pizza:PizzaShape
+	a sh:NodeShape ;
+	sh:targetClass pizza:Pizza ;    # Applies to all pizza
+	sh:property [
+		sh:name "REQ - 1 " ;
+		sh:description "Пицца должна иметь основу. Основа у пиццы должна быть только одна." ;
+		sh:message "Пицца имеет неправильное количество основ." ;
+		sh:path pizza:hasPart ;
+		sh:qualifiedValueShape [ sh:class pizza:PizzaBase ; ] ;
+		sh:qualifiedValueShapesDisjoint true ;
+		sh:qualifiedMinCount 1 ;
+		sh:qualifiedMaxCount 1 ;
+	] ;
+	sh:property [
+		sh:name "REQ - 2 " ;
+		sh:description "Пицца должна иметь топпинг. У пиццы может быть более одного топиинга." ;
+		sh:message "Пицца не имеет топинга." ;
+		sh:path pizza:hasPart ;
+		sh:qualifiedValueShape [ sh:class pizza:PizzaTopping ; ] ;
+		sh:qualifiedValueShapesDisjoint true ;
+		sh:qualifiedMinCount 1 ;
+	] ;
+.
+pizza:PizzaAttributesShape
+	a sh:NodeShape ;
+	sh:targetClass pizza:Pizza ;    # Applies to all pizza
+	sh:property [
+		sh:name "REQ - 3 " ;
+		sh:description "Пицца должна иметь 2 атрибута." ;
+		sh:message "Количество найденных атрибутов менее 2." ;
+		sh:path pizza:hasAttribute ;           # constrains the values of pizza:hasSize
+		sh:minCount 2 ;
+	] ;
+	sh:property [
+		sh:name "REQ - 4" ;
+		sh:description "Пицца должна иметь атрибут размер." ;
+		sh:message "У пиццы не найден атрибут размер." ;
+		sh:path pizza:hasAttribute ;
+		sh:qualifiedValueShape [ sh:class pizza:Size ; ] ;
+		sh:qualifiedValueShapesDisjoint true ;
+		sh:qualifiedMinCount 1 ;
+		sh:qualifiedMaxCount 1 ;
+	] ;
+	sh:property [
+		sh:name "REQ - 5" ;
+		sh:description "Пицца должна иметь атрибут цена." ;
+		sh:message "У пицца не найден атрибут цена." ;
+		sh:path pizza:hasAttribute ;
+		sh:qualifiedValueShape [ sh:class pizza:Price ; ] ;
+		sh:qualifiedValueShapesDisjoint true ;
+		sh:qualifiedMinCount 1 ;
+	] ;
+.

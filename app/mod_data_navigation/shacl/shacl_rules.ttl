@@ -9,56 +9,11 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 
-pizza:PizzaShape
-	a sh:NodeShape ;
-	sh:targetClass pizza:Pizza ;    # Applies to all pizza
-	sh:property [
-		sh:name "req 1" ;
-		sh:description "Пицца должна иметь свойство Размер. У пиццы свойство Размер должно иметь только одно значение. Допускается иметь следующие варианты размеров пиццы: 25 см, 31 см или 38см." ;
-		sh:path pizza:hasSize ;           # constrains the values of pizza:hasSize
-		sh:maxCount 1 ;
-		sh:in ("25" "31" "38") ;
-	] ;
-	sh:property [
-		sh:name "req 2" ;
-		sh:description "Пицца должна иметь Топпиги. У пиццы должен быть как минумум 1 Топпиг." ;
-		sh:path pizza:hasTopping ;
-		sh:minCount 1 ;
-		sh:nodeKind sh:IRI ;
-	] ;
-		sh:property [
-		sh:name "req 3" ;
-		sh:description "Пицца должна иметь Топпиги. У пиццы должен быть как максиму 5 Топпигов." ;
-		sh:path pizza:hasTopping ;
-		sh:class pizza:PizzaTopping ;
-		sh:maxCount 6 ;
-		sh:nodeKind sh:IRI ;
-	] ;
-		sh:property [
-		sh:name "req 4" ;
-		sh:description "Пицца должна иметь Основу. У пиццы может быть только 1 Основа." ;
-		sh:path pizza:hasBase ;
-		sh:minCount 1 ;
-		sh:maxCount 1 ;
-		sh:class pizza:PizzaBase ;
-		sh:nodeKind sh:IRI ;
-	] ;
-		sh:property [
-		sh:name "req 5" ;
-		sh:description "Пицца должна иметь свойство Цена. У пиццы свойство Цена должно иметь только одно значение. Цена не должна быть выше 5000" ;
-		sh:path pizza:hasPrice ;
-		sh:maxCount 1 ;
-		sh:maxInclusive 5000 ;
-		sh:nodeKind sh:Literal ;
-	] ;
-	sh:closed true ;
-	sh:ignoredProperties ( rdf:type rdfs:comment pizza:hasIngredient rdfs:label) ;
-.
 pizza:HotSpicedPizzaShape
     a sh:NodeShape ;
     sh:targetClass pizza:Pizza ;
 	sh:property [
-		sh:path (pizza:hasTopping pizza:hasSpiciness) ;
+		sh:path (pizza:hasPart pizza:hasSpiciness) ;
 		sh:nodeKind sh:IRI ;
         sh:class pizza:Hot ;
 		sh:minCount 1 ;
@@ -68,10 +23,10 @@ pizza:HotSpicedPizzaRuleShape
     a sh:NodeShape ;
     sh:targetClass pizza:Pizza ;
     sh:rule [
-        sh:name "rule 6" ;
+        a sh:TripleRule ;
+        sh:name "Rule 001" ;
         sh:description "Если в топпиге есть острый перец, то пицца относится к классу Острые пиццы" ;
         sh:prefixes pizza: ;
-        a sh:TripleRule ;
         sh:subject sh:this ;
         sh:predicate rdf:type ;
         sh:object pizza:SpicyPizza ;
@@ -83,7 +38,7 @@ pizza:NonVegetarianPizzaRulesShape
 	sh:targetClass pizza:Pizza ;
 	sh:rule [
 		a sh:SPARQLRule ;
-		sh:name "rule 7" ;
+		sh:name "Rule 002" ;
         sh:description "Если у пиццы мясной или рыбный топпинг, то это НЕ вегитарианская пицца." ;
 		sh:prefixes pizza: ;
 		sh:construct """
@@ -92,7 +47,7 @@ pizza:NonVegetarianPizzaRulesShape
 			}
 			WHERE {
   					$this a/rdfs:subClassOf* pizza:Pizza .
-  					$this pizza:hasTopping ?o .
+  					$this pizza:hasPart ?o .
   					?o a/rdfs:subClassOf* ?cls . filter (?cls IN (pizza:FishTopping, pizza:MeatTopping))
 			}
 			""" ;
@@ -103,7 +58,7 @@ pizza:VegetarianPizzaRulesShape
 	sh:targetClass pizza:Pizza ;
 	sh:rule [
 		a sh:SPARQLRule ;
-		sh:name "rule 8" ;
+		sh:name "Rule 003" ;
         sh:description "Если у пиццы нет мясного или рыбного топпинга, или вообще нет топпинга, то это Вегитарианская пицца." ;
 		sh:prefixes pizza: ;
 		sh:construct """
@@ -112,12 +67,12 @@ pizza:VegetarianPizzaRulesShape
 			}
 			WHERE {
 				  $this a/rdfs:subClassOf* pizza:Pizza .
-				  #$this pizza:hasTopping ?tp .
+				  #$this pizza:hasPart ?tp .
 				  minus {
 				  ?fish rdfs:subClassOf* pizza:FishTopping .
 				  ?meat rdfs:subClassOf* pizza:MeatTopping .
 				  $this a/rdfs:subClassOf* pizza:Pizza .
-				  $this pizza:hasTopping ?o . #filter (?o != ?fish && ?o != ?meat)
+				  $this pizza:hasPart ?o . #filter (?o != ?fish && ?o != ?meat)
 				  ?o a ?cls . filter (?cls IN (?fish, ?meat)) }			}
 			""" ;
 	] ;
