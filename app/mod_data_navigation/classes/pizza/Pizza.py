@@ -327,7 +327,7 @@ def get_reqs_verification(prefix, ontoclass, choiced_file):
                      debug=True)
 
         conforms, results_graph, results_text = r
-        results_graph.serialize('valid.ttl')
+
         if not conforms:
             qry_validat = """prefix sh: <http://www.w3.org/ns/shacl#>
                                 SELECT ?code ?text ?conf ?message ?inst ?val {{ 
