@@ -10,7 +10,8 @@
 @prefix terms: <http://purl.org/dc/terms/> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix qudt: <http://data.nasa.gov/qudt/owl/qudt#> .
+@prefix unit: <http://data.nasa.gov/qudt/owl/unit#> .
 
 dc:description
   a owl:AnnotationProperty ;
@@ -1102,7 +1103,7 @@ pizza:PrinceCarlo
 .
 pizza:QuattroFormaggi
   a owl:Class ;
-  rdfs:label "QuattroFormaggi"@en ;
+  rdfs:label "Quattro Formaggi"@en ;
   rdfs:subClassOf pizza:NamedPizza ;
   rdfs:subClassOf [
       a owl:Restriction ;
@@ -1782,3 +1783,18 @@ skos:prefLabel
       pizza:PizzaTopping
     ) ;
 ].
+unit:RussianRuble
+  a qudt:CurrencyUnit ;
+  qudt:abbreviation "RUB" ;
+  qudt:code "643" ;
+  qudt:currencyExponent 2 ;
+  qudt:description "Russia, Abkhazia, South Ossetia" ;
+  rdfs:label "руб"@ru ;
+.
+unit:Millimeter
+  a qudt:LengthUnit ;
+  qudt:abbreviation "mm" ;
+  qudt:conversionMultiplier "0.001"^^xsd:double ;
+  qudt:conversionOffset "0.0"^^xsd:double ;
+  rdfs:label "мм"@ru ;
+.

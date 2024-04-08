@@ -10,6 +10,8 @@
 @prefix terms: <http://purl.org/dc/terms/> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix qudt: <http://data.nasa.gov/qudt/owl/qudt#> .
+@prefix unit: <http://data.nasa.gov/qudt/owl/unit#> .
 
 pizza:America
   a pizza:Country ;
@@ -636,16 +638,18 @@ pizza:QuattroFormaggi_1
   pizza:hasAttribute pizza:QuattroFormaggi_1_att_price;
   pizza:hasAttribute pizza:QuattroFormaggi_1_att_size;
   pizza:hasPart pizza:base_1 ;
-  pizza:hasPart pizza:gorgonzola_top_inst ;
+  pizza:hasPart pizza:SweetPepperTopping_1 ;
   rdfs:label "Quattro Formaggi" ;
 .
 pizza:QuattroFormaggi_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1250"^^xsd:integer] ;
 .
 pizza:QuattroFormaggi_1_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:RedOnionTopping_1
   a pizza:RedOnionTopping ;
@@ -722,7 +726,8 @@ pizza:sugar_1
 .
 pizza:sugar_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "90"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "90"^^xsd:integer] ;
 .
 pizza:pepper_1
   a pizza:Food ;
@@ -731,7 +736,8 @@ pizza:pepper_1
 .
 pizza:pepper_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "10"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "10"^^xsd:integer] ;
 .
 pizza:oil_1
   a pizza:Food ;
@@ -740,7 +746,8 @@ pizza:oil_1
 .
 pizza:oil_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "200"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "200"^^xsd:integer] ;
 .
 pizza:solt_1
   a pizza:Food ;
@@ -749,11 +756,8 @@ pizza:solt_1
 .
 pizza:solt_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "42"^^xsd:integer] ;
-.
-pizza:TobascoPepperSauce_1
-  a pizza:TobascoPepperSauce ;
-  rdfs:label "Tobasco Pepper Sauce" ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "42"^^xsd:integer] ;
 .
 pizza:Veneziana_1
   a pizza:Veneziana ;
@@ -764,7 +768,8 @@ pizza:Veneziana_1
 .
 pizza:Veneziana_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1250"^^xsd:integer] ;
 .
 pizza:base_1
   a pizza:DeepPanBase ;
@@ -795,4 +800,6 @@ pizza:IceCream_instance_att_price
   a pizza:Price ;
   pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
 .
-
+qudt:rub
+  rdfs:label "руб"@ru ;
+.
