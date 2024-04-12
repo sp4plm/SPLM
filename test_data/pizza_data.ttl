@@ -23,7 +23,8 @@ pizza:America
 .
 pizza:Americ_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:Hot_1
   a pizza:Hot ;
@@ -42,11 +43,13 @@ pizza:AmericanHot_1
 .
 pizza:AmericanHot_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1450"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                            pizza:value "1450"^^xsd:integer] ;
 .
 pizza:AmericanHot_1_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "32"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "320"^^xsd:integer] ;
 .
 pizza:AnchoviesTopping_1
   a pizza:AnchoviesTopping ;
@@ -77,11 +80,13 @@ pizza:Capricciosa_1
 .
 pizza:Capricciosa_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "2110"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "2110"^^xsd:integer] ;
 .
 pizza:Capricciosa_1_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:CheeseyVegetableTopping_1
   a pizza:CheeseyVegetableTopping ;
@@ -104,11 +109,13 @@ pizza:ClosedPizza_1
 .
 pizza:ClosedPizza_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1900"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                            pizza:value "1900"^^xsd:integer] ;
 .
 pizza:ClosedPizza_1_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "38"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "380"^^xsd:integer] ;
 .
 pizza:England
   a pizza:Country ;
@@ -121,11 +128,13 @@ pizza:England
 .
 pizza:England_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1250"^^xsd:integer] ;
 .
 pizza:England_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:Fiorentina_1
   a pizza:Fiorentina ;
@@ -140,11 +149,13 @@ pizza:Fiorentina_1
 .
 pizza:Fiorentina_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1900"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1900"^^xsd:integer] ;
 .
 pizza:Fiorentina_1_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "39"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "390"^^xsd:integer] ;
 .
 pizza:FourCheesesTopping_1
   a pizza:FourCheesesTopping ;
@@ -164,11 +175,13 @@ pizza:FourSeasons_1
 .
 pizza:FourSeasons_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1900"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1900"^^xsd:integer] ;
 .
 pizza:FourSeasons_1_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "39"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "390"^^xsd:integer] ;
 .
 pizza:France
   a pizza:Country ;
@@ -180,11 +193,13 @@ pizza:France
 .
 pizza:France_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "7250"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "7250"^^xsd:integer] ;
 .
 pizza:France_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "30"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "300"^^xsd:integer] ;
 .
 pizza:FruttiDiMare_1
   a pizza:FruttiDiMare ;
@@ -200,11 +215,13 @@ pizza:FruttiDiMare_1
 .
 pizza:FruttiDiMare_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1900"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1900"^^xsd:integer] ;
 .
 pizza:FruttiDiMare_1_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "30"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "300"^^xsd:integer] ;
 .
 pizza:Germany
   a pizza:Country ;
@@ -216,11 +233,13 @@ pizza:Germany
 .
 pizza:Germany_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1250"^^xsd:integer] ;
 .
 pizza:Germany_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:Giardiniera_1
   a pizza:Giardiniera ;
@@ -232,11 +251,13 @@ pizza:Giardiniera_1
 .
 pizza:Giardiniera_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1900"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1900"^^xsd:integer] ;
 .
 pizza:Giardiniera_1_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "38"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "380"^^xsd:integer] ;
 .
 pizza:GoatsCheeseTopping_1
   a pizza:GoatsCheeseTopping ;
@@ -266,11 +287,13 @@ pizza:Italy
 .
 pizza:Italy_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1250"^^xsd:integer] ;
 .
 pizza:Italy_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:JalapenoPepperTopping_1
   a pizza:JalapenoPepperTopping ;
@@ -286,11 +309,13 @@ pizza:LaReine_1
 .
 pizza:LaReine_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1900"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1900"^^xsd:integer] ;
 .
 pizza:LaReine_1_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "38"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "380"^^xsd:integer] ;
 .
 pizza:LeekTopping_1
   a pizza:LeekTopping ;
@@ -305,11 +330,13 @@ pizza:Margherita_1
 .
 pizza:Margherita_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1250"^^xsd:integer] ;
 .
 pizza:Margherita_1_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:MixedSeafoodTopping_1
   a pizza:MixedSeafoodTopping ;
@@ -332,11 +359,13 @@ pizza:NamedIndividual_0
 .
 pizza:NamedIndividual_0_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "5200"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "5200"^^xsd:integer] ;
 .
 pizza:NamedIndividual_0_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "38"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "380"^^xsd:integer] ;
 .
 pizza:NamedIndividual_1
   a pizza:American ;
@@ -352,11 +381,13 @@ pizza:NamedIndividual_1
 .
 pizza:NamedIndividual_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1580"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1580"^^xsd:integer] ;
 .
 pizza:NamedIndividual_1_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:NamedIndividual_2
   a pizza:Cajun ;
@@ -375,11 +406,13 @@ pizza:NamedIndividual_2
 .
 pizza:NamedIndividual_2_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1700"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1700"^^xsd:integer] ;
 .
 pizza:NamedIndividual_2_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:NamedIndividual_3
   a pizza:Mushroom ;
@@ -394,11 +427,13 @@ pizza:NamedIndividual_3
 .
 pizza:NamedIndividual_3_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "2300"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "2300"^^xsd:integer] ;
 .
 pizza:NamedIndividual_3_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:NamedIndividual_33
   a pizza:Pizza ;
@@ -413,11 +448,13 @@ pizza:NamedIndividual_33
 .
 pizza:NamedIndividual_33_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1300"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1300"^^xsd:integer] ;
 .
 pizza:NamedIndividual_33_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "39"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "300"^^xsd:integer] ;
 .
 pizza:NamedIndividual_4
   a pizza:Mushroom ;
@@ -432,11 +469,13 @@ pizza:NamedIndividual_4
 .
 pizza:NamedIndividual_4_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "2500"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "2500"^^xsd:integer] ;
 .
 pizza:NamedIndividual_4_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:NamedIndividual_5
   a pizza:Mushroom ;
@@ -451,11 +490,13 @@ pizza:NamedIndividual_5
 .
 pizza:NamedIndividual_5_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1300"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1300"^^xsd:integer] ;
 .
 pizza:NamedIndividual_5_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:NamedIndividual_6
   a pizza:Mushroom ;
@@ -469,11 +510,13 @@ pizza:NamedIndividual_6
 .
 pizza:NamedIndividual_6_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1300"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1300"^^xsd:integer] ;
 .
 pizza:NamedIndividual_6_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:NamedIndividual_7
   a pizza:Soho ;
@@ -491,11 +534,13 @@ pizza:NamedIndividual_7
 .
 pizza:NamedIndividual_7_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1000"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1000"^^xsd:integer] ;
 .
 pizza:NamedIndividual_7_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:NamedIndividual_8
   a pizza:Soho ;
@@ -511,11 +556,13 @@ pizza:NamedIndividual_8
 .
 pizza:NamedIndividual_8_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1600"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1600"^^xsd:integer] ;
 .
 pizza:NamedIndividual_8_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:NamedIndividual_9
   a pizza:Soho ;
@@ -531,11 +578,13 @@ pizza:NamedIndividual_9
 .
 pizza:NamedIndividual_9_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "900"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "900"^^xsd:integer] ;
 .
 pizza:NamedIndividual_9_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:Napoletana_1
   a pizza:Napoletana ;
@@ -547,11 +596,13 @@ pizza:Napoletana_1
 .
 pizza:Napoletana_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1250"^^xsd:integer] ;
 .
 pizza:Napoletana_1_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:OliveTopping_1
   a pizza:OliveTopping ;
@@ -571,11 +622,13 @@ pizza:Parmense_1
 .
 pizza:Parmense_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1250"^^xsd:integer] ;
 .
 pizza:Parmense_1_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:ParmesanTopping_1
   a pizza:ParmesanTopping ;
@@ -607,11 +660,13 @@ pizza:PolloAdAstra_1
 .
 pizza:PolloAdAstra_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1250"^^xsd:integer] ;
 .
 pizza:PolloAdAstra_1_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:PrawnsTopping_1
   a pizza:PrawnsTopping ;
@@ -627,11 +682,13 @@ pizza:PrinceCarlo_1
 .
 pizza:PrinceCarlo_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1250"^^xsd:integer] ;
 .
 pizza:PrinceCarlo_1_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:QuattroFormaggi_1
   a pizza:QuattroFormaggi ;
@@ -673,11 +730,13 @@ pizza:Siciliana_1
 .
 pizza:Siciliana_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1250"^^xsd:integer] ;
 .
 pizza:Siciliana_1_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:SlicedTomatoTopping_1
   a pizza:SlicedTomatoTopping ;
@@ -693,11 +752,13 @@ pizza:SloppyGiuseppe_1
 .
 pizza:SloppyGiuseppe_1_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1250"^^xsd:integer] ;
 .
 pizza:SloppyGiuseppe_1_att_size
   a pizza:Size ;
-  pizza:hasAttributeValue [pizza:value "31"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:Millimeter ;
+                           pizza:value "310"^^xsd:integer] ;
 .
 pizza:SpinachTopping_1
   a pizza:SpinachTopping ;
@@ -798,7 +859,8 @@ pizza:IceCream_instance
 .
 pizza:IceCream_instance_att_price
   a pizza:Price ;
-  pizza:hasAttributeValue [pizza:value "1250"^^xsd:integer] ;
+  pizza:hasAttributeValue [qudt:unit unit:RussianRuble ;
+                           pizza:value "1250"^^xsd:integer] ;
 .
 qudt:rub
   rdfs:label "руб"@ru ;
