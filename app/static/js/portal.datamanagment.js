@@ -27,6 +27,7 @@ if(typeof void null!=typeof jQuery){
             _existedFiles=[],
             _existedFilesIdx = 0,
             _$existedFilesBox=null,
+            pref_col_idx = 0, // индекс колонки префикса, устанавливается в функции
             _useMaster = false;
         
         _$box = $('.maincontent:first');
@@ -169,6 +170,22 @@ if(typeof void null!=typeof jQuery){
         
         function custRToolbar(cellvalue, options, rowObject){
             return cookRowToolbar();
+        }
+
+        function prefix_formatter(cellvalue, options, rowObject) {
+            var _html, _lst, ix, cnt, _t;
+            _lst = cellvalue.split("\n");
+            cnt = _lst.length;
+            _html = '';
+            // on prefix origin view -> 'owl: http://www.w3.org/2002/07/owl#'
+            for(ix=0;ix<cnt;ix++) {
+                _t = _lst[ix].split(' ');
+                _html += '<b>' + _t[0] + '</b>' + '&nbsp;';
+                _html += '&lt;' + _t[1] + '&gt;';
+                _html += '<br />';
+            }
+            // on prefix result view -> <b>owl:</b>&nbsp;<http://www.w3.org/2002/07/owl#><br />
+            return _html;
         }
 
         function uploadFiles($form){
@@ -921,7 +938,7 @@ if(typeof void null!=typeof jQuery){
 
                 case 'print_onto':
                     if(type==='f'){
-                        document.location.href = "/onto/ontologies/print_onto?prefix=" + row.prefix;
+                        document.location.href = "/onto/ontologies/print_onto?filename=" + row.Name;
                     }
                     break;
             }
@@ -1170,6 +1187,10 @@ if(typeof void null!=typeof jQuery){
             // считаем что таблица получилась
             // назначаем специализированный форматтер для  первой колонки
             cfgObj['colModel'][0]['formatter'] = custRToolbar;
+
+            // добавляем частный обработчик для колонки prefix
+            pref_col_idx = 4
+            cfgObj['colModel'][pref_col_idx]['formatter'] = prefix_formatter;
             cfgObj['pager'] =  _gridID+'-pager';
             
             cfgObj['loadComplete'] = function(){

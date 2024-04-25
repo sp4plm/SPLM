@@ -124,11 +124,17 @@ def get_className(ontology_class):
     prefixes = {"http://www.w3.org/2002/07/owl" : "owl"}
     try:
         ontology, ontology_class = ontology_class.split("#")
-        if ontology in list(prefixes.keys()):
-            ontology_class = prefixes[ontology] + ":" + ontology_class
     except Exception as e:
         pass
-
+        _ris = ontology_class.find('/')
+        if -1 < _ris:
+            _ris = ontology_class.rfind('/')  # уточняем последний справа
+            ontology = ontology_class[:_ris]
+            ontology_class = ontology_class[_ris+1:]
+    if ontology in list(prefixes.keys()):
+        ontology_class = prefixes[ontology] + ":" + ontology_class
+    else:
+        ontology_class = ":" + ontology_class
     return ontology_class
 
 
@@ -192,7 +198,8 @@ def create_graph_by_node(node, g):
         for k in G.successors(n):
             i = Defrag(n) + '_' + Defrag(k)
             ch2 = sorted(get_children(k), key=lambda x: x['name'])
-            child.append({'id' : i, 'name' : get_className(k), 'uri' : k, 'children' : ch2})
+            k_cls = Ontology.ns2pref(k)
+            child.append({'id' : i, 'name' : k_cls, 'uri' : k, 'children' : ch2})
 
         return child
 
@@ -202,7 +209,7 @@ def create_graph_by_node(node, g):
     G.add_edges_from(input)
 
     ch1 = sorted(get_children(node), key=lambda x: x['name'])
-    data = [{'id' : Defrag(node), 'name' : get_className(node), "uri" : node, 'children' : ch1}]  # Начинаем создавать дерево с указанного узла
+    data = [{'id' : Defrag(node), 'name' : Ontology.ns2pref(node), "uri" : node, 'children' : ch1}]  # Начинаем создавать дерево с указанного узла
 
     return data
 
@@ -212,7 +219,16 @@ def Defrag(URL):
         q = URIRef(URL).partition("#")
         return q[2]
     else:
+        _k = '/'
+        if _k in URL:
+            _t = URL.split(_k)[-1]
+            # если вконце лишний символ был
+            if not _t:
+                _t = URL.split(_k)[-2]
+            # Важно! Возможно придется отсекать чать в _t начиная с какого-либо символа, несоответствующего path в URL
+            return _t
         return ""
+
 
 def get_onto_data(prefix):
     """"""
@@ -228,7 +244,7 @@ def get_onto_data(prefix):
 
     data_cls = {}
     for row in G.query(query_cls_string):
-        data_cls[str(row[0]).split("#")[1]] = [["URI", str(row[0])], ["Наименование", str(row[1])],
+        data_cls[Defrag(str(row[0]))] = [["URI", str(row[0])], ["Наименование", str(row[1])],
                                                ["Класс", str(row[2])], ["Комментарий", str(row[3])]]
 
     query_prd_string = """select ?term ?term_lbl ?term_cls ?term_dom ?term_rng ?term_comm
@@ -242,7 +258,7 @@ def get_onto_data(prefix):
                                """
     data_prd = {}
     for row in G.query(query_prd_string):
-        data_prd[str(row[0]).split("#")[1]] = [["URI", str(row[0])], ["Наименование", str(row[1])],
+        data_prd[Defrag(str(row[0]))] = [["URI", str(row[0])], ["Наименование", str(row[1])],
                                                ["Класс", str(row[2])], ["Domain", str(row[3])], ["Range", str(row[4])],
                                                ["Комментарий", str(row[5])]]
 
@@ -259,6 +275,8 @@ def nav_ontology():
     """
     Метод отвечает за навигацию по файлу онтологии и возвращает информацию об отношениях, аксиомах и экземплярах класса
     """
+    _ontology = Ontology()
+    _ontology.get_all_prefixes()  # fill class variable
     owl_Thing = "http://www.w3.org/2002/07/owl#Thing"
 
     _onto = unquote(request.args.get('onto') if request.args.get('onto') else "")
@@ -272,7 +290,7 @@ def nav_ontology():
     onto_file = os.path.join(onto_path, _onto)
 
     if _onto not in session:
-        graph = Graph().parse(onto_file, format='ttl')
+        graph = Graph().parse(onto_file, format=None)
 
         navigation_graph_file = os.path.join(NAVIGATION_GRAPH_PATH, _onto)
         DataSerializer().dump(navigation_graph_file, graph)
@@ -282,8 +300,10 @@ def nav_ontology():
         if os.path.exists(session[_onto]):
             graph = DataSerializer().restore(session[_onto])
         else:
-            graph = Graph().parse(onto_file, format='ttl')
+            graph = Graph().parse(onto_file, format=None)
             DataSerializer().dump(os.path.join(NAVIGATION_GRAPH_PATH, _onto), graph)
+
+    graph = _ontology.normalize_classes_tree(graph)  # make owl:Thing is classes hierarchy root
 
     TREE = json.dumps(create_graph_by_node(owl_Thing, graph))
 
@@ -355,7 +375,7 @@ def nav_ontology():
     instances_html = "<div>" + "<ul>" + instances_html + "<ul>" + "</div>"
 
 
-    return app_api.render_page("/onto_mgt/nav_ontology.html", relations = relations_html, axioms = axioms_html, instances = instances_html, js = js_code_tree(TREE), class_name = get_className(uri))
+    return app_api.render_page("/onto_mgt/nav_ontology.html", relations = relations_html, axioms = axioms_html, instances = instances_html, js = js_code_tree(TREE), class_name = Ontology.ns2pref(uri))
 
 
 @mod.route('/ontologies')
@@ -366,18 +386,18 @@ def ontologies():
 
     # Таблица онтологий
     cols_ontos = [
-        {"label": "", "index": "toolbar", "name": "toolbar", "width": 40, "sortable": False, "search": False},
+        {"label": "", "index": "toolbar", "name": "toolbar", "width": 10, "sortable": False, "search": False},
         # {name: 'Type', index: 'Type', label: 'Type', hidden: True, sortable: False}
         {"label": "Тип", "index": "Type", "name": "Type", "hidden": True, "search": False},
         {"label": "ID", "index": "id", "name": "id", "hidden": True, "search": False},
-        {"label": "Имя", "index": "name", "name": "Name", "width": 90, "search": True, "stype": 'text',
+        {"label": "Имя", "index": "name", "name": "Name", "width": 35, "search": True, "stype": 'text',
          "searchoptions": {"sopt": ['cn', 'nc', 'eq', 'ne', 'bw', 'bn', 'ew', 'en']}
          },
-        {"label": "Префикс", "index": "prefix", "name": "prefix", "width": 20, "align": "center",
+        {"label": "Префикс", "index": "prefix", "name": "prefix", "width": 43, "align": "left",
          "search": True, 'stype': 'text',
          "searchoptions": {"sopt": ['cn', 'nc', 'eq', 'ne', 'bw', 'bn', 'ew', 'en']}
          },
-        {"label": "Дата загрузки", "index": "loaddate", "name": "loaddate", "width": 40, "align": "center",
+        {"label": "Дата загрузки", "index": "loaddate", "name": "loaddate", "width": 12, "align": "center",
          "search": True, 'stype': 'text',
          "searchoptions": {"sopt": ['cn', 'nc', 'eq', 'ne', 'bw', 'bn', 'ew', 'en']}
          }
@@ -418,6 +438,8 @@ def print_onto():
 
     if 'prefix' in argms.keys():
         data = get_onto_data(argms['prefix'])
+    elif 'filename' in argms.keys():
+        data = Ontology().get_ontodata_by_file(argms['filename'])
     else:
         data = {'Ошибка! Префикс онтологии не указан.': {"": ""}}
 
@@ -520,6 +542,7 @@ def get_files():
     df = FilesManagment()
     file_list = df.get_dir_source(dir_name)
     if file_list:
+        _dir_path = os.path.dirname(file_list[0]['fullname'])
         if search_flag:
             file_list = apply_jqgrid_filters(file_list, filters)
 
@@ -528,12 +551,22 @@ def get_files():
         file_list1 = file_list[offset:offset + limit] if len(file_list) > limit else file_list
        
         rows = []
+        from app.onto_mgt.ontology import Ontology
+        _onto = Ontology()
         for item in file_list1:
             row = {'id': '', 'toolbar': '', 'Type': '', 'Name': '', 'prefix' : '', 'loaddate': ''}
+
+            _file_prefs = []
+            _file_prefs_s = ''
+            _c_file = os.path.join(_dir_path.rstrip(os.path.sep), item['name'])
+            _file_prefs = _onto.get_prefixes_from_file(_c_file)
+            if _file_prefs:
+                _file_prefs_s = _onto.prefixes_to_str(_file_prefs)
 
             row['id'] = item['name']
             row['Name'] = item['name']
             row['prefix'] = item['prefix'] if 'prefix' in item else ""
+            row['prefix'] = _file_prefs_s
             row['loaddate'] = item['mdate'] if 'mdate' in item else ""
             row['Type'] = 'f'
             rows.append(row)
@@ -615,29 +648,42 @@ def upload_files():
                             # Блок добавлен maxef для проверки уникальности префиксов и baseURI загружаемых онтологий
                             #######################
 
+                            _can_upload = Ontology().can_upload_onto_file(FN, True)
+                            if not _can_upload[0]:
+                                _error_info = _can_upload[1]
+                                # удаляем только что загруженный файл!
+                                os.remove(FN)
+                                _msg = 'Невозможно загрузить файл из-за коллизии префиксов!'
+                                _msg += 'Для префикса ' + _error_info['short'] + ' в загружаемом файле попытка '
+                                _msg += 'переопределить его URI с ' + _error_info['exist'] + ' на'
+                                _msg += ' ' + _error_info['checked']
+                                answer['Msg'] = _msg
+                                errors.append(_msg)
+                                return json.dumps(answer)
+
                             # Проверка base_uri
-                            _baseURI = Ontology().getBaseUri(FN)
-                            _prefix = Ontology().getOntoPrefix(FN)
-
-
-                            for item in meta.get_dir_source(dir_name):
-                                if "fullname" in item:
-                                    if Ontology().getBaseUri(item['fullname']) == _baseURI:
-                                        # удаляем только что загруженный файл!
-                                        os.remove(FN)
-
-                                        answer['Msg'] = 'Невозможно загрузить файл. Такой baseURI ({}) уже существует в {}'.format(_baseURI, item['name'])
-                                        errors.append('Невозможно загрузить файл. Такой baseURI ({}) уже существует в {}'.format(_baseURI, item['name']))
-                                        return json.dumps(answer)
-
-                                if "prefix" in item:
-                                    if Ontology().getOntoPrefix(item['fullname']) == _prefix:
-	                                    # удаляем только что загруженный файл!
-	                                    os.remove(FN)
-
-	                                    answer['Msg'] = 'Невозможно загрузить файл. Такой префикс ({}) уже существует в {}'.format(item["prefix"], item['name'])
-	                                    errors.append('Невозможно загрузить файл. Такой префикс ({}) уже существует в {}'.format(item["prefix"], item['name']))
-	                                    return json.dumps(answer)
+                            # _baseURI = Ontology().getBaseUri(FN)
+                            # _prefix = Ontology().getOntoPrefix(FN)
+                            #
+                            #
+                            # for item in meta.get_dir_source(dir_name):
+                            #     if "fullname" in item:
+                            #         if Ontology().getBaseUri(item['fullname']) == _baseURI:
+                            #             # удаляем только что загруженный файл!
+                            #             os.remove(FN)
+                            #
+                            #             answer['Msg'] = 'Невозможно загрузить файл. Такой baseURI ({}) уже существует в {}'.format(_baseURI, item['name'])
+                            #             errors.append('Невозможно загрузить файл. Такой baseURI ({}) уже существует в {}'.format(_baseURI, item['name']))
+                            #             return json.dumps(answer)
+                            #
+                            #     if "prefix" in item:
+                            #         if Ontology().getOntoPrefix(item['fullname']) == _prefix:
+	                        #             # удаляем только что загруженный файл!
+	                        #             os.remove(FN)
+                            #
+	                        #             answer['Msg'] = 'Невозможно загрузить файл. Такой префикс ({}) уже существует в {}'.format(item["prefix"], item['name'])
+	                        #             errors.append('Невозможно загрузить файл. Такой префикс ({}) уже существует в {}'.format(item["prefix"], item['name']))
+	                        #             return json.dumps(answer)
 
 
                         except Exception as ex:
