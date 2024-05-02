@@ -15,22 +15,19 @@
                 ?cls rdfs:subClassOf* onto:Pizza .
                 ?pz a ?cls .
                 ?pz rdfs:label ?pz_lbl .
-                ?pz onto:hasPrice ?price .
-                ?pz onto:hasSize ?size .
+                ?pz onto:hasAttribute ?att_val .
+                ?att_val a onto:Price .
+                ?att_val onto:hasAttributeValue/onto:value ?price .
+                ?pz onto:hasAttribute ?att_val2 .
+                ?att_val2 a onto:Size .
+                ?att_val2 onto:hasAttributeValue/onto:value ?size .
                } order by ?pz_lbl"
     },
     "hierarchy":{
-        "_CMT_":"Возвращает список пицц с топпингами",
+        "_CMT_":"Возвращает иерархию пицц",
         "#VARS":{"PREF":{"mark":"#{PREF}","default":""}, "URI":{"mark":"#{URI}","default":""}},
         "#TXT":"prefix onto: <#{PREF}>
                select ?short_cls3 ?short_cls2 ?short_cls (count(?pz) as ?count) {
-                {select distinct ?pz ?class ?class2 ?class3 {
-                  BIND(onto:Pizza as ?class)
-                  BIND('#.' as ?class2)
-                  BIND('' as ?class3)
-                  ?pz a ?class . }
-                }
-                UNION
                 {select distinct ?pz ?class ?class2 ?class3 {
                   BIND(onto:Pizza as ?class)
                   BIND('' as ?class3)
@@ -50,14 +47,15 @@
                 } Group by ?short_cls3 ?short_cls2 ?short_cls"
     },
     "toppings":{
-        "_CMT_":"Возвращает список пицц с характеристиками",
+        "_CMT_":"Возвращает список пицц с топпингами",
         "#VARS":{"PREF":{"mark":"#{PREF}","default":""}, "URI":{"mark":"#{URI}","default":""}},
         "#TXT":"prefix onto: <#{PREF}>
                 select ?pz_lbl ?topping ('1' as ?cnt) {
                 ?cls rdfs:subClassOf* onto:Pizza .
                 ?pz a ?cls .
                 ?pz rdfs:label ?pz_lbl .
-                ?pz onto:hasTopping ?top .
+                ?pz onto:hasPart ?top .
+                ?top a/rdfs:subClassOf* onto:PizzaTopping .
                 ?top rdfs:label ?topping .
                } order by ?pz_lbl"
     }

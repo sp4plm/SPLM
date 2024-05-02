@@ -38,7 +38,6 @@ def startPage():
     df = pd.DataFrame( query_1 )
     df2 = pd.DataFrame( query_2 )
     df4 = pd.DataFrame( query_3 )
-
     df[['price', 'size']] = df[['price', 'size']].apply( pd.to_numeric )
     df.columns = ['Имя','Цена','Размер']
 
