@@ -104,7 +104,7 @@
 {% block page_main_content %}
 <div class="section-toolbar">
 	<div class="toolbar-btn" action="make-report" type="pdf">
-		<a href="{{url_for('onto.print_onto_result', prefix=request.args.get('prefix')) }}" target="_blank">
+		<a href="{{url_for('onto.print_onto_result', filename=request.args.get('filename')) }}" target="_blank">
 			<span class="btn-icon">
 				<img class="stats_print" src="/static/img/printer2.png">
 			</span>

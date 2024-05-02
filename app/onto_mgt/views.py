@@ -457,6 +457,10 @@ def print_onto_result():
     argms = request.args.to_dict()
     if 'prefix' in argms:
         data = get_onto_data(argms['prefix'])
+    elif 'filename' in argms.keys():
+        data = Ontology().get_ontodata_by_file(argms['filename'])
+    else:
+        data = {'Ошибка! Префикс онтологии не указан.': {"": ""}}
 
     html = ""
     for type_key, type_val in data.items():
