@@ -56,12 +56,15 @@ def startPage():
 
     stat = {}
     for key, val in page_stat.items():
-        q_inst = tsc_query('mod_data_navigation.index.count_instances',{'URI':val[0]})
-        q_cls = tsc_query('mod_data_navigation.index.count_subclasses',{'URI':val[0]})
-        if q_inst and q_cls:
-            stat.update({key:{'inst':q_inst[0]['inst_qnt'], 'cls':q_cls[0]['cls_qnt'], 'img':val[1], 'href':val[2]}})
-        else:
-            stat.update({key: {'inst':q_inst, 'cls':q_cls}})
+        try:
+            q_inst = tsc_query('mod_data_navigation.index.count_instances',{'URI':val[0]})
+            q_cls = tsc_query('mod_data_navigation.index.count_subclasses',{'URI':val[0]})
+            if q_inst and q_cls:
+                stat.update({key:{'inst':q_inst[0]['inst_qnt'], 'cls':q_cls[0]['cls_qnt'], 'img':val[1], 'href':val[2]}})
+            else:
+                stat.update({key: {'inst':q_inst, 'cls':q_cls}})
+        except Exception as err:
+            message1 = "! ! ! - - - - ОТСУТСТВУЕТ ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ - - - - ! ! !"
 
     return app_api.render_page(mod.name + "/index.html", heading=heading, stat=stat, message1=message1, message2=message2)
 
