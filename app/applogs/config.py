@@ -31,7 +31,10 @@ class Config:
         import logging
         from logging.config import dictConfig
         if not os.path.exists(self._app_log_path):
-            raise Exception('Undefine path for log files!')
+            try:
+                os.makedirs(self._app_log_path, exist_ok=True)
+            except Exception as ex:
+                raise Exception('Undefine path for log files!')
         dictConfig(self.get_app_logger_conf())
 
     def get_log_loggers(self):
