@@ -89,15 +89,19 @@
 	<h2 class="content-header">{{ heading }}</h2>
 
     <h3>Сравнение пиццы по стоимость</h3>
+    {% if message %} {{ message }} {% endif %}
     <div class="container" id="plt_bar1"></div>
     <hr/>
     <h3>Сравнение пиццы по размеру</h3>
+    {% if message %} {{ message }} {% endif %}
     <div class="container" id="plt_bar2"></div>
     <hr/>
     <h3>Сравнение топпингов по частоте использования</h3>
+    {% if message %} {{ message }} {% endif %}
     <div class="container" id="plt_pie3"></div>
 
     <h3>Иерархия видов пиццы пропорционально количеству</h3>
+    {% if message %} {{ message }} {% endif %}
     <div class="container" id="plt_sun4"></div>
 
 {% endblock %}

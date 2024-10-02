@@ -30,71 +30,76 @@ def startPage():
 
     page_path = [{'href': 'analysis', 'label' : 'Аналитика'}]
     pref_unquote = "http://www.co-ode.org/ontologies/pizza/pizza.owl#"
+    message = ""
+    try:
+        query_1 = tsc_query( 'mod_analysis.analysis.attributes', {'PREF': pref_unquote } )
+        query_2 = tsc_query( 'mod_analysis.analysis.toppings', {'PREF': pref_unquote } )
+        query_3 = tsc_query( 'mod_analysis.analysis.hierarchy', {'PREF': pref_unquote } )
 
-    query_1 = tsc_query( 'mod_analysis.analysis.attributes', {'PREF': pref_unquote } )
-    query_2 = tsc_query( 'mod_analysis.analysis.toppings', {'PREF': pref_unquote } )
-    query_3 = tsc_query( 'mod_analysis.analysis.hierarchy', {'PREF': pref_unquote } )
+        df = pd.DataFrame( query_1 )
+        df2 = pd.DataFrame( query_2 )
+        df4 = pd.DataFrame( query_3 )
+        df[['price', 'size']] = df[['price', 'size']].apply( pd.to_numeric )
+        df.columns = ['Имя','Цена','Размер']
 
-    df = pd.DataFrame( query_1 )
-    df2 = pd.DataFrame( query_2 )
-    df4 = pd.DataFrame( query_3 )
-    df[['price', 'size']] = df[['price', 'size']].apply( pd.to_numeric )
-    df.columns = ['Имя','Цена','Размер']
+        df4[['count']] = df4[['count']].apply( pd.to_numeric )
+        df4 = df4.replace( r'^\s*$', nan, regex=True )
 
-    df4[['count']] = df4[['count']].apply( pd.to_numeric )
-    df4 = df4.replace( r'^\s*$', nan, regex=True )
+        fig1 = px.bar(df, x="Имя", y="Цена", text_auto=True)
+        fig2 = px.bar(df, x="Имя", y="Размер", text_auto=True)
+        fig3 = px.pie(df2, values="cnt", names="topping", hole=.2)
+        fig3.layout.height = 600
+        fig4 = px.sunburst(df4, path=['short_cls', 'short_cls2', 'short_cls3'], values='count')
+        fig4.layout.height = 800
 
-    fig1 = px.bar(df, x="Имя", y="Цена", text_auto=True)
-    fig2 = px.bar(df, x="Имя", y="Размер", text_auto=True)
-    fig3 = px.pie(df2, values="cnt", names="topping", hole=.2)
-    fig3.layout.height = 600
-    fig4 = px.sunburst(df4, path=['short_cls', 'short_cls2', 'short_cls3'], values='count')
-    fig4.layout.height = 800
+        fig1_json = json.dumps(fig1,cls=plotly.utils.PlotlyJSONEncoder)
+        fig2_json = json.dumps(fig2,cls=plotly.utils.PlotlyJSONEncoder)
+        fig3_json = json.dumps(fig3,cls=plotly.utils.PlotlyJSONEncoder)
+        fig4_json = json.dumps(fig4,cls=plotly.utils.PlotlyJSONEncoder)
 
-    fig1_json = json.dumps(fig1,cls=plotly.utils.PlotlyJSONEncoder)
-    fig2_json = json.dumps(fig2,cls=plotly.utils.PlotlyJSONEncoder)
-    fig3_json = json.dumps(fig3,cls=plotly.utils.PlotlyJSONEncoder)
-    fig4_json = json.dumps(fig4,cls=plotly.utils.PlotlyJSONEncoder)
+        fig1_js = """
+        <script>
+            (function($){
+                if(typeof void null!==typeof Plotly){
+                Plotly.newPlot('plt_bar1',%s);
+                }
+            })(jQuery);
+        </script>
+        """ % fig1_json
 
-    fig1_js = """
-    <script>
-        (function($){
-            if(typeof void null!==typeof Plotly){
-            Plotly.newPlot('plt_bar1',%s);
-            }
-        })(jQuery);
-    </script>
-    """ % fig1_json
+        fig2_js = """
+        <script>
+            (function($){
+                if(typeof void null!==typeof Plotly){
+                Plotly.newPlot('plt_bar2',%s);
+                }
+            })(jQuery);
+        </script>
+        """ % fig2_json
 
-    fig2_js = """
-    <script>
-        (function($){
-            if(typeof void null!==typeof Plotly){
-            Plotly.newPlot('plt_bar2',%s);
-            }
-        })(jQuery);
-    </script>
-    """ % fig2_json
+        fig3_js = """
+        <script>
+            (function($){
+                if(typeof void null!==typeof Plotly){
+                Plotly.newPlot('plt_pie3',%s);
+                }
+            })(jQuery);
+        </script>
+        """ % fig3_json
 
-    fig3_js = """
-    <script>
-        (function($){
-            if(typeof void null!==typeof Plotly){
-            Plotly.newPlot('plt_pie3',%s);
-            }
-        })(jQuery);
-    </script>
-    """ % fig3_json
+        fig4_js = """
+        <script>
+            (function($){
+                if(typeof void null!==typeof Plotly){
+                Plotly.newPlot('plt_sun4',%s);
+                }
+            })(jQuery);
+        </script>
+        """ % fig4_json
 
-    fig4_js = """
-    <script>
-        (function($){
-            if(typeof void null!==typeof Plotly){
-            Plotly.newPlot('plt_sun4',%s);
-            }
-        })(jQuery);
-    </script>
-    """ % fig4_json
+    except Exception:
+        fig1_js, fig2_js, fig3_js, fig4_js = "","","",""
+        message = "! ! ! - - - - ОТСУТСТВУЕТ ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ - - - - ! ! !"
 
     return app_api.render_page(mod.name + "/index.html",
                                heading = "Графические отчеты",
@@ -102,4 +107,5 @@ def startPage():
                                fig2=fig2_js,
                                fig3=fig3_js,
                                fig4=fig4_js,
+                               message = message,
                                page_path=page_path)
