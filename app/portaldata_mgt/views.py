@@ -159,7 +159,7 @@ def publish_process_break():
         _pub_file_result = ModUtils().get_publish_result_file()
         publish_result = None
         if os.path.exists(_pub_file_result):
-            from app.mod_portaldata.process_logger import ProcessLogger
+            from app.portaldata_mgt.process_logger import ProcessLogger
             publish_result = ProcessLogger()
             publish_result.set_log_file(_pub_file_result)
             publish_result.write('Процесс публикации завершен с ошибкой:')
